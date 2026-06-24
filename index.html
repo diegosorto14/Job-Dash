@@ -528,12 +528,11 @@ function renderMine() {
   const q      = (document.getElementById('mine-search')?.value || '').toLowerCase();
   const fSt    = document.getElementById('mine-status')?.value || '';
 
-  // Rows from the original 100 that have any status set (not "Not Applied")
+  const APPLIED_STATUSES = new Set(['Applied','First Round','Second Round','Offer','Rejected']);
+
+  // Rows from the original 100 where you've actually submitted an application
   const from100 = companies
-    .filter(c => {
-      const st = getStatus(c.id);
-      return st !== 'Not Applied';
-    })
+    .filter(c => APPLIED_STATUSES.has(getStatus(c.id)))
     .map(c => ({
       _id:     String(c.id),
       company: c.company,
@@ -547,7 +546,7 @@ function renderMine() {
       fromOriginal: true,
     }));
 
-  // Custom apps
+  // Custom apps — all of them count since you intentionally added them
   const custom = customApps.map(a => ({...a, source: a.auto ? 'Auto (Email)' : 'Manual'}));
 
   // Merge — deduplicate by company name in case both exist
@@ -563,7 +562,7 @@ function renderMine() {
   const body = document.getElementById('mine-body');
   if (!all.length) {
     body.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:#94a3b8">
-      ${fSt||q ? 'No applications match your filters' : 'No applications yet — apply to programs in the Tracker tab or add one above'}
+      ${fSt||q ? 'No applications match your filters' : 'No applications yet — mark programs as Applied in the Tracker tab or add one above'}
     </td></tr>`;
     return;
   }
