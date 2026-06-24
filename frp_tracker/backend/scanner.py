@@ -40,11 +40,11 @@ MONTH_TO_NUM = {
 }
 
 SEARCH_TERMS = [
-    "finance rotational program 2027",
-    "FP&A rotational program new grad 2027",
-    "finance leadership development program 2027",
-    "finance rotation program analyst 2027",
-    "financial planning analysis rotational 2027",
+    '"finance rotational program" 2027',
+    '"finance leadership development program" 2027',
+    '"finance rotation program" analyst 2027',
+    '"financial rotational program" new grad 2027',
+    '"finance development program" 2027',
 ]
 
 HEADERS = {
@@ -154,17 +154,31 @@ def handshake_link():
 
 # ── Classify new vs known programs ────────────────────────────────────────────
 def classify_jobs(jobs):
-    known = known_companies()
+    companies     = load_json(COMPANIES_FILE, [])
+    known_map     = {c["company"].lower(): c for c in companies}  # name → full record
+    known_names   = set(known_map.keys())
     known_jobs, new_programs = [], []
+
     for job in jobs:
         co = job.get("company", "").lower()
         if "multiple" in co or "handshake" in co:
             known_jobs.append(job)
             continue
-        if any(k in co or co in k for k in known):
+
+        matched = next(
+            (known_map[k] for k in known_names if k in co or co in k), None
+        )
+        if matched:
+            # Replace scraped link with the company's direct careers page
+            job = {**job,
+                   "link":    matched["link"],
+                   "program": matched.get("program", job.get("title", "")),
+                   "note":    f"Apply directly at {matched['company']}"}
             known_jobs.append(job)
         else:
+            # Unknown company — keep the source link (LinkedIn/Indeed)
             new_programs.append(job)
+
     return known_jobs, new_programs
 
 # ── Deadline alerts ───────────────────────────────────────────────────────────
@@ -299,17 +313,27 @@ def log_activity(new_jobs, new_programs, email_sent, email_error=None, errors=No
 
 # ── Email builders ────────────────────────────────────────────────────────────
 def _job_rows(jobs):
-    return "".join(f"""
+    rows = []
+    for j in jobs:
+        # Use program name if available (known companies), else scraped title
+        display_title = j.get("program") or j.get("title", "")
+        # Link label: known companies say "Apply at X", new programs say source
+        if j.get("note"):
+            link_label = f"Apply at {j['company'].split('(')[0].strip()} →"
+        else:
+            link_label = f"View on {j['source']} →"
+        rows.append(f"""
         <tr>
           <td style="padding:10px;border-bottom:1px solid #eee">
-            <strong>{j['title']}</strong><br>
+            <strong>{display_title}</strong><br>
             <span style="color:#666">{j['company']}</span>
           </td>
           <td style="padding:10px;border-bottom:1px solid #eee;color:#888">{j['source']}</td>
           <td style="padding:10px;border-bottom:1px solid #eee">
-            <a href="{j['link']}" style="color:#1d4ed8">View →</a>
+            <a href="{j['link']}" style="color:#1d4ed8">{link_label}</a>
           </td>
-        </tr>""" for j in jobs)
+        </tr>""")
+    return "".join(rows)
 
 def _deadline_rows(alerts):
     return "".join(f"""
