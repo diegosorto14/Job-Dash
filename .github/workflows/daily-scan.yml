@@ -3,7 +3,7 @@ name: Daily FRP Scanner
 on:
   schedule:
     - cron: "0 13 * * *"   # 9 AM ET (UTC-4) every day
-  workflow_dispatch:         # allows manual trigger from GitHub UI
+  workflow_dispatch:         # manual trigger from GitHub UI
 
 jobs:
   scan:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          ref: claude/ecstatic-mendel-pcnk0g
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -23,17 +23,24 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r frp_tracker/frp_tracker/backend/requirements.txt
+        run: pip install -r frp_tracker/backend/requirements.txt
 
-      - name: Run scanner
+      - name: Run job scanner
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        run: python frp_tracker/frp_tracker/backend/scanner.py
+        run: python frp_tracker/backend/scanner.py
+
+      - name: Run Gmail status parser
+        env:
+          GMAIL_CLIENT_ID:     ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+        run: python frp_tracker/backend/gmail_parser.py
 
       - name: Commit updated data files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add frp_tracker/frp_tracker/frontend/src/data/
-          git diff --cached --quiet || git commit -m "chore: daily scan update $(date -u '+%Y-%m-%d')"
-          git push origin claude/ecstatic-mendel-pcnk0g
+          git add frp_tracker/frontend/src/data/
+          git diff --cached --quiet || git commit -m "chore: daily scan + status update $(date -u '+%Y-%m-%d')"
+          git push origin main
