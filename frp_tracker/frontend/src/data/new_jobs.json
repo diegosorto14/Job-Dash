@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "title": "Finance Professional Development Program",
+    "company": "Abbott",
+    "link": "https://www.abbott.com/careers.html",
+    "source": "LinkedIn",
+    "date": "2026-06-24",
+    "id": "li_4429906670",
+    "program": "Finance Leadership Development Program",
+    "note": "Apply directly at Abbott Laboratories"
+  },
+  {
+    "title": "Advisor Development Program - Financial Solutions Advisor Trainee (Centralized) - Greenwood Village",
+    "company": "Bank of America",
+    "link": "https://campus.bankofamerica.com",
+    "source": "LinkedIn",
+    "date": "2026-06-24",
+    "id": "li_4392350660",
+    "program": "Finance Development Program",
+    "note": "Apply directly at Bank of America"
+  },
+  {
+    "title": "Finance Rotational Programs 2027 \u2014 Search on Handshake",
+    "company": "Multiple companies \u2014 click to browse",
+    "link": "https://joinhandshake.com/jobs/?query=finance%20rotational%20program%202027&job_type=JOB",
+    "source": "Handshake",
+    "date": "2026-06-24",
+    "id": "hs_frp_2027"
+  }
+]

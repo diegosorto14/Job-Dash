@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "ts": "2026-06-24T19:16:46",
+    "date": "2026-06-24",
+    "new_jobs": 3,
+    "new_programs": 2,
+    "email_sent": true,
+    "email_error": null,
+    "scan_errors": []
+  }
+]
