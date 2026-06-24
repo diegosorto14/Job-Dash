@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FRP Tracker — Diego Sorto Taipe</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1a2233;min-height:100vh}
+
+/* NAV */
+nav{background:#0f2044;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.nav-brand{color:#fff;font-size:17px;font-weight:700;letter-spacing:.3px}
+.nav-brand span{color:#60a5fa}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{background:none;border:none;color:#94a3b8;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s}
+.nav-tab:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-tab.active{background:#1a5fb4;color:#fff}
+.nav-right{color:#64748b;font-size:12px}
+
+/* MAIN */
+.page{display:none;padding:24px 28px;max-width:1400px;margin:0 auto}
+.page.active{display:block}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:#fff;border-radius:10px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);border-top:3px solid #e2e8f0}
+.kpi-val{font-size:28px;font-weight:800;line-height:1}
+.kpi-lbl{font-size:11px;color:#64748b;margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.kpi.blue{border-color:#1a5fb4}.kpi.blue .kpi-val{color:#1a5fb4}
+.kpi.purple{border-color:#7c3aed}.kpi.purple .kpi-val{color:#7c3aed}
+.kpi.cyan{border-color:#0891b2}.kpi.cyan .kpi-val{color:#0891b2}
+.kpi.green{border-color:#16a34a}.kpi.green .kpi-val{color:#16a34a}
+.kpi.red{border-color:#dc2626}.kpi.red .kpi-val{color:#dc2626}
+.kpi.orange{border-color:#ea580c}.kpi.orange .kpi-val{color:#ea580c}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-bar input,.filter-bar select{padding:8px 12px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;background:#fff;color:#1a2233;outline:none}
+.filter-bar input:focus,.filter-bar select:focus{border-color:#1a5fb4}
+.filter-bar input{flex:1;min-width:180px}
+.btn{padding:8px 16px;border:none;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s}
+.btn-primary{background:#1a5fb4;color:#fff}.btn-primary:hover{background:#1e40af}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-danger{background:#fee2e2;color:#dc2626}.btn-danger:hover{background:#fecaca}
+
+/* PROGRESS BAR */
+.prog-wrap{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-bottom:7px;font-weight:600}
+.prog-bar{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1a5fb4,#4a90d9);border-radius:99px;transition:width .5s}
+
+/* TABLE */
+.table-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:#0f2044;color:#fff}
+th{padding:11px 14px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+td{padding:11px 14px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.company-name{font-weight:600;color:#0f2044}
+.program-name{font-size:11px;color:#64748b;margin-top:2px}
+a.apply-link{color:#1a5fb4;text-decoration:none;font-weight:600;font-size:12px}
+a.apply-link:hover{text-decoration:underline}
+
+/* STATUS SELECT */
+.status-sel{border:none;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;text-align:center}
+.s-not{background:#f1f5f9;color:#64748b}
+.s-app{background:#dbeafe;color:#1d4ed8}
+.s-fr{background:#ede9fe;color:#7c3aed}
+.s-sr{background:#cffafe;color:#0e7490}
+.s-off{background:#dcfce7;color:#16a34a}
+.s-rej{background:#fee2e2;color:#dc2626}
+
+/* NOTES BTN */
+.notes-btn{background:#f1f5f9;border:none;border-radius:6px;padding:4px 9px;font-size:11px;cursor:pointer;color:#475569}
+.notes-btn:hover{background:#e2e8f0}
+.has-note{background:#fef9c3;color:#92400e}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:28px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{font-size:17px;font-weight:700;color:#0f2044;margin-bottom:18px}
+.modal label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:5px;margin-top:14px}
+.modal input,.modal select,.modal textarea{width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;font-family:inherit}
+.modal input:focus,.modal select:focus,.modal textarea:focus{border-color:#1a5fb4}
+.modal textarea{resize:vertical;min-height:80px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.card h4{font-size:13px;font-weight:700;color:#0f2044;margin-bottom:14px;text-transform:uppercase;letter-spacing:.4px}
+.sector-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px}
+.sector-bar-wrap{flex:1;height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.sector-bar{height:100%;background:#1a5fb4;border-radius:99px}
+.pipeline{display:flex;align-items:center;gap:0;margin-top:8px;flex-wrap:wrap}
+.pipe-step{text-align:center;flex:1;min-width:80px}
+.pipe-num{font-size:26px;font-weight:800;color:#0f2044}
+.pipe-lbl{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase}
+.pipe-arrow{color:#cbd5e1;font-size:22px;padding:0 4px;align-self:flex-start;margin-top:10px}
+
+/* ACTIVITY */
+.act-item{background:#fff;border-radius:8px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;gap:16px}
+.act-dot{width:10px;height:10px;border-radius:50%;background:#1a5fb4;flex-shrink:0}
+.act-dot.none{background:#e2e8f0}
+.act-meta{font-size:12px;color:#64748b}
+.act-stat{font-size:13px;font-weight:600;color:#0f2044}
+
+/* NEW JOBS */
+.job-card{background:#fff;border-radius:10px;padding:16px 20px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.07);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.job-info .job-title{font-weight:700;color:#0f2044;font-size:14px}
+.job-info .job-co{font-size:12px;color:#64748b;margin-top:2px}
+.job-badge{font-size:11px;background:#eff6ff;color:#1d4ed8;padding:3px 9px;border-radius:20px;font-weight:600}
+
+/* ADD FORM */
+.add-section{background:#fff;border-radius:10px;padding:20px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.add-section h4{font-size:14px;font-weight:700;color:#0f2044;margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.form-grid label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%;padding:8px 11px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;font-family:inherit}
+.form-grid input:focus,.form-grid select:focus{border-color:#1a5fb4}
+
+/* LOADING */
+.loading{text-align:center;padding:60px;color:#64748b;font-size:14px}
+.spinner{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#1a5fb4;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#0f2044;color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  .kpi-row{grid-template-columns:repeat(3,1fr)}
+  .stats-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .kpi-row{grid-template-columns:repeat(2,1fr)}
+  .nav-tabs{gap:2px}
+  .nav-tab{padding:6px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">FRP Tracker <span>· Diego Sorto Taipe</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('tracker')">Tracker</button>
+    <button class="nav-tab" onclick="showTab('discover')">New Jobs</button>
+    <button class="nav-tab" onclick="showTab('mine')">My Applications</button>
+    <button class="nav-tab" onclick="showTab('stats')">Stats</button>
+    <button class="nav-tab" onclick="showTab('activity')">Activity</button>
+  </div>
+  <div class="nav-right" id="last-updated">Loading…</div>
+</nav>
+
+<!-- TRACKER TAB -->
+<div class="page active" id="page-tracker">
+  <div class="kpi-row">
+    <div class="kpi blue"><div class="kpi-val" id="k-total">—</div><div class="kpi-lbl">Total Programs</div></div>
+    <div class="kpi blue"><div class="kpi-val" id="k-applied">—</div><div class="kpi-lbl">Applied</div></div>
+    <div class="kpi purple"><div class="kpi-val" id="k-fr">—</div><div class="kpi-lbl">First Round</div></div>
+    <div class="kpi cyan"><div class="kpi-val" id="k-sr">—</div><div class="kpi-lbl">Second Round</div></div>
+    <div class="kpi green"><div class="kpi-val" id="k-offer">—</div><div class="kpi-lbl">Offers</div></div>
+    <div class="kpi orange"><div class="kpi-val" id="k-week">—</div><div class="kpi-lbl">Due This Week</div></div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-label"><span>Application Progress</span><span id="prog-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="search" placeholder="Search company or program…" oninput="renderTable()"/>
+    <select id="f-sector" onchange="renderTable()"><option value="">All Sectors</option></select>
+    <select id="f-status" onchange="renderTable()">
+      <option value="">All Statuses</option>
+      <option>Not Applied</option><option>Applied</option><option>First Round</option>
+      <option>Second Round</option><option>Offer</option><option>Rejected</option>
+    </select>
+    <select id="f-sort" onchange="renderTable()">
+      <option value="deadline">Sort: Deadline</option>
+      <option value="company">Sort: Company A–Z</option>
+      <option value="sector">Sort: Sector</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Company</th><th>Sector</th><th>Window</th><th>Status</th><th>Notes</th><th>Apply</th>
+      </tr></thead>
+      <tbody id="tbl-body"><tr><td colspan="7"><div class="loading"><div class="spinner"></div>Loading programs…</div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- NEW JOBS TAB -->
+<div class="page" id="page-discover">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div>
+      <h2 style="font-size:18px;font-weight:700;color:#0f2044">New Job Postings</h2>
+      <p style="font-size:13px;color:#64748b;margin-top:3px">Fresh postings found by the daily scanner — updated every morning at 9 AM ET</p>
+    </div>
+    <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
+  </div>
+  <div id="new-jobs-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+</div>
+
+<!-- MY APPLICATIONS TAB -->
+<div class="page" id="page-mine">
+  <div class="add-section">
+    <h4>Add a Custom Application</h4>
+    <div class="form-grid">
+      <div class="full">
+        <label>Job Posting URL</label>
+        <input type="url" id="add-url" placeholder="Paste the link to the job posting"/>
+      </div>
+      <div>
+        <label>Company Name</label>
+        <input type="text" id="add-company" placeholder="e.g. Balyasny Asset Management"/>
+      </div>
+      <div>
+        <label>Program / Role Title</label>
+        <input type="text" id="add-program" placeholder="e.g. Finance Rotational Program"/>
+      </div>
+      <div>
+        <label>Sector</label>
+        <select id="add-sector">
+          <option>Tech & Media</option><option>Banking & Financial Services</option>
+          <option>Consumer Goods & Retail</option><option>Healthcare & Pharma</option>
+          <option>Energy & Utilities</option><option>Industrials & Manufacturing</option>
+          <option>Real Estate & REITs</option><option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Current Stage</label>
+        <select id="add-status">
+          <option>Not Applied</option><option>Applied</option><option>First Round</option>
+          <option>Second Round</option><option>Offer</option><option>Rejected</option>
+        </select>
+      </div>
+      <div>
+        <label>Opens Month</label>
+        <input type="text" id="add-opens" placeholder="e.g. August"/>
+      </div>
+      <div>
+        <label>Closes Month</label>
+        <input type="text" id="add-closes" placeholder="e.g. October"/>
+      </div>
+      <div class="full">
+        <label>Notes</label>
+        <textarea id="add-notes" rows="2" placeholder="Any notes about this application…"></textarea>
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="saveCustomApp()">Add Application</button>
+    </div>
+  </div>
+  <div id="mine-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+</div>
+
+<!-- STATS TAB -->
+<div class="page" id="page-stats">
+  <div class="stats-grid">
+    <div class="card">
+      <h4>Application Pipeline</h4>
+      <div class="pipeline" id="pipeline"></div>
+    </div>
+    <div class="card">
+      <h4>By Sector</h4>
+      <div id="sector-chart"></div>
+    </div>
+    <div class="card">
+      <h4>Programs Closing This Month</h4>
+      <div id="closing-soon"></div>
+    </div>
+    <div class="card">
+      <h4>Quick Stats</h4>
+      <div id="quick-stats"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVITY TAB -->
+<div class="page" id="page-activity">
+  <div style="margin-bottom:18px">
+    <h2 style="font-size:18px;font-weight:700;color:#0f2044">Scanner Activity Log</h2>
+    <p style="font-size:13px;color:#64748b;margin-top:3px">Every time the daily scanner runs, it logs results here</p>
+  </div>
+  <div id="activity-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+</div>
+
+<!-- NOTES MODAL -->
+<div class="modal-bg" id="notes-modal">
+  <div class="modal">
+    <h3 id="notes-modal-title">Notes</h3>
+    <label>Your notes</label>
+    <textarea id="notes-ta" rows="5" placeholder="Interview notes, contacts, deadlines…"></textarea>
+    <div class="modal-footer">
+      <button class="btn" style="background:#f1f5f9;color:#475569" onclick="closeModal('notes-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNote()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data sources (GitHub raw URLs) ────────────────────────────────────────────
+const RAW = 'https://raw.githubusercontent.com/diegosorto14/Job-Dash/main/frp_tracker/frontend/src/data';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let companies = [], appStatus = {}, newJobs = [], newPrograms = [], activityLog = [];
+let customApps = JSON.parse(localStorage.getItem('frp_custom_apps') || '[]');
+let localStatus = JSON.parse(localStorage.getItem('frp_status_v2') || '{}');
+let localNotes  = JSON.parse(localStorage.getItem('frp_notes_v2')  || '{}');
+let activeNoteId = null;
+
+const MONTH_NUM = {january:1,february:2,march:3,april:4,may:5,june:6,
+  july:7,august:8,september:9,october:10,november:11,december:12};
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+async function boot() {
+  try {
+    const bust = '?t=' + Date.now();
+    const [cos, status, jobs, progs, log] = await Promise.all([
+      fetch(RAW + '/companies.json' + bust).then(r => r.json()).catch(() => []),
+      fetch(RAW + '/app_status.json' + bust).then(r => r.json()).catch(() => ({})),
+      fetch(RAW + '/new_jobs.json' + bust).then(r => r.json()).catch(() => []),
+      fetch(RAW + '/new_programs.json' + bust).then(r => r.json()).catch(() => []),
+      fetch(RAW + '/activity_log.json' + bust).then(r => r.json()).catch(() => []),
+    ]);
+    companies   = cos;
+    newJobs     = jobs;
+    newPrograms = progs;
+    activityLog = log;
+
+    // Merge repo status (auto from Gmail) with local overrides (manual)
+    // Local always wins so manual changes aren't overwritten
+    appStatus = {...status, ...localStatus};
+
+    // Populate sector filter
+    const sectors = [...new Set(companies.map(c => c.sector))].sort();
+    const sel = document.getElementById('f-sector');
+    sectors.forEach(s => { const o = document.createElement('option'); o.textContent = s; sel.appendChild(o); });
+
+    const now = new Date();
+    document.getElementById('last-updated').textContent =
+      'Updated ' + now.toLocaleDateString('en-US',{month:'short',day:'numeric'}) +
+      ' · ' + now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+
+    renderAll();
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function refreshData() { await boot(); toast('Data refreshed'); }
+
+// ── Status helpers ─────────────────────────────────────────────────────────────
+function getStatus(id) { return (appStatus[String(id)] || {}).status || 'Not Applied'; }
+
+function setStatus(id, val) {
+  localStatus[String(id)] = { status: val, updated: new Date().toISOString() };
+  appStatus[String(id)]   = { status: val, updated: new Date().toISOString() };
+  localStorage.setItem('frp_status_v2', JSON.stringify(localStatus));
+  updateKPIs();
+}
+
+const STATUS_CLASS = {
+  'Not Applied':'s-not','Applied':'s-app','First Round':'s-fr',
+  'Second Round':'s-sr','Offer':'s-off','Rejected':'s-rej'
+};
+
+function statusSel(id, cur) {
+  const opts = ['Not Applied','Applied','First Round','Second Round','Offer','Rejected'];
+  return `<select class="status-sel ${STATUS_CLASS[cur]||'s-not'}" onchange="handleStatus('${id}',this)">
+    ${opts.map(o=>`<option${o===cur?' selected':''}>${o}</option>`).join('')}
+  </select>`;
+}
+
+function handleStatus(id, el) {
+  const val = el.value;
+  el.className = 'status-sel ' + (STATUS_CLASS[val] || 's-not');
+  setStatus(id, val);
+}
+
+// ── Deadline helpers ──────────────────────────────────────────────────────────
+function daysUntilClose(co) {
+  const num = MONTH_NUM[(co.closesMonth||'').toLowerCase()];
+  if (!num) return 999;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let year = today.getFullYear();
+  if (num < today.getMonth()+1) year++;
+  const close = new Date(year, num-1, 1);
+  return Math.ceil((close - today) / 86400000);
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────────────
+function updateKPIs() {
+  const all = [...companies, ...customApps];
+  const counts = {};
+  all.forEach(c => { const s = getStatus(c.id||c._id); counts[s] = (counts[s]||0)+1; });
+  const applied = (counts['Applied']||0)+(counts['First Round']||0)+(counts['Second Round']||0)+(counts['Offer']||0)+(counts['Rejected']||0);
+  const dueWeek = companies.filter(c => daysUntilClose(c) <= 7 && getStatus(c.id) === 'Not Applied').length;
+
+  document.getElementById('k-total').textContent   = all.length;
+  document.getElementById('k-applied').textContent = counts['Applied']||0;
+  document.getElementById('k-fr').textContent      = counts['First Round']||0;
+  document.getElementById('k-sr').textContent      = counts['Second Round']||0;
+  document.getElementById('k-offer').textContent   = counts['Offer']||0;
+  document.getElementById('k-week').textContent    = dueWeek;
+
+  const pct = all.length ? Math.round(applied/all.length*100) : 0;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+// ── Tracker table ─────────────────────────────────────────────────────────────
+function renderTable() {
+  const q       = document.getElementById('search').value.toLowerCase();
+  const sector  = document.getElementById('f-sector').value;
+  const status  = document.getElementById('f-status').value;
+  const sort    = document.getElementById('f-sort').value;
+
+  let rows = companies.filter(c => {
+    if (q && !c.company.toLowerCase().includes(q) && !c.program.toLowerCase().includes(q)) return false;
+    if (sector && c.sector !== sector) return false;
+    if (status && getStatus(c.id) !== status) return false;
+    return true;
+  });
+
+  if (sort === 'deadline') rows.sort((a,b) => daysUntilClose(a) - daysUntilClose(b));
+  else if (sort === 'company') rows.sort((a,b) => a.company.localeCompare(b.company));
+  else if (sort === 'sector') rows.sort((a,b) => a.sector.localeCompare(b.sector));
+
+  const body = document.getElementById('tbl-body');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#94a3b8">No programs match your filters</td></tr>';
+    return;
+  }
+
+  body.innerHTML = rows.map((c,i) => {
+    const st  = getStatus(c.id);
+    const note = localNotes[String(c.id)] || '';
+    const days = daysUntilClose(c);
+    const window = `${c.opensMonth||'—'} – ${c.closesMonth||'—'}` +
+      (days <= 7 ? `<br><span style="color:#dc2626;font-size:11px;font-weight:700">${days}d left!</span>` :
+       days <= 30 ? `<br><span style="color:#ea580c;font-size:11px">${days}d left</span>` : '');
+    return `<tr>
+      <td style="color:#94a3b8;font-size:12px">${i+1}</td>
+      <td><div class="company-name">${c.company}</div><div class="program-name">${c.program}</div></td>
+      <td style="font-size:12px;color:#475569">${c.sector}</td>
+      <td style="font-size:12px;color:#475569">${window}</td>
+      <td>${statusSel(c.id, st)}</td>
+      <td><button class="notes-btn${note?' has-note':''}" onclick="openNote(${c.id},'${escHtml(c.company)}')">${note?'Edit note':'+ Note'}</button></td>
+      <td><a class="apply-link" href="${c.link}" target="_blank">Apply →</a></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── New Jobs tab ──────────────────────────────────────────────────────────────
+function renderNewJobs() {
+  const el = document.getElementById('new-jobs-list');
+  const all = [...newJobs, ...newPrograms];
+  if (!all.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:10px">No new postings yet — scanner runs daily at 9 AM ET</div>';
+    return;
+  }
+  el.innerHTML = all.map(j => `
+    <div class="job-card">
+      <div class="job-info">
+        <div class="job-title">${j.title}</div>
+        <div class="job-co">${j.company} · <span style="color:#94a3b8">${j.date||''}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="job-badge">${j.source}</span>
+        <a class="btn btn-primary btn-sm" href="${j.link}" target="_blank">View →</a>
+      </div>
+    </div>`).join('');
+}
+
+// ── My Applications tab ───────────────────────────────────────────────────────
+function renderMine() {
+  const el = document.getElementById('mine-list');
+  if (!customApps.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:10px">No custom applications yet — add one above</div>';
+    return;
+  }
+  el.innerHTML = customApps.map((a,i) => {
+    const st = getStatus(a._id);
+    return `<div class="job-card" style="flex-wrap:wrap;gap:10px">
+      <div class="job-info" style="flex:1;min-width:200px">
+        <div class="job-title">${a.program}</div>
+        <div class="job-co">${a.company} · ${a.sector}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:3px">Window: ${a.opens||'—'} – ${a.closes||'—'}</div>
+        ${a.notes?`<div style="font-size:11px;color:#92400e;margin-top:4px;background:#fef9c3;padding:3px 7px;border-radius:5px">${a.notes}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        ${statusSel(a._id, st)}
+        <a class="btn btn-primary btn-sm" href="${a.url||'#'}" target="_blank">View →</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteCustomApp(${i})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveCustomApp() {
+  const url     = document.getElementById('add-url').value.trim();
+  const company = document.getElementById('add-company').value.trim();
+  const program = document.getElementById('add-program').value.trim();
+  if (!company || !program) { toast('Company and program name are required'); return; }
+
+  const id = 'custom_' + Date.now();
+  const app = {
+    _id:     id,
+    url, company, program,
+    sector:  document.getElementById('add-sector').value,
+    opens:   document.getElementById('add-opens').value.trim(),
+    closes:  document.getElementById('add-closes').value.trim(),
+    notes:   document.getElementById('add-notes').value.trim(),
+    added:   new Date().toISOString(),
+  };
+  const initStatus = document.getElementById('add-status').value;
+  setStatus(id, initStatus);
+
+  customApps.unshift(app);
+  localStorage.setItem('frp_custom_apps', JSON.stringify(customApps));
+
+  // Clear form
+  ['add-url','add-company','add-program','add-opens','add-closes','add-notes'].forEach(id => document.getElementById(id).value='');
+
+  renderMine(); updateKPIs(); toast('Application added!');
+}
+
+function deleteCustomApp(i) {
+  if (!confirm('Remove this application?')) return;
+  customApps.splice(i,1);
+  localStorage.setItem('frp_custom_apps', JSON.stringify(customApps));
+  renderMine(); updateKPIs();
+}
+
+// ── Stats tab ─────────────────────────────────────────────────────────────────
+function renderStats() {
+  // Pipeline
+  const counts = {};
+  companies.forEach(c => { const s=getStatus(c.id); counts[s]=(counts[s]||0)+1; });
+  const steps = [
+    {l:'Applied',k:'Applied',c:'#1a5fb4'},
+    {l:'First Round',k:'First Round',c:'#7c3aed'},
+    {l:'Second Round',k:'Second Round',c:'#0891b2'},
+    {l:'Offer',k:'Offer',c:'#16a34a'},
+  ];
+  document.getElementById('pipeline').innerHTML = steps.map((s,i) =>
+    `${i>0?'<div class="pipe-arrow">›</div>':''}
+     <div class="pipe-step">
+       <div class="pipe-num" style="color:${s.c}">${counts[s.k]||0}</div>
+       <div class="pipe-lbl">${s.l}</div>
+     </div>`).join('');
+
+  // Sector chart
+  const sectors = {};
+  companies.forEach(c => {
+    if (!sectors[c.sector]) sectors[c.sector] = {total:0,applied:0};
+    sectors[c.sector].total++;
+    if (getStatus(c.id) !== 'Not Applied') sectors[c.sector].applied++;
+  });
+  const maxT = Math.max(...Object.values(sectors).map(s=>s.total));
+  document.getElementById('sector-chart').innerHTML = Object.entries(sectors)
+    .sort((a,b)=>b[1].total-a[1].total)
+    .map(([name,d]) => `
+      <div class="sector-row">
+        <div style="width:130px;font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+        <div class="sector-bar-wrap"><div class="sector-bar" style="width:${Math.round(d.total/maxT*100)}%"></div></div>
+        <div style="font-size:12px;color:#64748b;width:40px;text-align:right">${d.total}</div>
+      </div>`).join('');
+
+  // Closing soon
+  const closing = companies
+    .filter(c => { const d=daysUntilClose(c); return d<=45 && d>=0 && getStatus(c.id)==='Not Applied'; })
+    .sort((a,b)=>daysUntilClose(a)-daysUntilClose(b)).slice(0,8);
+  document.getElementById('closing-soon').innerHTML = closing.length
+    ? closing.map(c=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px">
+        <span style="font-weight:600">${c.company}</span>
+        <span style="color:${daysUntilClose(c)<=7?'#dc2626':'#ea580c'};font-weight:700">${daysUntilClose(c)}d</span>
+      </div>`).join('')
+    : '<div style="color:#94a3b8;font-size:13px;padding-top:8px">No programs closing in the next 45 days</div>';
+
+  // Quick stats
+  const rejected = counts['Rejected']||0;
+  const appliedTotal = (counts['Applied']||0)+(counts['First Round']||0)+(counts['Second Round']||0)+(counts['Offer']||0)+rejected;
+  const convRate = appliedTotal ? Math.round(((counts['First Round']||0)+(counts['Second Round']||0)+(counts['Offer']||0))/appliedTotal*100) : 0;
+  document.getElementById('quick-stats').innerHTML = `
+    <div style="display:grid;gap:12px;margin-top:4px">
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Total Applied</span><strong>${appliedTotal}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Interview Rate</span><strong style="color:#7c3aed">${convRate}%</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Rejected</span><strong style="color:#dc2626">${rejected}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Not Yet Applied</span><strong>${counts['Not Applied']||companies.length}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Custom Apps Added</span><strong>${customApps.length}</strong></div>
+    </div>`;
+}
+
+// ── Activity tab ──────────────────────────────────────────────────────────────
+function renderActivity() {
+  const el = document.getElementById('activity-list');
+  if (!activityLog.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:10px">No scanner runs logged yet</div>';
+    return;
+  }
+  el.innerHTML = activityLog.map(e => {
+    const hasData = e.new_jobs > 0 || e.new_programs > 0;
+    const d = new Date(e.ts);
+    const dateStr = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) +
+      ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return `<div class="act-item">
+      <div class="act-dot${hasData?'':' none'}"></div>
+      <div style="flex:1">
+        <div class="act-stat">${hasData ? `${e.new_jobs} new jobs · ${e.new_programs} new programs` : 'No new findings'}</div>
+        <div class="act-meta">${dateStr}</div>
+        ${e.scan_errors&&e.scan_errors.length?`<div style="font-size:11px;color:#dc2626;margin-top:3px">${e.scan_errors.length} scan error(s)</div>`:''}
+      </div>
+      <div style="font-size:12px">
+        ${e.email_sent?'<span style="color:#16a34a;font-weight:600">Email sent</span>':'<span style="color:#94a3b8">No email</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Notes modal ───────────────────────────────────────────────────────────────
+function openNote(id, name) {
+  activeNoteId = id;
+  document.getElementById('notes-modal-title').textContent = name;
+  document.getElementById('notes-ta').value = localNotes[String(id)] || '';
+  document.getElementById('notes-modal').classList.add('open');
+}
+function saveNote() {
+  localNotes[String(activeNoteId)] = document.getElementById('notes-ta').value.trim();
+  localStorage.setItem('frp_notes_v2', JSON.stringify(localNotes));
+  closeModal('notes-modal');
+  renderTable();
+  toast('Note saved');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.getElementById('notes-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('notes-modal');
+});
+
+// ── Tab navigation ────────────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name==='stats') renderStats();
+  if (name==='activity') renderActivity();
+  if (name==='discover') renderNewJobs();
+  if (name==='mine') renderMine();
+}
+
+// ── Render all ────────────────────────────────────────────────────────────────
+function renderAll() {
+  updateKPIs();
+  renderTable();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function escHtml(s) { return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+
+boot();
+</script>
+</body>
+</html>
