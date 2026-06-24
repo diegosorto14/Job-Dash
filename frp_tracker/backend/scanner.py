@@ -73,11 +73,21 @@ def known_companies():
     companies = load_json(COMPANIES_FILE, [])
     return {c["company"].lower() for c in companies}
 
+def already_applied_companies():
+    """Return lowercase company names where status is Applied or further."""
+    app_status = load_json(STATUS_FILE, {})
+    companies  = load_json(COMPANIES_FILE, [])
+    applied_statuses = {"Applied", "First Round", "Second Round", "Offer", "Rejected"}
+    applied_ids = {cid for cid, v in app_status.items()
+                   if v.get("status") in applied_statuses}
+    return {c["company"].lower() for c in companies if str(c["id"]) in applied_ids}
+
 # ── Scrapers ──────────────────────────────────────────────────────────────────
 def search_indeed(query):
     jobs = []
     try:
-        url = f"https://www.indeed.com/jobs?q={requests.utils.quote(query)}&sort=date"
+        # fromage=1 = posted in last 24 hours only
+        url = f"https://www.indeed.com/jobs?q={requests.utils.quote(query)}&sort=date&fromage=1"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         soup = BeautifulSoup(resp.text, "html.parser")
         for card in soup.select("div.job_seen_beacon")[:8]:
@@ -203,7 +213,9 @@ def get_weekly_summary():
 
 # ── Main scan ─────────────────────────────────────────────────────────────────
 def scan_all():
-    seen = set(load_json(SEEN_FILE, []))
+    seen          = set(load_json(SEEN_FILE, []))
+    applied_cos   = already_applied_companies()   # companies you've already acted on
+    today         = datetime.date.today().isoformat()
     new_jobs, errors = [], []
 
     for term in SEARCH_TERMS:
@@ -219,9 +231,18 @@ def scan_all():
             errors.append(str(e))
 
         for job in found:
-            if job["id"] not in seen:
-                seen.add(job["id"])
-                new_jobs.append(job)
+            # Skip if already seen in a previous run
+            if job["id"] in seen:
+                continue
+            # Skip if posted on a different day (stale result slipping through)
+            if job.get("date") and job["date"] != today:
+                continue
+            # Skip if you've already applied to this company
+            co = job.get("company", "").lower()
+            if any(k in co or co in k for k in applied_cos):
+                continue
+            seen.add(job["id"])
+            new_jobs.append(job)
 
     save_json(SEEN_FILE, list(seen))
 
