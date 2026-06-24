@@ -199,12 +199,31 @@ a.apply-link:hover{text-decoration:underline}
 <div class="page" id="page-discover">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
     <div>
-      <h2 style="font-size:18px;font-weight:700;color:#0f2044">New Job Postings</h2>
-      <p style="font-size:13px;color:#64748b;margin-top:3px">Fresh postings found by the daily scanner — updated every morning at 9 AM ET</p>
+      <h2 style="font-size:18px;font-weight:700;color:#0f2044">New Jobs</h2>
+      <p style="font-size:13px;color:#64748b;margin-top:3px">Daily scanner results — <span id="scan-date"></span>. Status flips to Applied automatically when your confirmation email arrives.</p>
     </div>
     <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
   </div>
-  <div id="new-jobs-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+
+  <!-- Priority: matches your 100 -->
+  <div style="margin-bottom:24px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="width:10px;height:10px;border-radius:50%;background:#dc2626;flex-shrink:0"></div>
+      <h3 style="font-size:14px;font-weight:700;color:#0f2044">Priority — From Your 100</h3>
+      <span style="font-size:12px;color:#64748b">These programs are now open. Apply before the deadline.</span>
+    </div>
+    <div id="priority-jobs"></div>
+  </div>
+
+  <!-- New discoveries -->
+  <div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="width:10px;height:10px;border-radius:50%;background:#1a5fb4;flex-shrink:0"></div>
+      <h3 style="font-size:14px;font-weight:700;color:#0f2044">New Discoveries</h3>
+      <span style="font-size:12px;color:#64748b">Programs not in your original 100 — worth exploring.</span>
+    </div>
+    <div id="discovery-jobs"></div>
+  </div>
 </div>
 
 <!-- MY APPLICATIONS TAB -->
@@ -293,22 +312,29 @@ a.apply-link:hover{text-decoration:underline}
 
 <!-- STATS TAB -->
 <div class="page" id="page-stats">
+  <div style="margin-bottom:20px">
+    <h2 style="font-size:18px;font-weight:700;color:#0f2044">Stats</h2>
+    <p style="font-size:13px;color:#64748b;margin-top:3px">Based on everything you've applied to — from your 100 and beyond</p>
+  </div>
+
+  <!-- Sector breakdown -->
+  <div class="card" style="margin-bottom:18px">
+    <h4>Where You're Applying — By Sector</h4>
+    <p style="font-size:12px;color:#94a3b8;margin-bottom:14px;font-weight:400">% of your actual applications by industry</p>
+    <div id="sector-chart"></div>
+  </div>
+
+  <!-- This month -->
   <div class="stats-grid">
     <div class="card">
-      <h4>Application Pipeline</h4>
-      <div class="pipeline" id="pipeline"></div>
+      <h4>Opening This Month</h4>
+      <p style="font-size:12px;color:#94a3b8;margin-bottom:12px;font-weight:400">From your 100 + scanner findings</p>
+      <div id="opening-month"></div>
     </div>
     <div class="card">
-      <h4>By Sector</h4>
-      <div id="sector-chart"></div>
-    </div>
-    <div class="card">
-      <h4>Programs Closing This Month</h4>
-      <div id="closing-soon"></div>
-    </div>
-    <div class="card">
-      <h4>Quick Stats</h4>
-      <div id="quick-stats"></div>
+      <h4>Closing This Month</h4>
+      <p style="font-size:12px;color:#94a3b8;margin-bottom:12px;font-weight:400">Programs with deadlines this month — not yet applied</p>
+      <div id="closing-month"></div>
     </div>
   </div>
 </div>
@@ -499,23 +525,54 @@ function renderTable() {
 
 // ── New Jobs tab ──────────────────────────────────────────────────────────────
 function renderNewJobs() {
-  const el = document.getElementById('new-jobs-list');
-  const all = [...newJobs, ...newPrograms];
-  if (!all.length) {
-    el.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:10px">No new postings yet — scanner runs daily at 9 AM ET</div>';
-    return;
+  const knownNames = new Set(companies.map(c => c.company.toLowerCase()));
+
+  function isFromYour100(job) {
+    const co = (job.company || '').toLowerCase();
+    return [...knownNames].some(k => k.includes(co) || co.includes(k));
   }
-  el.innerHTML = all.map(j => `
-    <div class="job-card">
-      <div class="job-info">
-        <div class="job-title">${j.title}</div>
-        <div class="job-co">${j.company} · <span style="color:#94a3b8">${j.date||''}</span></div>
+
+  function jobCard(j, priority) {
+    const co100 = priority ? companies.find(c => {
+      const k = c.company.toLowerCase(), co = j.company.toLowerCase();
+      return k.includes(co) || co.includes(k);
+    }) : null;
+    const status = co100 ? getStatus(co100.id) : null;
+    const alreadyApplied = status && status !== 'Not Applied';
+
+    return `<div class="job-card" style="border-left:3px solid ${priority?'#dc2626':'#1a5fb4'}">
+      <div class="job-info" style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="job-title">${j.title}</div>
+          ${priority ? `<span style="font-size:11px;background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:20px;font-weight:700">In Your 100</span>` : ''}
+          ${alreadyApplied ? `<span style="font-size:11px;background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:20px;font-weight:700">${status}</span>` : ''}
+        </div>
+        <div class="job-co">${j.company} · <span style="color:#94a3b8">${j.source}</span></div>
+        ${priority && !alreadyApplied ? `<div style="font-size:11px;color:#dc2626;margin-top:4px;font-weight:600">Apply now — status will flip to Applied automatically when your confirmation email arrives</div>` : ''}
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="job-badge">${j.source}</span>
-        <a class="btn btn-primary btn-sm" href="${j.link}" target="_blank">View →</a>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <a class="btn btn-primary btn-sm" href="${j.link}" target="_blank">Apply →</a>
       </div>
-    </div>`).join('');
+    </div>`;
+  }
+
+  const all = [...newJobs, ...newPrograms];
+  const today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('scan-date').textContent = `last scan ${today}`;
+
+  const priority    = all.filter(j => isFromYour100(j));
+  const discoveries = all.filter(j => !isFromYour100(j));
+
+  const pEl = document.getElementById('priority-jobs');
+  const dEl = document.getElementById('discovery-jobs');
+
+  pEl.innerHTML = priority.length
+    ? priority.map(j => jobCard(j, true)).join('')
+    : '<div style="background:#fff;border-radius:10px;padding:20px;color:#94a3b8;font-size:13px">None of today\'s postings matched your 100 — check back tomorrow</div>';
+
+  dEl.innerHTML = discoveries.length
+    ? discoveries.map(j => jobCard(j, false)).join('')
+    : '<div style="background:#fff;border-radius:10px;padding:20px;color:#94a3b8;font-size:13px">No new discoveries today</div>';
 }
 
 // ── My Applications tab ───────────────────────────────────────────────────────
@@ -702,62 +759,92 @@ function deleteCustomApp(i) {
 
 // ── Stats tab ─────────────────────────────────────────────────────────────────
 function renderStats() {
-  // Pipeline
-  const counts = {};
-  companies.forEach(c => { const s=getStatus(c.id); counts[s]=(counts[s]||0)+1; });
-  const steps = [
-    {l:'Applied',k:'Applied',c:'#1a5fb4'},
-    {l:'First Round',k:'First Round',c:'#7c3aed'},
-    {l:'Second Round',k:'Second Round',c:'#0891b2'},
-    {l:'Offer',k:'Offer',c:'#16a34a'},
+  const APPLIED = new Set(['Applied','First Round','Second Round','Offer','Rejected']);
+  const thisMonth = new Date().getMonth() + 1; // 1-12
+  const MONTHS = ['january','february','march','april','may','june',
+                  'july','august','september','october','november','december'];
+  const thisMonthName = MONTHS[thisMonth - 1];
+
+  // All applied entries: from 100 + custom apps
+  const appliedFrom100   = companies.filter(c => APPLIED.has(getStatus(c.id)));
+  const appliedFromCustom = customApps;
+  const allApplied = [
+    ...appliedFrom100.map(c => ({...c, sector: c.sector})),
+    ...appliedFromCustom.map(a => ({...a, sector: a.sector || 'Other'})),
   ];
-  document.getElementById('pipeline').innerHTML = steps.map((s,i) =>
-    `${i>0?'<div class="pipe-arrow">›</div>':''}
-     <div class="pipe-step">
-       <div class="pipe-num" style="color:${s.c}">${counts[s.k]||0}</div>
-       <div class="pipe-lbl">${s.l}</div>
-     </div>`).join('');
 
-  // Sector chart
-  const sectors = {};
-  companies.forEach(c => {
-    if (!sectors[c.sector]) sectors[c.sector] = {total:0,applied:0};
-    sectors[c.sector].total++;
-    if (getStatus(c.id) !== 'Not Applied') sectors[c.sector].applied++;
+  // ── Sector breakdown of actual applications ───────────────────────────────
+  const sectorCounts = {};
+  allApplied.forEach(a => {
+    const s = a.sector || 'Other';
+    sectorCounts[s] = (sectorCounts[s] || 0) + 1;
   });
-  const maxT = Math.max(...Object.values(sectors).map(s=>s.total));
-  document.getElementById('sector-chart').innerHTML = Object.entries(sectors)
-    .sort((a,b)=>b[1].total-a[1].total)
-    .map(([name,d]) => `
-      <div class="sector-row">
-        <div style="width:130px;font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
-        <div class="sector-bar-wrap"><div class="sector-bar" style="width:${Math.round(d.total/maxT*100)}%"></div></div>
-        <div style="font-size:12px;color:#64748b;width:40px;text-align:right">${d.total}</div>
-      </div>`).join('');
+  const total = allApplied.length || 1;
+  const COLORS = ['#1a5fb4','#7c3aed','#0891b2','#16a34a','#ea580c','#dc2626','#64748b','#0f2044'];
+  const sorted = Object.entries(sectorCounts).sort((a,b) => b[1]-a[1]);
 
-  // Closing soon
-  const closing = companies
-    .filter(c => { const d=daysUntilClose(c); return d<=45 && d>=0 && getStatus(c.id)==='Not Applied'; })
-    .sort((a,b)=>daysUntilClose(a)-daysUntilClose(b)).slice(0,8);
-  document.getElementById('closing-soon').innerHTML = closing.length
-    ? closing.map(c=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px">
-        <span style="font-weight:600">${c.company}</span>
-        <span style="color:${daysUntilClose(c)<=7?'#dc2626':'#ea580c'};font-weight:700">${daysUntilClose(c)}d</span>
-      </div>`).join('')
-    : '<div style="color:#94a3b8;font-size:13px;padding-top:8px">No programs closing in the next 45 days</div>';
+  document.getElementById('sector-chart').innerHTML = sorted.length
+    ? sorted.map(([name, count], i) => {
+        const pct = Math.round(count / total * 100);
+        return `<div class="sector-row" style="margin-bottom:12px">
+          <div style="width:160px;font-size:13px;color:#1a2233;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+          <div class="sector-bar-wrap" style="flex:1;height:10px">
+            <div class="sector-bar" style="width:${pct}%;background:${COLORS[i%COLORS.length]}"></div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:${COLORS[i%COLORS.length]};width:50px;text-align:right">${pct}% <span style="color:#94a3b8;font-weight:400">(${count})</span></div>
+        </div>`;
+      }).join('') + `<div style="font-size:12px;color:#94a3b8;margin-top:8px">${total} total applications tracked</div>`
+    : '<div style="color:#94a3b8;font-size:13px">No applications yet — start applying and this will fill in</div>';
 
-  // Quick stats
-  const rejected = counts['Rejected']||0;
-  const appliedTotal = (counts['Applied']||0)+(counts['First Round']||0)+(counts['Second Round']||0)+(counts['Offer']||0)+rejected;
-  const convRate = appliedTotal ? Math.round(((counts['First Round']||0)+(counts['Second Round']||0)+(counts['Offer']||0))/appliedTotal*100) : 0;
-  document.getElementById('quick-stats').innerHTML = `
-    <div style="display:grid;gap:12px;margin-top:4px">
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Total Applied</span><strong>${appliedTotal}</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Interview Rate</span><strong style="color:#7c3aed">${convRate}%</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Rejected</span><strong style="color:#dc2626">${rejected}</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Not Yet Applied</span><strong>${counts['Not Applied']||companies.length}</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#64748b">Custom Apps Added</span><strong>${customApps.length}</strong></div>
-    </div>`;
+  // ── Opening this month (from 100 + scanner new programs) ──────────────────
+  const openingNow = [
+    ...companies.filter(c => (c.opensMonth||'').toLowerCase() === thisMonthName),
+    ...newPrograms.filter(j => {
+      // scanner items don't have opensMonth but found today = opening now
+      return true;
+    }).slice(0, 5),
+  ].slice(0, 10);
+
+  document.getElementById('opening-month').innerHTML = openingNow.length
+    ? openingNow.map(c => {
+        const st = getStatus(c.id || c._id);
+        const badge = APPLIED.has(st)
+          ? `<span style="font-size:11px;background:#dcfce7;color:#16a34a;padding:2px 7px;border-radius:20px;font-weight:700">${st}</span>`
+          : `<span style="font-size:11px;background:#fef9c3;color:#92400e;padding:2px 7px;border-radius:20px;font-weight:600">Not Applied</span>`;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f5f9">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#0f2044">${c.company||c.title}</div>
+            <div style="font-size:11px;color:#64748b">${c.program||c.sector||''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            ${badge}
+            <a href="${c.link}" target="_blank" style="font-size:12px;color:#1a5fb4;font-weight:600;text-decoration:none">Apply →</a>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="color:#94a3b8;font-size:13px">No programs opening this month in your list</div>';
+
+  // ── Closing this month (from 100 — not yet applied) ───────────────────────
+  const closingNow = companies
+    .filter(c => (c.closesMonth||'').toLowerCase() === thisMonthName && !APPLIED.has(getStatus(c.id)))
+    .sort((a,b) => daysUntilClose(a) - daysUntilClose(b));
+
+  document.getElementById('closing-month').innerHTML = closingNow.length
+    ? closingNow.map(c => {
+        const days = daysUntilClose(c);
+        const urgent = days <= 7;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f5f9">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#0f2044">${c.company}</div>
+            <div style="font-size:11px;color:#64748b">${c.program}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:12px;font-weight:700;color:${urgent?'#dc2626':'#ea580c'}">${days}d left</span>
+            <a href="${c.link}" target="_blank" style="font-size:12px;color:#1a5fb4;font-weight:600;text-decoration:none">Apply →</a>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="color:#94a3b8;font-size:13px">No programs closing this month that you haven\'t applied to yet</div>';
 }
 
 // ── Activity tab ──────────────────────────────────────────────────────────────
