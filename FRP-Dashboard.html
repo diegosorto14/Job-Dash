@@ -5,174 +5,216 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>FRP Tracker — Diego Sorto Taipe</title>
 <style>
-:root {
-  --navy:#0f2044; --blue:#1a5fb4; --sky:#4a90d9;
-  --light:#e8f0fe; --bg:#f4f6fb; --white:#fff;
-  --text:#1a1a2e; --muted:#64748b; --border:#dde3ee;
-  --green:#0d7a4e; --greenl:#d1fae5;
-  --amber:#b45309; --amberl:#fef3c7;
-  --red:#b91c1c;   --redl:#fee2e2;
+:root{
+  --navy:#0f2044;--blue:#1a5fb4;--sky:#4a90d9;
+  --light:#e8f0fe;--bg:#f4f6fb;--white:#fff;
+  --text:#1a1a2e;--muted:#64748b;--border:#dde3ee;
+  --green:#0d7a4e;--greenl:#d1fae5;
+  --amber:#b45309;--amberl:#fef3c7;
+  --red:#b91c1c;--redl:#fee2e2;
   --purple:#6d28d9;--purpl:#ede9fe;
+  --teal:#0e7490;--teall:#cffafe;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 .hidden{display:none!important}
 
-/* TOP BAR */
-.topbar{background:var(--navy);padding:0 28px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.35)}
-.tb-brand{display:flex;align-items:center;gap:10px;margin-right:36px;flex-shrink:0}
+/* TOPBAR */
+.topbar{background:var(--navy);padding:0 28px;display:flex;align-items:center;height:58px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.tb-brand{display:flex;align-items:center;gap:10px;margin-right:32px;flex-shrink:0}
 .tb-icon{font-size:20px}
-.tb-title{font-size:15px;font-weight:700;color:#fff}
-.tb-sub{font-size:11px;color:#8ba4c8;margin-left:3px}
-.tb-tabs{display:flex;gap:0}
-.tab-btn{background:none;border:none;border-bottom:3px solid transparent;color:#8ba4c8;font-size:13px;font-weight:500;padding:0 18px;height:56px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.tab-btn:hover{color:#fff;background:rgba(255,255,255,.05)}
-.tab-btn.active{color:#fff;border-bottom-color:var(--sky)}
-.tb-right{margin-left:auto;text-align:right;font-size:11px;color:#8ba4c8;line-height:1.6;flex-shrink:0}
-.tb-right strong{color:#c5d8f0;font-weight:600}
+.tb-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:-.2px}
+.tb-cycle{font-size:11px;color:#7a9cc8;margin-left:4px;font-weight:500}
+.tb-tabs{display:flex}
+.tab-btn{background:none;border:none;border-bottom:3px solid transparent;color:#8ba4c8;font-size:13px;font-weight:600;padding:0 18px;height:58px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;letter-spacing:.01em}
+.tab-btn:hover{color:#c5d8f0;background:rgba(255,255,255,.05)}
+.tab-btn.active{color:#fff;border-bottom-color:#4a90d9}
+.tb-right{margin-left:auto;text-align:right;font-size:11px;color:#7a9cc8;line-height:1.7;flex-shrink:0}
+.tb-right strong{color:#e2ecf8;font-weight:600;font-size:12px}
+.tb-user{font-size:10px;color:#5a7a9a}
 
 /* CONTENT */
-.content{padding:26px 30px;max-width:1400px;margin:0 auto}
-.pg-title{font-size:21px;font-weight:800;color:var(--navy);margin-bottom:3px}
-.pg-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
+.content{padding:24px 28px;max-width:1440px;margin:0 auto}
+.pg-hd{margin-bottom:20px}
+.pg-title{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:2px}
+.pg-sub{font-size:13px;color:var(--muted)}
 
 /* KPI STRIP */
-.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
-.kpi{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:16px 18px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05);position:relative;overflow:hidden}
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:16px}
+.kpi{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:14px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05);position:relative;overflow:hidden;cursor:default}
 .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--blue))}
-.kpi-val{font-size:30px;font-weight:800;color:var(--kc,var(--blue));line-height:1;margin-bottom:4px}
-.kpi-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.kpi-val{font-size:28px;font-weight:800;color:var(--kc,var(--blue));line-height:1;margin-bottom:3px}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.kpi-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
 
 /* PROGRESS */
-.prog-wrap{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:14px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.prog-lbl{font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap}
+.prog-card{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:13px 20px;margin-bottom:18px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.prog-lbl{font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap}
 .prog-track{flex:1;background:#e2e8f0;border-radius:99px;height:9px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:99px;transition:width .5s}
-.prog-pct{font-size:17px;font-weight:800;color:var(--blue);white-space:nowrap}
-.prog-detail{font-size:12px;color:var(--muted);white-space:nowrap}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:99px;transition:width .5s ease}
+.prog-pct{font-size:17px;font-weight:800;color:var(--blue);white-space:nowrap;min-width:48px;text-align:right}
+.prog-det{font-size:11.5px;color:var(--muted);white-space:nowrap}
 
-/* FILTERS */
-.fbar{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:13px 16px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.sbox{position:relative;flex:1;min-width:210px}
-.sbox input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:#f8fafc;transition:border .15s}
+/* PIPELINE STAGES (stats top) */
+.pipeline{display:flex;gap:0;margin-bottom:20px;border-radius:11px;overflow:hidden;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.pipe-stage{flex:1;padding:12px 14px;text-align:center;background:var(--white);border-right:1px solid var(--border);position:relative}
+.pipe-stage:last-child{border-right:none}
+.pipe-stage::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--pc)}
+.pipe-n{font-size:22px;font-weight:800;color:var(--pc)}
+.pipe-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:2px}
+.pipe-arr{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:14px;color:#cbd5e1;z-index:2;display:none}
+
+/* FILTER BAR */
+.fbar{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:12px 15px;margin-bottom:11px;display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.sbox{position:relative;flex:1;min-width:200px}
+.sbox input{width:100%;padding:7px 11px 7px 30px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:#f8fafc}
 .sbox input:focus{border-color:var(--blue);background:#fff}
-.sbox-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
-select{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:#f8fafc;outline:none;cursor:pointer;color:var(--text)}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+select{padding:7px 9px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;background:#f8fafc;outline:none;cursor:pointer;color:var(--text)}
 select:focus{border-color:var(--blue)}
-.btn-sm{padding:8px 13px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;align-self:flex-end;transition:all .15s}
-.btn-sm:hover{background:var(--light);color:var(--navy)}
-.rcount{font-size:12px;color:var(--muted);margin-bottom:8px;padding-left:2px}
+.btn-xs{padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:none;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;align-self:flex-end}
+.btn-xs:hover{background:var(--light);color:var(--navy)}
+.rct{font-size:12px;color:var(--muted);margin-bottom:7px;padding-left:2px}
 
 /* TABLE */
-.tcard{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:#f1f5fb;padding:10px 13px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:9px 13px;border-bottom:1px solid #f0f4fa;vertical-align:middle}
+.tcard{background:var(--white);border-radius:11px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:#f1f5fb;padding:9px 12px;text-align:left;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid #f0f4fa;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#f8fafc}
-.cn{font-weight:700;color:var(--navy);white-space:nowrap}
-.pn{color:#475569;max-width:190px;font-size:12.5px;line-height:1.3}
-.sp{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--light);color:var(--blue);white-space:nowrap}
-.win{white-space:nowrap;font-size:12px}
-.wo{color:var(--blue);font-weight:600}
-.wa{color:#cbd5e1;margin:0 3px}
-.wc{color:var(--muted)}
-.ssel{font-size:11.5px;font-weight:700;border:1.5px solid;border-radius:99px;padding:4px 10px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none}
-.dlw{display:flex;align-items:center;gap:5px}
-.dli{font-size:12px;border:1px solid var(--border);border-radius:7px;padding:4px 7px;outline:none;background:#f8fafc;color:var(--text)}
-.dli.urg{border-color:var(--red);background:#fff5f5}
-.dlb{font-size:10px;font-weight:700;background:var(--redl);color:var(--red);padding:2px 6px;border-radius:99px;white-space:nowrap}
-.nb{font-size:11.5px;background:#f8fafc;border:1px solid var(--border);border-radius:7px;padding:4px 10px;cursor:pointer;color:var(--muted);white-space:nowrap}
+.cn{font-weight:700;color:var(--navy);white-space:nowrap;font-size:13px}
+.pn{color:#475569;max-width:180px;font-size:12px;line-height:1.3}
+.sptag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--light);color:var(--blue);white-space:nowrap}
+.win{white-space:nowrap;font-size:11.5px}
+.wo{color:var(--blue);font-weight:700}.wa{color:#cbd5e1;margin:0 2px}.wc{color:var(--muted)}
+
+/* STATUS SELECT */
+.ssel{font-size:11.5px;font-weight:700;border:2px solid;border-radius:99px;padding:4px 10px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;min-width:110px;text-align:center}
+
+/* DEADLINE */
+.dlw{display:flex;align-items:center;gap:4px}
+.dli{font-size:11.5px;border:1px solid var(--border);border-radius:7px;padding:3px 6px;outline:none;background:#f8fafc;color:var(--text)}
+.dli:focus{border-color:var(--blue)}
+.dli.urg{border-color:var(--red)!important;background:#fff5f5}
+.dlb{font-size:9.5px;font-weight:700;background:var(--redl);color:var(--red);padding:2px 5px;border-radius:99px;white-space:nowrap}
+.nb{font-size:11px;background:#f8fafc;border:1px solid var(--border);border-radius:7px;padding:3px 9px;cursor:pointer;color:var(--muted);white-space:nowrap}
 .nb:hover{background:var(--light);color:var(--navy)}
-.nb.has{background:var(--amberl);border-color:#fbbf24;color:var(--amber)}
-.al{font-size:12px;font-weight:600;color:var(--blue);padding:4px 10px;border:1px solid #bfdbfe;border-radius:7px;background:var(--light);text-decoration:none;white-space:nowrap;display:inline-block}
+.nb.has{background:var(--amberl);border-color:#fbbf24;color:var(--amber);font-weight:600}
+.al{font-size:11.5px;font-weight:700;color:var(--blue);padding:3px 9px;border:1.5px solid #bfdbfe;border-radius:7px;background:var(--light);text-decoration:none;white-space:nowrap;display:inline-block}
 .al:hover{background:#dbeafe}
-.rej td{opacity:.4}
-.new-badge{font-size:9px;background:#dcfce7;color:#15803d;padding:1px 5px;border-radius:99px;font-weight:700;margin-left:5px}
+.rej td{opacity:.38}
+.new-badge{font-size:9px;background:#dcfce7;color:#15803d;padding:1px 5px;border-radius:99px;font-weight:700;margin-left:5px;vertical-align:middle}
 
 /* EMPTY */
-.empty-st{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:56px 40px;text-align:center}
-.empty-ic{font-size:42px;margin-bottom:14px}
-.empty-st h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.empty-st{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:52px 36px;text-align:center}
+.empty-ic{font-size:38px;margin-bottom:12px}
+.empty-st h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:7px}
 .empty-st p{font-size:13px;color:var(--muted);margin-bottom:10px}
-.empty-st code{display:inline-block;background:#f1f5f9;color:var(--blue);padding:9px 18px;border-radius:8px;font-family:monospace;font-size:13px}
+.empty-st code{display:inline-block;background:#f1f5f9;color:var(--blue);padding:8px 16px;border-radius:8px;font-family:monospace;font-size:13px}
 
-/* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(10,20,40,.55);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px)}
-.modal{background:#fff;border-radius:14px;padding:26px;width:460px;max-width:90vw;box-shadow:0 24px 64px rgba(0,0,0,.28)}
+/* MODAL (notes) */
+.overlay{position:fixed;inset:0;background:rgba(10,20,40,.6);display:flex;align-items:center;justify-content:center;z-index:300;backdrop-filter:blur(3px)}
+.modal{background:#fff;border-radius:14px;padding:26px;width:480px;max-width:92vw;box-shadow:0 24px 72px rgba(0,0,0,.3)}
 .modal-h{font-size:15px;font-weight:800;color:var(--navy)}
 .modal-co{font-size:12px;color:var(--muted);margin:3px 0 14px;display:block}
-.modal textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:12px;font-size:13px;resize:vertical;outline:none;font-family:inherit;line-height:1.5}
-.modal textarea:focus{border-color:var(--blue)}
+.modal textarea,.modal input[type=text],.modal input[type=url]{width:100%;border:1px solid var(--border);border-radius:9px;padding:11px 12px;font-size:13px;outline:none;font-family:inherit;line-height:1.5;color:var(--text)}
+.modal textarea{resize:vertical}
+.modal textarea:focus,.modal input:focus{border-color:var(--blue)}
 .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 .bsave{background:var(--blue);color:#fff;border:none;padding:9px 22px;border-radius:9px;font-size:13px;cursor:pointer;font-weight:700}
 .bsave:hover{background:var(--navy)}
 .bcancel{background:#f8fafc;color:#475569;border:1px solid var(--border);padding:9px 18px;border-radius:9px;font-size:13px;cursor:pointer}
 .bcancel:hover{background:var(--light)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-row.full{grid-template-columns:1fr}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 
 /* STATS */
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-.sc{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:15px 17px;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.sc:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px}
+.sc{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:14px 16px;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sc:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
 .sc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
-.sc-lbl{font-size:12px;font-weight:700}.sc-num{font-size:25px;font-weight:800}
+.sc-lbl{font-size:12px;font-weight:700}
+.sc-num{font-size:24px;font-weight:800}
 .sc-tr{background:#f1f5f9;border-radius:99px;height:5px;overflow:hidden;margin-bottom:5px}
-.sc-fi{height:100%;border-radius:99px;transition:width .4s}.sc-pct{font-size:11px;color:var(--muted)}
-.sec-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px 22px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.sh{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:14px}
-.sr{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.sl{width:200px;flex-shrink:0;display:flex;justify-content:space-between}
-.sn{font-size:12.5px;font-weight:500;color:#334155}.sk{font-size:12px;color:var(--muted)}
+.sc-fi{height:100%;border-radius:99px;transition:width .4s}
+.sc-pct{font-size:11px;color:var(--muted)}
+.sec-card{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:17px 20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sh{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:13px}
+.sr{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.sl{width:195px;flex-shrink:0;display:flex;justify-content:space-between}
+.sn{font-size:12px;font-weight:500;color:#334155}.sk{font-size:11.5px;color:var(--muted)}
 .st{flex:1;background:#e2e8f0;border-radius:99px;height:7px;overflow:hidden}
-.sf{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:99px;min-width:3px;transition:width .4s}
-.sp2{font-size:11px;color:var(--muted);width:34px;text-align:right;flex-shrink:0}
-.up-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px 22px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.ur{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #f0f4fa}
+.sf{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:99px;min-width:3px}
+.sp2{font-size:11px;color:var(--muted);width:32px;text-align:right;flex-shrink:0}
+.up-card{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:17px 20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ur{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #f0f4fa}
 .ur:last-child{border-bottom:none}
-.ur-hot{background:#fffbeb;border-radius:8px;padding:9px;margin:4px -9px}
-.ui{flex:1}.uco{font-size:13px;font-weight:700;color:var(--navy)}.upr{font-size:11px;color:var(--muted)}
-.ub{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
-.ud{font-size:13px;font-weight:700;color:var(--muted);min-width:48px;text-align:right}
+.ur-hot{background:#fffbeb;border-radius:8px;padding:9px;margin:3px -9px}
+.ui{flex:1}.uco{font-size:12.5px;font-weight:700;color:var(--navy)}.upr{font-size:11px;color:var(--muted)}
+.ub{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.ud{font-size:12.5px;font-weight:700;color:var(--muted);min-width:44px;text-align:right}
 .ud.hot{color:var(--red)}
 
 /* ACTIVITY */
-.act-list{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.ar{display:flex;align-items:center;gap:16px;padding:11px 18px;border-bottom:1px solid #f0f4fa}
+.act-list{background:var(--white);border-radius:11px;border:1px solid var(--border);overflow:hidden}
+.ar{display:flex;align-items:center;gap:15px;padding:11px 17px;border-bottom:1px solid #f0f4fa}
 .ar:last-child{border-bottom:none}
 .ar.emailed{background:#f0fdf4}
-.ar-dt{flex-shrink:0;width:140px}.ar-day{font-size:13px;font-weight:600;color:var(--navy)}.ar-tm{font-size:11px;color:var(--muted)}
-.ar-pills{flex:1;display:flex;gap:6px;flex-wrap:wrap}
-.ap{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px}
-.ap-j{background:var(--light);color:var(--blue)}.ap-p{background:var(--greenl);color:var(--green)}.ap-e{background:var(--redl);color:var(--red)}
+.ar-dt{flex-shrink:0;width:140px}
+.ar-day{font-size:12.5px;font-weight:600;color:var(--navy)}
+.ar-tm{font-size:11px;color:var(--muted)}
+.ar-pills{flex:1;display:flex;gap:5px;flex-wrap:wrap}
+.ap{font-size:11px;font-weight:600;padding:2px 9px;border-radius:99px}
+.ap-j{background:var(--light);color:var(--blue)}
+.ap-p{background:var(--greenl);color:var(--green)}
+.ap-e{background:var(--redl);color:var(--red)}
 .ar-em{font-size:12px;white-space:nowrap}
-.em-ok{color:var(--green);font-weight:600}.em-er{color:var(--red)}.em-no{color:var(--muted)}
-.ls{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px 22px;margin-bottom:18px;display:flex;gap:28px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.ls-l{flex-shrink:0}.ls-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px}
-.ls-date{font-size:16px;font-weight:700;color:var(--navy)}.ls-time{font-size:12px;color:var(--muted);margin-top:2px}
-.ls-stats{display:flex;gap:22px;flex-wrap:wrap}
+.em-ok{color:var(--green);font-weight:600}
+.em-er{color:var(--red)}
+.em-no{color:var(--muted)}
+.ls{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:17px 20px;margin-bottom:16px;display:flex;gap:26px;align-items:center}
+.ls-l{flex-shrink:0}
+.ls-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px}
+.ls-date{font-size:15px;font-weight:700;color:var(--navy)}
+.ls-time{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ls-stats{display:flex;gap:20px;flex-wrap:wrap}
 .lst{display:flex;flex-direction:column;align-items:center;gap:2px}
-.lst-n{font-size:22px;font-weight:800;color:var(--blue)}.lst-l{font-size:11px;color:var(--muted)}
+.lst-n{font-size:20px;font-weight:800;color:var(--blue)}
+.lst-l{font-size:11px;color:var(--muted)}
 
 /* DISCOVER */
-.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:13px;margin-bottom:24px}
-.dc{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:17px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:8px}
+.disc-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.btn-add-prog{background:var(--navy);color:#fff;border:none;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-add-prog:hover{background:var(--blue)}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:22px}
+.dc{background:var(--white);border-radius:11px;border:1px solid var(--border);padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:7px}
 .dc-hd{display:flex;justify-content:space-between;align-items:center}
-.dc-src{font-size:10.5px;font-weight:700;color:var(--blue);background:var(--light);padding:2px 8px;border-radius:99px}
+.dc-src{font-size:10px;font-weight:700;color:var(--blue);background:var(--light);padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
 .dc-dt{font-size:11px;color:var(--muted)}
-.dc-co{font-size:14px;font-weight:700;color:var(--navy)}.dc-ti{font-size:12.5px;color:#475569;line-height:1.4;flex:1}
-.dc-ac{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
-.dc-vw{font-size:12px;color:var(--blue);text-decoration:none;font-weight:600}
+.dc-co{font-size:13.5px;font-weight:700;color:var(--navy)}
+.dc-ti{font-size:12px;color:#475569;line-height:1.4;flex:1}
+.dc-sec{display:flex;gap:6px;flex-wrap:wrap}
+.dc-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:#f1f5f9;color:var(--muted)}
+.dc-ac{display:flex;justify-content:space-between;align-items:center;margin-top:3px;gap:8px}
+.dc-vw{font-size:12px;color:var(--blue);text-decoration:none;font-weight:600;white-space:nowrap}
 .dc-vw:hover{text-decoration:underline}
-.dc-ad{font-size:12px;font-weight:700;background:var(--navy);color:#fff;border:none;padding:6px 13px;border-radius:7px;cursor:pointer}
+.dc-ad{font-size:12px;font-weight:700;background:var(--navy);color:#fff;border:none;padding:5px 13px;border-radius:7px;cursor:pointer;white-space:nowrap}
 .dc-ad:hover{background:var(--blue)}
-.add-list{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden}
-.add-row{display:flex;align-items:center;gap:13px;padding:11px 15px;border-bottom:1px solid #f0f4fa}
+.dc-del{font-size:12px;background:none;border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:7px;cursor:pointer}
+.dc-del:hover{background:var(--redl);color:var(--red);border-color:var(--red)}
+.added-list{background:var(--white);border-radius:11px;border:1px solid var(--border);overflow:hidden}
+.add-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #f0f4fa}
 .add-row:last-child{border-bottom:none}
-.add-inf{flex:1}.add-co{font-size:13px;font-weight:600;color:var(--navy)}.add-pr{font-size:11px;color:var(--muted)}
+.add-inf{flex:1}
+.add-co{font-size:13px;font-weight:700;color:var(--navy)}
+.add-pr{font-size:11px;color:var(--muted)}
 .ssm{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.form-hint{font-size:11px;color:var(--muted);margin-top:3px}
 </style>
 </head>
 <body>
@@ -181,16 +223,17 @@ tr:hover td{background:#f8fafc}
   <div class="tb-brand">
     <span class="tb-icon">&#127919;</span>
     <span class="tb-title">FRP Tracker</span>
-    <span class="tb-sub">&#183; 2027 Cycle</span>
+    <span class="tb-cycle">&#183; 2027 Cycle</span>
   </div>
   <div class="tb-tabs">
     <button class="tab-btn active" onclick="switchTab('tracker',this)">&#128203; Tracker</button>
-    <button class="tab-btn" onclick="switchTab('discover',this)">&#128301; Discover</button>
-    <button class="tab-btn" onclick="switchTab('activity',this)">&#128140; Activity</button>
+    <button class="tab-btn" onclick="switchTab('discover',this)">&#128279; My Applications</button>
+    <button class="tab-btn" onclick="switchTab('activity',this)">&#128140; Scanner Activity</button>
     <button class="tab-btn" onclick="switchTab('stats',this)">&#128202; Stats</button>
   </div>
   <div class="tb-right">
-    Last opened<br><strong id="ts-now">—</strong>
+    <div class="tb-user">Diego Sorto Taipe &nbsp;&#183;&nbsp; UVA McIntire</div>
+    <strong id="ts-now">—</strong>
   </div>
 </div>
 
@@ -198,18 +241,22 @@ tr:hover td{background:#f8fafc}
 
   <!-- TRACKER -->
   <div id="tab-tracker">
+    <div class="pg-hd">
+      <div class="pg-title">Application Tracker</div>
+      <div class="pg-sub">Track your FRP applications across all programs — update status as you progress</div>
+    </div>
     <div class="kpi-strip" id="kpis"></div>
-    <div class="prog-wrap">
-      <span class="prog-lbl">Application Progress</span>
+    <div class="prog-card">
+      <span class="prog-lbl">&#128200; Application Progress</span>
       <div class="prog-track"><div class="prog-fill" id="pf" style="width:0%"></div></div>
       <span class="prog-pct" id="pp">0%</span>
-      <span class="prog-detail" id="pd"></span>
+      <span class="prog-det" id="pd"></span>
     </div>
     <div class="fbar">
-      <div class="fg" style="flex:1;min-width:210px">
+      <div class="fg" style="flex:1;min-width:200px">
         <label>Search</label>
         <div class="sbox">
-          <span class="sbox-icon">&#128269;</span>
+          <span class="si">&#128269;</span>
           <input id="qs" type="text" placeholder="Company or program…" oninput="renderTable()">
         </div>
       </div>
@@ -222,58 +269,153 @@ tr:hover td{background:#f8fafc}
           <option>September</option><option>October</option><option>November</option><option>December</option>
         </select>
       </div>
-      <div class="fg"><label>Status</label>
+      <div class="fg"><label>Stage</label>
         <select id="qst" onchange="renderTable()">
-          <option value="">All Statuses</option>
+          <option value="">All Stages</option>
           <option>Not Applied</option><option>Applied</option><option>First Round</option>
-          <option>Final Round</option><option>Offer</option><option>Rejected</option>
+          <option>Second Round</option><option>Offer</option><option>Rejected</option>
         </select>
       </div>
-      <button class="btn-sm" onclick="clearF()">Clear</button>
+      <button class="btn-xs" onclick="clearF()">&#10005; Clear</button>
     </div>
-    <div class="rcount" id="rc"></div>
+    <div class="rct" id="rc"></div>
     <div class="tcard">
       <table>
-        <thead><tr><th>Company</th><th>Program</th><th>Sector</th><th>Window</th><th>Status</th><th>Deadline</th><th>Notes</th><th>Apply</th></tr></thead>
+        <thead><tr>
+          <th>Company</th><th>Program</th><th>Sector</th><th>Window</th>
+          <th>Stage</th><th>Deadline</th><th>Notes</th><th>Apply</th>
+        </tr></thead>
         <tbody id="tb"></tbody>
       </table>
-      <div id="te" class="hidden" style="padding:40px;text-align:center;color:var(--muted)">No programs match. <button class="btn-sm" style="display:inline;margin-left:8px" onclick="clearF()">Clear filters</button></div>
+      <div id="te" class="hidden" style="padding:36px;text-align:center;color:var(--muted);font-size:13px">
+        No programs match your filters. <button class="btn-xs" style="display:inline;margin-left:8px" onclick="clearF()">Clear</button>
+      </div>
     </div>
   </div>
 
-  <!-- DISCOVER -->
+  <!-- MY APPLICATIONS (DISCOVER) -->
   <div id="tab-discover" class="hidden">
-    <div class="pg-title">Discover New Programs</div>
-    <div class="pg-sub">Programs found by the scanner not in your original 100 — add to your tracker</div>
-    <div id="disc"></div>
+    <div class="pg-hd">
+      <div class="pg-title">My Applications</div>
+      <div class="pg-sub">Programs you've applied to beyond the original 100 — paste a job link and fill in the details</div>
+    </div>
+    <div class="disc-toolbar">
+      <span id="disc-count" style="font-size:13px;color:var(--muted)"></span>
+      <button class="btn-add-prog" onclick="openAddForm()">&#43; Add Application</button>
+    </div>
+    <div id="disc-content"></div>
   </div>
 
   <!-- ACTIVITY -->
   <div id="tab-activity" class="hidden">
-    <div class="pg-title">Scanner Activity</div>
-    <div class="pg-sub">Every scan run is logged here — jobs found, new programs, emails sent</div>
+    <div class="pg-hd">
+      <div class="pg-title">Scanner Activity</div>
+      <div class="pg-sub">Every scan run is logged here — jobs found, new programs, emails sent</div>
+    </div>
     <div class="kpi-strip" id="akpis"></div>
     <div id="act"></div>
   </div>
 
   <!-- STATS -->
   <div id="tab-stats" class="hidden">
-    <div class="pg-title">Your Pipeline</div>
-    <div class="pg-sub">Snapshot of where things stand across all programs</div>
+    <div class="pg-hd">
+      <div class="pg-title">Your Pipeline</div>
+      <div class="pg-sub">Snapshot of where things stand across all programs</div>
+    </div>
     <div id="sts"></div>
   </div>
 
 </div>
 
-<!-- MODAL -->
-<div class="overlay hidden" id="ov" onclick="closeM()">
+<!-- NOTES MODAL -->
+<div class="overlay hidden" id="ov-notes" onclick="closeNotes()">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-h" id="mh">Notes</div>
     <span class="modal-co" id="mc"></span>
-    <textarea id="mta" rows="7" placeholder="Add contacts, interview tips, links…"></textarea>
+    <textarea id="mta" rows="7" placeholder="Add contacts, interview tips, links, recruiter info…"></textarea>
     <div class="modal-btns">
-      <button class="bcancel" onclick="closeM()">Cancel</button>
-      <button class="bsave" onclick="saveN()">Save note</button>
+      <button class="bcancel" onclick="closeNotes()">Cancel</button>
+      <button class="bsave" onclick="saveNote()">Save note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD APPLICATION MODAL -->
+<div class="overlay hidden" id="ov-add" onclick="closeAddForm()">
+  <div class="modal" onclick="event.stopPropagation()" style="width:560px">
+    <div class="modal-h">Add Application</div>
+    <span class="modal-co">Paste the job link and fill in the details — everything saves to your tracker</span>
+    <div style="margin-top:4px">
+      <div class="form-row full" style="margin-bottom:10px">
+        <div class="fld">
+          <label>Job Posting Link *</label>
+          <input type="url" id="af-link" placeholder="https://careers.example.com/job/123"/>
+          <span class="form-hint">Paste the direct link to the job description</span>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="fld">
+          <label>Company Name *</label>
+          <input type="text" id="af-company" placeholder="e.g. Stripe"/>
+        </div>
+        <div class="fld">
+          <label>Program / Role Title *</label>
+          <input type="text" id="af-program" placeholder="e.g. Finance Rotational Program"/>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="fld">
+          <label>Sector</label>
+          <select id="af-sector">
+            <option value="Tech & Media">Tech &amp; Media</option>
+            <option value="Banking & Financial Services">Banking &amp; Financial Services</option>
+            <option value="Healthcare & Pharma">Healthcare &amp; Pharma</option>
+            <option value="Consumer Goods & Retail">Consumer Goods &amp; Retail</option>
+            <option value="Energy & Industrials">Energy &amp; Industrials</option>
+            <option value="Aerospace & Defense">Aerospace &amp; Defense</option>
+            <option value="Consulting & Professional Services">Consulting &amp; Professional Services</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>Current Stage</label>
+          <select id="af-status">
+            <option>Not Applied</option><option>Applied</option><option>First Round</option>
+            <option>Second Round</option><option>Offer</option><option>Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="fld">
+          <label>Applications Open</label>
+          <select id="af-opens">
+            <option value="Unknown">Unknown</option>
+            <option>January</option><option>February</option><option>March</option><option>April</option>
+            <option>May</option><option>June</option><option selected>July</option><option>August</option>
+            <option>September</option><option>October</option><option>November</option><option>December</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>Applications Close</label>
+          <select id="af-closes">
+            <option value="Unknown">Unknown</option>
+            <option>January</option><option>February</option><option>March</option><option>April</option>
+            <option>May</option><option>June</option><option>July</option><option>August</option>
+            <option>September</option><option selected>October</option><option>November</option><option>December</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full" style="margin-bottom:0">
+        <div class="fld">
+          <label>Notes (optional)</label>
+          <textarea id="af-notes" rows="3" placeholder="Recruiter name, referral, interview tips…" style="margin-top:0"></textarea>
+        </div>
+      </div>
+    </div>
+    <div id="af-err" style="color:var(--red);font-size:12px;margin-top:8px;display:none"></div>
+    <div class="modal-btns">
+      <button class="bcancel" onclick="closeAddForm()">Cancel</button>
+      <button class="bsave" onclick="saveAddForm()">&#10003; Add to Tracker</button>
     </div>
   </div>
 </div>
@@ -282,32 +424,35 @@ tr:hover td{background:#f8fafc}
 const COS = [{"id": 1, "company": "Google (Alphabet)", "program": "Google Finance Rotation Program", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://careers.google.com"}, {"id": 2, "company": "Microsoft", "program": "Finance Development Program (FDP)", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.microsoft.com/v2/global/en/financerotation"}, {"id": 3, "company": "Apple", "program": "Finance Leadership Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.apple.com"}, {"id": 4, "company": "Meta", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://www.metacareers.com"}, {"id": 5, "company": "Amazon", "program": "Finance Rotational Program (AFRP)", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://amazon.jobs/content/en/career-programs/university/undergraduate-non-tech"}, {"id": 6, "company": "Netflix", "program": "Finance & Strategy Associate Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.netflix.com"}, {"id": 7, "company": "Salesforce", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.salesforce.com"}, {"id": 8, "company": "Adobe", "program": "Finance Associate Rotational Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.adobe.com"}, {"id": 9, "company": "Intel", "program": "Finance Development Program", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.intel.com"}, {"id": 10, "company": "NVIDIA", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://nvidia.wd5.myworkdayjobs.com"}, {"id": 11, "company": "IBM", "program": "Finance & Operations Development Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.ibm.com"}, {"id": 12, "company": "Cisco", "program": "Finance Leadership Development Program", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.cisco.com"}, {"id": 13, "company": "Oracle", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.oracle.com"}, {"id": 14, "company": "Qualcomm", "program": "Finance Development Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.qualcomm.com"}, {"id": 15, "company": "Comcast", "program": "Finance Leadership Development Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "October", "link": "https://jobs.comcast.com"}, {"id": 16, "company": "Walt Disney", "program": "Finance & Strategy Rotational Program", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.disneycareers.com"}, {"id": 17, "company": "Spotify", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "September", "closesMonth": "December", "link": "https://www.lifeatspotify.com/jobs"}, {"id": 18, "company": "Snap Inc.", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "September", "closesMonth": "December", "link": "https://careers.snap.com"}, {"id": 19, "company": "Goldman Sachs", "program": "Finance Division Analyst Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program"}, {"id": 20, "company": "JPMorgan Chase", "program": "Finance & Business Management Rotational Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://careers.jpmorgan.com"}, {"id": 21, "company": "Morgan Stanley", "program": "Finance Analyst Rotation", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://www.morganstanley.com/people/students"}, {"id": 22, "company": "Bank of America", "program": "Finance Development Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://campus.bankofamerica.com"}, {"id": 23, "company": "Citigroup", "program": "Finance & Risk Rotational Analyst Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.citi.com"}, {"id": 24, "company": "Wells Fargo", "program": "Finance Rotational Associate Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://www.wellsfargojobs.com"}, {"id": 25, "company": "BlackRock", "program": "Finance & Accounting Development Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.blackrock.com"}, {"id": 26, "company": "Vanguard", "program": "Finance Rotational Development Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://www.vanguardjobs.com"}, {"id": 27, "company": "Fidelity Investments", "program": "Finance Leadership Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.fidelity.com"}, {"id": 28, "company": "Charles Schwab", "program": "Finance Rotational Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://www.schwabjobs.com"}, {"id": 29, "company": "American Express", "program": "Finance Analyst Development Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.americanexpress.com"}, {"id": 30, "company": "Capital One", "program": "Finance Rotation Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "October", "link": "https://www.capitalonecareers.com/full-time-programs"}, {"id": 31, "company": "Visa", "program": "Finance Rotational Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "October", "link": "https://corporate.visa.com/en/jobs"}, {"id": 32, "company": "Mastercard", "program": "Finance Leadership Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.mastercard.com"}, {"id": 33, "company": "PayPal", "program": "Finance Development Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.pypl.com"}, {"id": 34, "company": "T. Rowe Price", "program": "Finance Rotational Program", "sector": "Banking & Financial Services", "opensMonth": "September", "closesMonth": "November", "link": "https://careers.troweprice.com"}, {"id": 35, "company": "Prudential Financial", "program": "Finance Leadership Development Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.prudential.com"}, {"id": 36, "company": "MetLife", "program": "Finance & Actuarial Rotational Program", "sector": "Banking & Financial Services", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.metlife.com"}, {"id": 37, "company": "Allstate", "program": "Finance Rotational Program", "sector": "Banking & Financial Services", "opensMonth": "September", "closesMonth": "December", "link": "https://careers.allstate.com"}, {"id": 38, "company": "Lockheed Martin", "program": "Finance Leadership Development Program (FLDP)", "sector": "Aerospace & Defense", "opensMonth": "July", "closesMonth": "October", "link": "https://www.lockheedmartinjobs.com"}, {"id": 39, "company": "Raytheon (RTX)", "program": "Finance Leadership Program", "sector": "Aerospace & Defense", "opensMonth": "July", "closesMonth": "October", "link": "https://careers.rtx.com"}, {"id": 40, "company": "Northrop Grumman", "program": "Finance Development Program", "sector": "Aerospace & Defense", "opensMonth": "July", "closesMonth": "October", "link": "https://www.northropgrumman.com/careers"}, {"id": 41, "company": "Boeing", "program": "Finance Career Foundation Program", "sector": "Aerospace & Defense", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.boeing.com/entry-level"}, {"id": 42, "company": "General Dynamics", "program": "Finance Development Program", "sector": "Aerospace & Defense", "opensMonth": "August", "closesMonth": "October", "link": "https://gdscareers.com"}, {"id": 43, "company": "L3Harris", "program": "Finance Leadership Rotation", "sector": "Aerospace & Defense", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.l3harris.com"}, {"id": 44, "company": "BAE Systems", "program": "Finance Rotational Program", "sector": "Aerospace & Defense", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.baesystems.com"}, {"id": 45, "company": "Leidos", "program": "Finance Development Program", "sector": "Aerospace & Defense", "opensMonth": "September", "closesMonth": "November", "link": "https://careers.leidos.com"}, {"id": 46, "company": "SAIC", "program": "Finance Rotational Program", "sector": "Aerospace & Defense", "opensMonth": "September", "closesMonth": "December", "link": "https://jobs.saic.com"}, {"id": 47, "company": "Johnson & Johnson", "program": "Finance Leadership Development Program (FLDP)", "sector": "Healthcare & Pharma", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.jnj.com"}, {"id": 48, "company": "Pfizer", "program": "Finance Rotational Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "October", "link": "https://www.pfizer.com/en/about/careers/early-careers"}, {"id": 49, "company": "UnitedHealth Group", "program": "Finance Development Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.unitedhealthgroup.com"}, {"id": 50, "company": "Abbott Laboratories", "program": "Finance Leadership Development Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://www.abbott.com/careers.html"}, {"id": 51, "company": "Medtronic", "program": "Finance Leadership Rotation Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.medtronic.com"}, {"id": 52, "company": "Merck & Co.", "program": "Finance Rotational Program", "sector": "Healthcare & Pharma", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.merck.com"}, {"id": 53, "company": "Eli Lilly", "program": "Finance Leadership Development Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.lilly.com"}, {"id": 54, "company": "Cigna Group", "program": "Finance Rotational Development Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.cigna.com"}, {"id": 55, "company": "CVS Health", "program": "Finance Rotational Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.cvshealth.com"}, {"id": 56, "company": "Becton Dickinson", "program": "Finance Leadership Rotation", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.bd.com"}, {"id": 57, "company": "Boston Scientific", "program": "Finance Development Program", "sector": "Healthcare & Pharma", "opensMonth": "September", "closesMonth": "November", "link": "https://jobs.bostonscientific.com"}, {"id": 58, "company": "Humana", "program": "Finance Development Program", "sector": "Healthcare & Pharma", "opensMonth": "September", "closesMonth": "November", "link": "https://careers.humana.com"}, {"id": 59, "company": "Stryker", "program": "Finance Leadership Development Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.stryker.com"}, {"id": 60, "company": "Procter & Gamble", "program": "Finance & Accounting Leadership Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "October", "link": "https://www.pgcareers.com"}, {"id": 61, "company": "PepsiCo", "program": "Finance Leadership Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "October", "link": "https://www.pepsicojobs.com"}, {"id": 62, "company": "Coca-Cola", "program": "Finance Rotational Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.coca-colacompany.com"}, {"id": 63, "company": "Walmart", "program": "Finance Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.walmart.com"}, {"id": 64, "company": "Target", "program": "Finance Rotational Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "October", "link": "https://corporate.target.com/careers"}, {"id": 65, "company": "Nike", "program": "Finance Rotational Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.nike.com"}, {"id": 66, "company": "Estee Lauder", "program": "Finance Leadership Rotation", "sector": "Consumer Goods & Retail", "opensMonth": "September", "closesMonth": "November", "link": "https://careers.elcompanies.com"}, {"id": 67, "company": "Colgate-Palmolive", "program": "Finance Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.colgate.com"}, {"id": 68, "company": "Unilever US", "program": "Finance Rotational Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.unilever.com"}, {"id": 69, "company": "Kimberly-Clark", "program": "Finance Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "September", "closesMonth": "November", "link": "https://jobs.kimberly-clark.com"}, {"id": 70, "company": "Kraft Heinz", "program": "Finance Leadership Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.kraftheinzcompany.com"}, {"id": 71, "company": "General Mills", "program": "Finance Rotation Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.generalmills.com"}, {"id": 72, "company": "Mondelez", "program": "Finance Development Program", "sector": "Consumer Goods & Retail", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.mondelezinternational.com"}, {"id": 73, "company": "Starbucks", "program": "Finance Rotational Program", "sector": "Consumer Goods & Retail", "opensMonth": "September", "closesMonth": "November", "link": "https://careers.starbucks.com"}, {"id": 74, "company": "ExxonMobil", "program": "Finance Development Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "October", "link": "https://jobs.exxonmobil.com"}, {"id": 75, "company": "Chevron", "program": "Finance Rotational Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.chevron.com"}, {"id": 76, "company": "General Electric", "program": "Finance Rotational Development Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.gecareers.com"}, {"id": 77, "company": "Honeywell", "program": "Finance & Accounting Leadership Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.honeywell.com"}, {"id": 78, "company": "Caterpillar", "program": "Finance Leadership Development Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.caterpillar.com"}, {"id": 79, "company": "3M", "program": "Finance Rotational Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "November", "link": "https://www.3m.com/3M/en_US/careers-us"}, {"id": 80, "company": "Emerson Electric", "program": "Finance Development Program", "sector": "Energy & Industrials", "opensMonth": "September", "closesMonth": "November", "link": "https://www.emerson.com/en-us/careers"}, {"id": 81, "company": "Parker Hannifin", "program": "Finance Development Program", "sector": "Energy & Industrials", "opensMonth": "September", "closesMonth": "November", "link": "https://ph.jobs"}, {"id": 82, "company": "John Deere", "program": "Finance Development Program", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "October", "link": "https://jobs.deere.com"}, {"id": 83, "company": "Deloitte", "program": "Finance & Accounting Rotational Program", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "November", "link": "https://www2.deloitte.com/us/en/careers"}, {"id": 84, "company": "PwC", "program": "Finance Leadership Rotation", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "November", "link": "https://www.pwc.com/us/en/careers.html"}, {"id": 85, "company": "KPMG", "program": "Finance Development Rotation", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "November", "link": "https://home.kpmg/us/en/home/careers.html"}, {"id": 86, "company": "EY", "program": "Finance Rotational Analyst Program", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "November", "link": "https://www.ey.com/en_us/careers"}, {"id": 87, "company": "McKinsey & Company", "program": "Finance & Operations Associate Program", "sector": "Consulting & Professional Services", "opensMonth": "September", "closesMonth": "December", "link": "https://www.mckinsey.com/careers"}, {"id": 88, "company": "FedEx", "program": "Finance Leadership Development Program", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "October", "link": "https://careers.fedex.com"}, {"id": 89, "company": "UPS", "program": "Finance Rotational Development Program", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "October", "link": "https://www.upsjobs.com"}, {"id": 90, "company": "General Motors", "program": "Finance Rotational Development Program", "sector": "Consulting & Professional Services", "opensMonth": "July", "closesMonth": "October", "link": "https://careers.gm.com"}, {"id": 91, "company": "Ford Motor", "program": "Finance Rotational Program", "sector": "Consulting & Professional Services", "opensMonth": "July", "closesMonth": "October", "link": "https://corporate.ford.com/careers.html"}, {"id": 92, "company": "AT&T", "program": "Finance Rotational Leadership Program", "sector": "Consulting & Professional Services", "opensMonth": "August", "closesMonth": "November", "link": "https://www.att.jobs"}, {"id": 93, "company": "Genentech", "program": "Early Finance Rotation Development Program (eFRDP)", "sector": "Healthcare & Pharma", "opensMonth": "September", "closesMonth": "November", "link": "https://careers.gene.com/us/en/finance-rotational-program-frdp-"}, {"id": 94, "company": "Applied Materials", "program": "Finance Rotation Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://www.appliedmaterials.com/us/en/careers/new-grads-finance.html"}, {"id": 95, "company": "Match Group", "program": "Corporate Rotational Analyst Program", "sector": "Tech & Media", "opensMonth": "August", "closesMonth": "November", "link": "https://careers.match.com"}, {"id": 96, "company": "Gilead Sciences", "program": "CFO Undergraduate Development Rotational Program", "sector": "Healthcare & Pharma", "opensMonth": "August", "closesMonth": "November", "link": "https://www.gilead.com/careers"}, {"id": 97, "company": "Western Digital", "program": "Finance Rotational Program", "sector": "Tech & Media", "opensMonth": "July", "closesMonth": "October", "link": "https://jobs.westerndigital.com"}, {"id": 98, "company": "East West Bank", "program": "Treasury Rotational Leadership Development Program", "sector": "Banking & Financial Services", "opensMonth": "July", "closesMonth": "September", "link": "https://www.eastwestbank.com/en/about-us/careers"}, {"id": 99, "company": "EnerSys", "program": "FP&A / Finance Analyst", "sector": "Energy & Industrials", "opensMonth": "August", "closesMonth": "November", "link": "https://jobs.enersys.com"}, {"id": 100, "company": "Avis Budget Group", "program": "Financial Planning & Analysis Intern", "sector": "Consulting & Professional Services", "opensMonth": "June", "closesMonth": "August", "link": "https://jobs.avisbudgetgroup.com"}];
 
 const SM = {
-  "Not Applied":{c:"#6b7280",b:"#f3f4f6"},
-  "Applied":    {c:"#1a5fb4",b:"#e8f0fe"},
-  "First Round":{c:"#b45309",b:"#fef3c7"},
-  "Final Round":{c:"#6d28d9",b:"#ede9fe"},
-  "Offer":      {c:"#0d7a4e",b:"#d1fae5"},
-  "Rejected":   {c:"#b91c1c",b:"#fee2e2"},
+  "Not Applied": {c:"#6b7280", b:"#f3f4f6", border:"#9ca3af"},
+  "Applied":     {c:"#1a5fb4", b:"#e8f0fe", border:"#1a5fb4"},
+  "First Round": {c:"#b45309", b:"#fef3c7", border:"#f59e0b"},
+  "Second Round":{c:"#6d28d9", b:"#ede9fe", border:"#7c3aed"},
+  "Offer":       {c:"#0d7a4e", b:"#d1fae5", border:"#059669"},
+  "Rejected":    {c:"#b91c1c", b:"#fee2e2", border:"#ef4444"},
 };
-const STATUSES = ["Not Applied","Applied","First Round","Final Round","Offer","Rejected"];
+const STATUSES = ["Not Applied","Applied","First Round","Second Round","Offer","Rejected"];
+
+function load(k,d){ try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch{return d} }
+function save(k,v){ localStorage.setItem(k,JSON.stringify(v)) }
 
 let apps     = load("frp_apps",{});
-let added    = load("frp_added",[]);
+let added    = load("frp_added2",[]);  // v2 key to avoid old data conflicts
 let actLog   = load("frp_log",[]);
 let newProgs = load("frp_discover",[]);
 let modalId  = null;
 
-function load(k,def){ try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(def))}catch{return def} }
-function save(k,v)  { localStorage.setItem(k,JSON.stringify(v)) }
-function allCos()   { return [...COS,...added] }
+function allCos(){ return [...COS,...added] }
 function daysUntil(d){ if(!d)return null; return Math.ceil((new Date(d)-new Date())/86400000) }
 function fmtDate(iso){ if(!iso)return"—"; return new Date(iso).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) }
 function fmtTime(iso){ if(!iso)return""; return new Date(iso).toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}) }
-function e(id){ return document.getElementById(id) }
+function ge(id){ return document.getElementById(id) }
+function uid(){ return "u"+Date.now()+Math.random().toString(36).slice(2,6) }
 
+/* ── Tab switching ── */
 function switchTab(id,btn){
   document.querySelectorAll("[id^='tab-']").forEach(el=>el.classList.add("hidden"));
-  e("tab-"+id).classList.remove("hidden");
+  ge("tab-"+id).classList.remove("hidden");
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
   if(btn) btn.classList.add("active");
   if(id==="stats")    renderStats();
@@ -315,109 +460,273 @@ function switchTab(id,btn){
   if(id==="discover") renderDiscover();
 }
 
-/* ── KPIs & progress ── */
+/* ── KPIs ── */
 function renderKPIs(){
-  const cos   = allCos();
+  const cos    = allCos();
   const total  = cos.length;
-  const inprog = cos.filter(c=>(apps[c.id]?.status||"Not Applied")!=="Not Applied").length;
+  const applied= cos.filter(c=>(apps[c.id]?.status||"Not Applied")!=="Not Applied").length;
+  const fr     = cos.filter(c=>apps[c.id]?.status==="First Round").length;
+  const sr     = cos.filter(c=>apps[c.id]?.status==="Second Round").length;
   const offers = cos.filter(c=>apps[c.id]?.status==="Offer").length;
   const urgent = cos.filter(c=>{ const d=daysUntil(apps[c.id]?.deadline); return d!==null&&d>=0&&d<=7 }).length;
-  const pct    = total ? Math.round(inprog/total*100) : 0;
-  e("kpis").innerHTML = [
-    ["&#127919; Total Programs", total,    "FRP programs tracked",      "#1a5fb4"],
-    ["&#128203; In Progress",    inprog,   inprog+" programs started",  "#1a5fb4"],
-    ["&#127942; Offers",         offers,   "received so far",           "#0d7a4e"],
-    ["&#9203; Due This Week",    urgent,   urgent>0?"action needed":"none upcoming", urgent>0?"#b91c1c":"#6b7280"],
-    ["&#128200; Progress",       pct+"%",  inprog+" of "+total+" touched","#6d28d9"],
-  ].map(([l,v,s,c])=>`<div class="kpi" style="--kc:${c}"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join("");
-  e("pf").style.width = pct+"%";
-  e("pp").textContent = pct+"%";
-  e("pd").textContent = inprog+" of "+total+" programs touched";
+  const pct    = total?Math.round(applied/total*100):0;
+
+  ge("kpis").innerHTML=[
+    ["&#127919; Total Programs", total,   total+" programs",         "#1a5fb4"],
+    ["&#128203; Applied",        applied, applied+" started",         "#1a5fb4"],
+    ["&#9197; First Round",      fr,      fr+" interviews",           "#b45309"],
+    ["&#9654; Second Round",     sr,      sr+" advancing",            "#6d28d9"],
+    ["&#127942; Offers",         offers,  offers+" received",         "#0d7a4e"],
+    [urgent>0?"&#9203; Due Soon":"&#9203; Deadlines",urgent,urgent>0?"this week":"none this week",urgent>0?"#b91c1c":"#6b7280"],
+  ].map(([l,v,s,c])=>`<div class="kpi" style="--kc:${c}">
+    <div class="kpi-val">${v}</div>
+    <div class="kpi-lbl">${l}</div>
+    <div class="kpi-sub">${s}</div>
+  </div>`).join("");
+
+  ge("pf").style.width=pct+"%";
+  ge("pp").textContent=pct+"%";
+  ge("pd").textContent=applied+" of "+total+" programs touched";
 }
 
 /* ── Table ── */
 function renderTable(){
-  const q   = e("qs").value.toLowerCase();
-  const sec = e("qsec").value;
-  const mo  = e("qmo").value;
-  const st  = e("qst").value;
-  const rows = allCos().filter(c=>{
-    const cst = apps[c.id]?.status||"Not Applied";
-    return (!sec||c.sector===sec) && (!mo||c.opensMonth===mo) && (!st||cst===st)
-        && (!q||c.company.toLowerCase().includes(q)||c.program.toLowerCase().includes(q));
+  const q   = ge("qs").value.toLowerCase();
+  const sec = ge("qsec").value;
+  const mo  = ge("qmo").value;
+  const st  = ge("qst").value;
+
+  const rows=allCos().filter(c=>{
+    const cst=apps[c.id]?.status||"Not Applied";
+    return (!sec||c.sector===sec)&&(!mo||c.opensMonth===mo)&&(!st||cst===st)
+        &&(!q||c.company.toLowerCase().includes(q)||c.program.toLowerCase().includes(q));
   });
-  e("rc").textContent = rows.length+" program"+(rows.length!==1?"s":"");
-  if(!rows.length){ e("tb").innerHTML=""; e("te").classList.remove("hidden"); return; }
-  e("te").classList.add("hidden");
-  e("tb").innerHTML = rows.map(c=>{
-    const app = apps[c.id]||{};
-    const cst = app.status||"Not Applied";
-    const m   = SM[cst];
-    const d   = daysUntil(app.deadline);
-    const urg = d!==null&&d>=0&&d<=7;
-    const opts= STATUSES.map(s=>`<option${s===cst?" selected":""}>${s}</option>`).join("");
+
+  ge("rc").textContent=rows.length+" program"+(rows.length!==1?"s":"");
+  if(!rows.length){ ge("tb").innerHTML=""; ge("te").classList.remove("hidden"); return; }
+  ge("te").classList.add("hidden");
+
+  ge("tb").innerHTML=rows.map(c=>{
+    const app=apps[c.id]||{};
+    const cst=app.status||"Not Applied";
+    const m=SM[cst];
+    const d=daysUntil(app.deadline);
+    const urg=d!==null&&d>=0&&d<=7;
+    const opts=STATUSES.map(s=>`<option${s===cst?" selected":""}>${s}</option>`).join("");
     return `<tr class="${cst==="Rejected"?"rej":""}">
-      <td class="cn">${c.company}${c.discovered?'<span class="new-badge">New</span>':""}</td>
+      <td class="cn">${c.company}${c.custom?'<span class="new-badge">Custom</span>':""}</td>
       <td class="pn">${c.program}</td>
-      <td><span class="sp">${c.sector}</span></td>
-      <td class="win"><span class="wo">${(c.opensMonth||"?").slice(0,3)}</span><span class="wa">&#8594;</span><span class="wc">${(c.closesMonth||"?").slice(0,3)}</span></td>
-      <td><select class="ssel" style="color:${m.c};background:${m.b};border-color:${m.c}55" onchange="setStatus(${c.id},this.value)">${opts}</select></td>
-      <td><div class="dlw"><input type="date" class="dli${urg?" urg":""}" value="${app.deadline||""}" onchange="setDeadline(${c.id},this.value)">${urg?`<span class="dlb">${d===0?"Today!":d+"d"}</span>`:""}</div></td>
-      <td><button class="nb${app.notes?" has":""}" onclick="openM(${c.id})">${app.notes?"&#128221; Edit":"+ Note"}</button></td>
+      <td><span class="sptag">${c.sector}</span></td>
+      <td class="win">
+        <span class="wo">${(c.opensMonth||"?").slice(0,3)}</span>
+        <span class="wa">&#8594;</span>
+        <span class="wc">${(c.closesMonth||"?").slice(0,3)}</span>
+      </td>
+      <td>
+        <select class="ssel"
+          style="color:${m.c};background:${m.b};border-color:${m.border}"
+          onchange="setStatus('${c.id}',this.value)">
+          ${opts}
+        </select>
+      </td>
+      <td>
+        <div class="dlw">
+          <input type="date" class="dli${urg?" urg":""}" value="${app.deadline||""}"
+            onchange="setDeadline('${c.id}',this.value)">
+          ${urg?`<span class="dlb">${d===0?"Today!":d+"d"}</span>`:""}
+        </div>
+      </td>
+      <td>
+        <button class="nb${app.notes?" has":""}" onclick="openNotes('${c.id}')">
+          ${app.notes?"&#128221; Edit":"+ Note"}
+        </button>
+      </td>
       <td><a href="${c.link}" target="_blank" class="al">Apply &#8594;</a></td>
     </tr>`;
   }).join("");
 }
 
-function clearF(){ e("qs").value=""; e("qsec").value=""; e("qmo").value=""; e("qst").value=""; renderTable(); }
-function setStatus(id,v)  { apps[id]={...(apps[id]||{}),status:v};  save("frp_apps",apps); renderKPIs(); }
-function setDeadline(id,v){ apps[id]={...(apps[id]||{}),deadline:v};save("frp_apps",apps); renderKPIs(); }
+function clearF(){ ge("qs").value=""; ge("qsec").value=""; ge("qmo").value=""; ge("qst").value=""; renderTable(); }
 
-/* ── Modal ── */
-function openM(id){
-  modalId=id;
-  const co=allCos().find(c=>c.id===id);
-  e("mh").textContent="Notes";
-  e("mc").textContent=co?.company||"";
-  e("mta").value=apps[id]?.notes||"";
-  e("ov").classList.remove("hidden");
-  e("mta").focus();
+function setStatus(id,v){
+  apps[id]={...(apps[id]||{}),status:v};
+  save("frp_apps",apps);
+  renderKPIs();
+  // re-render just that row's select color
+  renderTable();
 }
-function closeM(){ e("ov").classList.add("hidden"); modalId=null; }
-function saveN(){
+function setDeadline(id,v){
+  apps[id]={...(apps[id]||{}),deadline:v};
+  save("frp_apps",apps);
+  renderKPIs();
+}
+
+/* ── Notes modal ── */
+function openNotes(id){
+  modalId=id;
+  const co=allCos().find(c=>String(c.id)===String(id));
+  ge("mh").textContent="Notes";
+  ge("mc").textContent=co?.company||"";
+  ge("mta").value=apps[id]?.notes||"";
+  ge("ov-notes").classList.remove("hidden");
+  ge("mta").focus();
+}
+function closeNotes(){ ge("ov-notes").classList.add("hidden"); modalId=null; }
+function saveNote(){
   if(modalId===null)return;
-  apps[modalId]={...(apps[modalId]||{}),notes:e("mta").value};
-  save("frp_apps",apps); renderTable(); closeM();
+  apps[modalId]={...(apps[modalId]||{}),notes:ge("mta").value};
+  save("frp_apps",apps);
+  renderTable();
+  closeNotes();
+}
+
+/* ── Add Application modal ── */
+function openAddForm(){
+  ge("af-link").value="";
+  ge("af-company").value="";
+  ge("af-program").value="";
+  ge("af-notes").value="";
+  ge("af-err").style.display="none";
+  ge("ov-add").classList.remove("hidden");
+  ge("af-link").focus();
+}
+function closeAddForm(){ ge("ov-add").classList.add("hidden"); }
+function saveAddForm(){
+  const link   =ge("af-link").value.trim();
+  const company=ge("af-company").value.trim();
+  const program=ge("af-program").value.trim();
+  const err=ge("af-err");
+  if(!company||!program){
+    err.textContent="Company name and program title are required.";
+    err.style.display="block";
+    return;
+  }
+  const id=uid();
+  const entry={
+    id, company, program,
+    sector:  ge("af-sector").value,
+    opensMonth:  ge("af-opens").value,
+    closesMonth: ge("af-closes").value,
+    link: link||"#",
+    custom: true,
+    addedAt: new Date().toISOString(),
+  };
+  const notes=ge("af-notes").value.trim();
+  const status=ge("af-status").value;
+  apps[id]={status, notes: notes||undefined};
+  save("frp_apps",apps);
+  added=[entry,...added];
+  save("frp_added2",added);
+  closeAddForm();
+  renderDiscover();
+  renderKPIs();
+}
+
+/* ── Discover tab ── */
+function renderDiscover(){
+  const cos=added;
+  ge("disc-count").textContent=cos.length+" custom application"+(cos.length!==1?"s":"")+" added";
+
+  if(!cos.length){
+    ge("disc-content").innerHTML=`
+    <div class="empty-st">
+      <div class="empty-ic">&#128279;</div>
+      <h3>No custom applications yet</h3>
+      <p>Add internships or programs you found yourself — paste the link and fill in the details.</p>
+      <p style="margin-top:10px"><button class="btn-add-prog" onclick="openAddForm()" style="margin:0 auto;display:inline-flex">&#43; Add Your First Application</button></p>
+    </div>`;
+    return;
+  }
+
+  const cards=cos.map((c,i)=>{
+    const app=apps[c.id]||{};
+    const cst=app.status||"Not Applied";
+    const m=SM[cst];
+    return `<div class="dc">
+      <div class="dc-hd">
+        <span class="dc-src">${c.sector}</span>
+        <span class="dc-dt">${c.addedAt?fmtDate(c.addedAt):""}</span>
+      </div>
+      <div class="dc-co">${c.company}</div>
+      <div class="dc-ti">${c.program}</div>
+      <div class="dc-sec">
+        <span class="dc-tag">&#128197; ${c.opensMonth||"?"} &#8594; ${c.closesMonth||"?"}</span>
+        <span class="dc-tag" style="background:${m.b};color:${m.c};font-weight:700">${cst}</span>
+      </div>
+      <div class="dc-ac">
+        ${c.link&&c.link!=="#"?`<a href="${c.link}" target="_blank" class="dc-vw">&#128279; View Posting &#8594;</a>`:`<span style="color:var(--muted);font-size:12px">No link saved</span>`}
+        <div style="display:flex;gap:6px">
+          <button class="dc-del" onclick="deleteAdded('${c.id}')">&#128465;</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  ge("disc-content").innerHTML=`<div class="dg">${cards}</div>`;
+}
+
+function deleteAdded(id){
+  if(!confirm("Remove this application?"))return;
+  added=added.filter(a=>String(a.id)!==String(id));
+  save("frp_added2",added);
+  delete apps[id];
+  save("frp_apps",apps);
+  renderDiscover();
+  renderKPIs();
+  renderTable();
 }
 
 /* ── Stats ── */
 function renderStats(){
-  const cos   = allCos();
-  const total  = cos.length;
-  const SECS   = [...new Set(COS.map(c=>c.sector))].sort();
-  const scards = STATUSES.map(s=>{
+  const cos=allCos();
+  const total=cos.length;
+  const SECS=[...new Set(COS.map(c=>c.sector))].sort();
+
+  const pipeline=`<div class="pipeline" style="margin-bottom:20px">
+    ${[
+      ["Applied","#1a5fb4"],["First Round","#b45309"],["Second Round","#6d28d9"],["Offer","#0d7a4e"]
+    ].map(([s,c])=>{
+      const cnt=cos.filter(x=>(apps[x.id]?.status||"Not Applied")===s).length;
+      return `<div class="pipe-stage" style="--pc:${c}">
+        <div class="pipe-n">${cnt}</div>
+        <div class="pipe-l">${s}</div>
+      </div>`;
+    }).join('<div style="display:flex;align-items:center;color:#cbd5e1;font-size:18px;background:#fff;padding:0 4px">&#8250;</div>')}
+  </div>`;
+
+  const scards=STATUSES.map(s=>{
     const cnt=cos.filter(c=>(apps[c.id]?.status||"Not Applied")===s).length;
     const m=SM[s]; const p=total?Math.round(cnt/total*100):0;
-    return `<div class="sc" style="border-color:${cnt>0?m.c+"55":"var(--border)"}" onclick="filterStatus('${s}')">
-      <div class="sc-top"><span class="sc-lbl" style="color:${m.c}">${s}</span><span class="sc-num" style="color:${m.c}">${cnt}</span></div>
+    return `<div class="sc" style="border-color:${cnt>0?m.border+"88":"var(--border)"}" onclick="filterStatus('${s}')">
+      <div class="sc-top">
+        <span class="sc-lbl" style="color:${m.c}">${s}</span>
+        <span class="sc-num" style="color:${m.c}">${cnt}</span>
+      </div>
       <div class="sc-tr"><div class="sc-fi" style="width:${p}%;background:${m.c}"></div></div>
       <div class="sc-pct">${p}% &nbsp;&#183;&nbsp; tap to filter</div>
     </div>`;
   }).join("");
-  const srows = SECS.map(s=>{
+
+  const srows=SECS.map(s=>{
     const sc=cos.filter(c=>c.sector===s);
     const ap=sc.filter(c=>(apps[c.id]?.status||"Not Applied")!=="Not Applied").length;
     const p=sc.length?Math.round(ap/sc.length*100):0;
-    return `<div class="sr"><div class="sl"><span class="sn">${s}</span><span class="sk">${ap}/${sc.length}</span></div>
+    return `<div class="sr">
+      <div class="sl"><span class="sn">${s}</span><span class="sk">${ap}/${sc.length}</span></div>
       <div class="st"><div class="sf" style="width:${p}%"></div></div>
-      <span class="sp2">${p}%</span></div>`;
+      <span class="sp2">${p}%</span>
+    </div>`;
   }).join("");
+
   const up=cos.map(c=>({...c,app:apps[c.id]||{}}))
     .filter(c=>{ const d=daysUntil(c.app.deadline); return d!==null&&d>=0&&d<=14; })
     .sort((a,b)=>new Date(a.app.deadline)-new Date(b.app.deadline));
+
   const upHTML=up.length===0?"":
-    `<div class="up-card" style="margin-top:16px">
-      <div class="sh">&#9203; Upcoming Deadlines <span style="background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px">${up.length}</span></div>
+    `<div class="up-card" style="margin-top:14px">
+      <div class="sh">&#9203; Upcoming Deadlines
+        <span style="background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:6px">${up.length}</span>
+      </div>
       ${up.map(c=>{ const d=daysUntil(c.app.deadline); const m=SM[c.app.status||"Not Applied"];
         return `<div class="ur${d<=3?" ur-hot":""}">
           <div class="ui"><div class="uco">${c.company}</div><div class="upr">${c.program}</div></div>
@@ -425,33 +734,55 @@ function renderStats(){
           <span class="ud${d<=3?" hot":""}">${d===0?"Today!":d+"d"}</span>
         </div>`; }).join("")}
     </div>`;
-  e("sts").innerHTML=`<div class="sg">${scards}</div>
+
+  ge("sts").innerHTML=pipeline+`<div class="sg">${scards}</div>
     <div class="sec-card"><div class="sh">By Sector</div>${srows}</div>${upHTML}`;
 }
-function filterStatus(s){ e("qst").value=s; switchTab("tracker",document.querySelectorAll(".tab-btn")[0]); renderTable(); }
+
+function filterStatus(s){
+  ge("qst").value=s;
+  switchTab("tracker",document.querySelectorAll(".tab-btn")[0]);
+  renderTable();
+}
 
 /* ── Activity ── */
 function renderActivity(){
   const log=actLog;
-  e("akpis").innerHTML=[
-    ["Total Scans",   log.length,                                "all time",             "#1a5fb4"],
-    ["Emails Sent",   log.filter(x=>x.email_sent).length,       "delivered to inbox",   "#0d7a4e"],
-    ["Jobs Found",    log.reduce((s,x)=>s+(x.new_jobs||0),0),   "new postings",         "#1a5fb4"],
-    ["New Programs",  log.reduce((s,x)=>s+(x.new_programs||0),0),"not in original 100", "#6d28d9"],
-  ].map(([l,v,s,c])=>`<div class="kpi" style="--kc:${c}"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div></div>`).join("");
+  ge("akpis").innerHTML=[
+    ["Total Scans",  log.length,                               "all time",           "#1a5fb4"],
+    ["Emails Sent",  log.filter(x=>x.email_sent).length,      "to your inbox",      "#0d7a4e"],
+    ["Jobs Found",   log.reduce((s,x)=>s+(x.new_jobs||0),0),  "new postings found", "#1a5fb4"],
+    ["New Programs", log.reduce((s,x)=>s+(x.new_programs||0),0),"outside original 100","#6d28d9"],
+  ].map(([l,v,s,c])=>`<div class="kpi" style="--kc:${c}">
+    <div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div><div class="kpi-sub">${s}</div>
+  </div>`).join("");
+
   if(!log.length){
-    e("act").innerHTML=`<div class="empty-st"><div class="empty-ic">&#128140;</div><h3>No scan history yet</h3><p>Run the scanner to start logging:</p><code>cd backend &amp;&amp; python scanner.py</code></div>`;
+    ge("act").innerHTML=`<div class="empty-st">
+      <div class="empty-ic">&#128140;</div>
+      <h3>No scan history yet</h3>
+      <p>Run the Python scanner to start logging daily activity:</p>
+      <code>cd backend &amp;&amp; python scanner.py</code>
+    </div>`;
     return;
   }
   const last=log[0];
   const lsHTML=`<div class="ls">
-    <div class="ls-l"><div class="ls-lbl">Last Scan</div><div class="ls-date">${fmtDate(last.date)}</div><div class="ls-time">${fmtTime(last.ts)}</div></div>
+    <div class="ls-l">
+      <div class="ls-lbl">Last Scan</div>
+      <div class="ls-date">${fmtDate(last.date)}</div>
+      <div class="ls-time">${fmtTime(last.ts)}</div>
+    </div>
     <div class="ls-stats">
       <div class="lst"><span class="lst-n">${last.new_jobs}</span><span class="lst-l">jobs found</span></div>
       <div class="lst"><span class="lst-n">${last.new_programs}</span><span class="lst-l">new programs</span></div>
-      <div class="lst"><span class="lst-n" style="color:${last.email_sent?"#0d7a4e":"#6b7280"}">${last.email_sent?"&#10003;":"—"}</span><span class="lst-l">email sent</span></div>
+      <div class="lst">
+        <span class="lst-n" style="color:${last.email_sent?"#0d7a4e":"#6b7280"}">${last.email_sent?"&#10003;":"—"}</span>
+        <span class="lst-l">email sent</span>
+      </div>
     </div>
   </div>`;
+
   const rows=log.map(x=>`<div class="ar${x.email_sent?" emailed":""}">
     <div class="ar-dt"><div class="ar-day">${fmtDate(x.date)}</div><div class="ar-tm">${fmtTime(x.ts)}</div></div>
     <div class="ar-pills">
@@ -459,53 +790,29 @@ function renderActivity(){
       ${x.new_programs>0?`<span class="ap ap-p">${x.new_programs} new programs</span>`:""}
       ${(x.scan_errors||[]).length>0?`<span class="ap ap-e">${x.scan_errors.length} error${x.scan_errors.length>1?"s":""}</span>`:""}
     </div>
-    <div class="ar-em">${x.email_sent?'<span class="em-ok">&#10003; Sent</span>':x.email_error?`<span class="em-er">&#9888; ${x.email_error.slice(0,30)}</span>`:'<span class="em-no">No email</span>'}</div>
+    <div class="ar-em">${x.email_sent
+      ?'<span class="em-ok">&#10003; Sent</span>'
+      :x.email_error?`<span class="em-er">&#9888; ${x.email_error.slice(0,32)}</span>`
+      :'<span class="em-no">No email</span>'}</div>
   </div>`).join("");
-  e("act").innerHTML=lsHTML+`<div class="sh" style="margin-bottom:10px">Scan History</div><div class="act-list">${rows}</div>`;
-}
 
-/* ── Discover ── */
-function renderDiscover(){
-  const addedIds=new Set(added.map(a=>a.id));
-  const origIds =new Set(COS.map(c=>String(c.id)));
-  const toShow  =newProgs.filter(p=>!addedIds.has(p.id)&&!origIds.has(p.id));
-  if(!newProgs.length){
-    e("disc").innerHTML=`<div class="empty-st"><div class="empty-ic">&#128301;</div><h3>No new programs found yet</h3><p>Run the scanner to discover programs beyond the original 100:</p><code>cd backend &amp;&amp; python scanner.py</code></div>`;
-    return;
-  }
-  const cards=toShow.map((p,i)=>`<div class="dc">
-    <div class="dc-hd"><span class="dc-src">${p.source}</span><span class="dc-dt">${fmtDate(p.date)}</span></div>
-    <div class="dc-co">${p.company}</div><div class="dc-ti">${p.title}</div>
-    <div class="dc-ac"><a href="${p.link}" target="_blank" class="dc-vw">View &#8594;</a>
-      <button class="dc-ad" onclick="addProg(${i})">+ Add to Tracker</button></div>
-  </div>`).join("");
-  const addedHTML=added.length===0?"":
-    `<div style="margin-top:8px"><div class="sh" style="margin-bottom:10px">Added to Tracker (${added.length})</div>
-    <div class="add-list">${added.map(p=>{ const m=SM[apps[p.id]?.status||"Not Applied"];
-      return `<div class="add-row"><div class="add-inf"><div class="add-co">${p.company}</div><div class="add-pr">${p.program}</div></div>
-        <span class="ssm" style="color:${m.c};background:${m.b}">${apps[p.id]?.status||"Not Applied"}</span>
-        <a href="${p.link}" target="_blank" class="al">Apply &#8594;</a></div>`;
-    }).join("")}</div></div>`;
-  e("disc").innerHTML=`<div style="font-size:13px;color:var(--muted);margin-bottom:14px">${toShow.length} to review &nbsp;&#183;&nbsp; ${added.length} added</div>
-    <div class="dg">${cards}</div>${addedHTML}`;
-}
-function addProg(idx){
-  const addedIds=new Set(added.map(a=>a.id));
-  const origIds =new Set(COS.map(c=>String(c.id)));
-  const toShow  =newProgs.filter(p=>!addedIds.has(p.id)&&!origIds.has(p.id));
-  const p=toShow[idx]; if(!p)return;
-  added=[{id:p.id,company:p.company,program:p.title,sector:"Discovered",opensMonth:"Unknown",closesMonth:"Unknown",link:p.link,discovered:true},...added];
-  save("frp_added",added); renderDiscover(); renderKPIs();
+  ge("act").innerHTML=lsHTML+
+    `<div class="sh" style="margin-bottom:10px;margin-top:4px">Scan History</div>
+     <div class="act-list">${rows}</div>`;
 }
 
 /* ── Init ── */
 function init(){
   // Sectors dropdown
-  const sel=e("qsec");
-  [...new Set(COS.map(c=>c.sector))].sort().forEach(s=>{ const o=document.createElement("option"); o.value=s; o.textContent=s; sel.appendChild(o); });
-  // Timestamp
+  const sel=ge("qsec");
+  [...new Set(COS.map(c=>c.sector))].sort().forEach(s=>{
+    const o=document.createElement("option");o.value=s;o.textContent=s;sel.appendChild(o);
+  });
+  // Accurate timestamp
   const now=new Date();
-  e("ts-now").textContent=now.toLocaleDateString("en-US",{month:"short",day:"numeric"})+" at "+now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+  const dateStr=now.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"});
+  const timeStr=now.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+  ge("ts-now").textContent=dateStr+" · "+timeStr;
   renderKPIs();
   renderTable();
 }
