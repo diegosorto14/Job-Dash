@@ -213,8 +213,9 @@ a.apply-link:hover{text-decoration:underline}
     <h4>Add a Custom Application</h4>
     <div class="form-grid">
       <div class="full">
-        <label>Job Posting URL</label>
-        <input type="url" id="add-url" placeholder="Paste the link to the job posting"/>
+        <label>Job Posting URL <span style="color:#94a3b8;font-weight:400">— paste link and we'll auto-fill the rest</span></label>
+        <input type="url" id="add-url" placeholder="Paste LinkedIn, Indeed, Greenhouse, Workday, or company link…" onblur="autoFillFromUrl()"/>
+        <div id="url-status" style="font-size:12px;color:#64748b;margin-top:4px;min-height:16px"></div>
       </div>
       <div>
         <label>Company Name</label>
@@ -335,6 +336,12 @@ async function boot() {
     newJobs     = jobs;
     newPrograms = progs;
     activityLog = log;
+
+    // Merge auto-added custom apps from GitHub (gmail parser) with local ones
+    const repoApps = await fetch(RAW + '/custom_apps.json' + bust).then(r=>r.json()).catch(()=>[]);
+    const localIds = new Set(customApps.map(a=>a._id));
+    repoApps.forEach(a => { if(!localIds.has(a._id)) customApps.push(a); });
+    localStorage.setItem('frp_custom_apps', JSON.stringify(customApps));
 
     // Merge repo status (auto from Gmail) with local overrides (manual)
     // Local always wins so manual changes aren't overwritten
@@ -504,6 +511,85 @@ function renderMine() {
       </div>
     </div>`;
   }).join('');
+}
+
+// ── URL auto-fill ─────────────────────────────────────────────────────────────
+const SECTOR_HINTS = {
+  'Banking & Financial Services': ['bank','capital','financial','asset','investment','securities','wealth','insurance','hedge','credit'],
+  'Tech & Media': ['tech','software','digital','media','cloud','data','ai','network','systems','saas'],
+  'Healthcare & Pharma': ['health','pharma','medical','biotech','clinical','hospital'],
+  'Consumer Goods & Retail': ['consumer','retail','brand','foods','beverage','apparel','fashion'],
+  'Energy & Utilities': ['energy','oil','gas','power','utility','electric','renewable'],
+  'Industrials & Manufacturing': ['industrial','manufacturing','aerospace','defense','engineering','logistics'],
+  'Real Estate & REITs': ['real estate','reit','property','realty'],
+};
+
+function guessSector(text) {
+  const t = text.toLowerCase();
+  for (const [sector, hints] of Object.entries(SECTOR_HINTS)) {
+    if (hints.some(h => t.includes(h))) return sector;
+  }
+  return '';
+}
+
+function companyFromUrl(url) {
+  try {
+    const host = new URL(url).hostname.replace('www.','').replace('careers.','').replace('jobs.','');
+    const parts = host.split('.');
+    return parts[0].replace(/-/g,' ').replace(/_/g,' ')
+      .split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+  } catch { return ''; }
+}
+
+async function autoFillFromUrl() {
+  const url = document.getElementById('add-url').value.trim();
+  if (!url || !url.startsWith('http')) return;
+  const statusEl = document.getElementById('url-status');
+  statusEl.textContent = 'Fetching job details…';
+
+  try {
+    // Use allorigins as CORS proxy to fetch the page HTML
+    const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const res   = await fetch(proxy, {signal: AbortSignal.timeout(8000)});
+    const data  = await res.json();
+    const html  = data.contents || '';
+
+    // Parse title and meta tags from raw HTML
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const ogTitle    = html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i)
+                    || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:title["']/i);
+    const ogSite     = html.match(/<meta[^>]*property=["']og:site_name["'][^>]*content=["']([^"']+)["']/i)
+                    || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:site_name["']/i);
+
+    let jobTitle = (ogTitle?.[1] || titleMatch?.[1] || '').trim();
+    // Clean up common suffixes like "| LinkedIn", "- Indeed", "| Careers"
+    jobTitle = jobTitle.replace(/\s*[\|—–-]\s*(LinkedIn|Indeed|Glassdoor|Handshake|Careers|Jobs).*$/i,'').trim();
+
+    let company = (ogSite?.[1] || '').trim() || companyFromUrl(url);
+    // If LinkedIn/Indeed, company is often in title: "Role at Company | LinkedIn"
+    const atMatch = (ogTitle?.[1] || titleMatch?.[1] || '').match(/\bat\s+(.+?)(?:\s*[\|—–]|$)/i);
+    if (atMatch) company = atMatch[1].trim();
+
+    const sector = guessSector(html.slice(0, 5000));
+
+    if (jobTitle) document.getElementById('add-program').value = jobTitle;
+    if (company)  document.getElementById('add-company').value = company;
+    if (sector)   document.getElementById('add-sector').value  = sector;
+
+    statusEl.style.color = '#16a34a';
+    statusEl.textContent = `Auto-filled from page${sector?' · sector: '+sector:''}`;
+  } catch(e) {
+    // Fallback: at minimum guess company from URL
+    const co = companyFromUrl(url);
+    if (co) {
+      document.getElementById('add-company').value = co;
+      statusEl.style.color = '#ea580c';
+      statusEl.textContent = 'Could not fetch full details — company name guessed from URL. Fill in the rest manually.';
+    } else {
+      statusEl.style.color = '#94a3b8';
+      statusEl.textContent = 'Could not auto-fill — fill in manually.';
+    }
+  }
 }
 
 function saveCustomApp() {

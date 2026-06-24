@@ -28,8 +28,20 @@ load_dotenv(Path(__file__).parent / ".env")
 
 BASE       = Path(__file__).parent
 FRONTEND   = BASE.parent / "frontend" / "src" / "data"
-COMPANIES_FILE = FRONTEND / "companies.json"
-STATUS_FILE    = FRONTEND / "app_status.json"
+COMPANIES_FILE  = FRONTEND / "companies.json"
+STATUS_FILE     = FRONTEND / "app_status.json"
+CUSTOM_APPS_FILE = FRONTEND / "custom_apps.json"
+
+# Sector keyword hints for auto-detection
+SECTOR_HINTS = {
+    "Banking & Financial Services": ["bank","capital","financial","asset management","investment","securities","wealth","insurance","credit","lending"],
+    "Tech & Media": ["tech","software","digital","media","cloud","data","ai","intelligence","network","systems"],
+    "Healthcare & Pharma": ["health","pharma","medical","biotech","clinical","hospital","care"],
+    "Consumer Goods & Retail": ["consumer","retail","brand","foods","beverage","apparel","fashion"],
+    "Energy & Utilities": ["energy","oil","gas","power","utility","electric","renewable"],
+    "Industrials & Manufacturing": ["industrial","manufacturing","aerospace","defense","engineering","logistics","supply"],
+    "Real Estate & REITs": ["real estate","reit","property","realty"],
+}
 
 # ── Gmail OAuth config ────────────────────────────────────────────────────────
 CLIENT_ID     = os.environ.get("GMAIL_CLIENT_ID", "")
@@ -181,18 +193,55 @@ def classify_email(email_text):
     return None
 
 def match_company(email, companies):
-    """
-    Returns list of company IDs whose name appears in the sender or subject.
-    """
+    """Returns list of company IDs whose name appears in the sender or subject."""
     text = (email["from"] + " " + email["subject"] + " " + email["snippet"]).lower()
     matched = []
     for co in companies:
         name = co["company"].lower()
-        # strip common suffixes for fuzzy matching
         short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?)$', '', name).strip()
         if short and (short in text or name in text):
             matched.append(co["id"])
     return matched
+
+def extract_sender_company(email):
+    """Pull company name from the sender's display name or email domain."""
+    frm = email["from"]
+    # Try display name first: "Goldman Sachs Recruiting <noreply@gs.com>"
+    match = re.match(r'^"?([^"<]+)"?\s*<', frm)
+    if match:
+        name = match.group(1).strip()
+        # Strip common recruiting suffixes
+        name = re.sub(r'\s*(recruiting|careers|talent|hr|noreply|no-reply|jobs|hiring).*$', '', name, flags=re.I).strip()
+        if len(name) > 2:
+            return name
+    # Fall back to domain: noreply@goldmansachs.com → "goldmansachs"
+    domain_match = re.search(r'@([\w-]+)\.(com|org|net|io|co)', frm.lower())
+    if domain_match:
+        domain = domain_match.group(1).replace('-', ' ').replace('_', ' ')
+        return domain.title()
+    return None
+
+def guess_sector(text):
+    """Guess sector from email content keywords."""
+    t = text.lower()
+    for sector, hints in SECTOR_HINTS.items():
+        if any(h in t for h in hints):
+            return sector
+    return "Other"
+
+def extract_role_from_subject(subject):
+    """Pull a role/program title from the email subject line."""
+    # Remove common prefixes like "Thank you for applying to", "Application for"
+    cleaned = re.sub(
+        r'^(thank you for (applying|your application|your interest)|'
+        r'application (received|confirmation|for|submitted)|'
+        r'we received your application (for|to)|'
+        r'your application to|re:|fw:)\s*',
+        '', subject, flags=re.I
+    ).strip()
+    # Remove trailing "at CompanyName"
+    cleaned = re.sub(r'\s+at\s+\S.*$', '', cleaned, flags=re.I).strip()
+    return cleaned if len(cleaned) > 3 else subject
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 def run_parser():
@@ -209,7 +258,10 @@ def run_parser():
     emails = fetch_recent_emails(service, days=3)
     print(f"  Fetched {len(emails)} recent emails.")
 
+    custom_apps  = _load_json(CUSTOM_APPS_FILE, [])
+    custom_ids   = {a["_id"] for a in custom_apps}
     updates = {}
+
     for email in emails:
         full_text = email["subject"] + " " + email["body"] + " " + email["snippet"]
         detected_status = classify_email(full_text)
@@ -217,25 +269,68 @@ def run_parser():
             continue
 
         matched_ids = match_company(email, companies)
-        for cid in matched_ids:
-            key = str(cid)
-            current = app_status.get(key, {}).get("status", "Not Applied")
 
-            # Only upgrade status, never downgrade (e.g. don't overwrite Offer with Applied)
-            current_pri = STATUS_PRIORITY.index(current) if current in STATUS_PRIORITY else 99
-            new_pri     = STATUS_PRIORITY.index(detected_status) if detected_status in STATUS_PRIORITY else 99
-            if new_pri < current_pri:
-                app_status[key] = {
-                    "status":    detected_status,
-                    "updated":   datetime.datetime.now().isoformat(timespec="seconds"),
-                    "email_sub": email["subject"][:100],
-                }
-                updates[key] = detected_status
-                co_name = next((c["company"] for c in companies if c["id"] == cid), key)
-                print(f"  [{co_name}] {current} → {detected_status}")
+        if matched_ids:
+            # ── Known company: update app_status.json ─────────────────────────
+            for cid in matched_ids:
+                key = str(cid)
+                current = app_status.get(key, {}).get("status", "Not Applied")
+                current_pri = STATUS_PRIORITY.index(current) if current in STATUS_PRIORITY else 99
+                new_pri     = STATUS_PRIORITY.index(detected_status) if detected_status in STATUS_PRIORITY else 99
+                if new_pri < current_pri:
+                    app_status[key] = {
+                        "status":    detected_status,
+                        "updated":   datetime.datetime.now().isoformat(timespec="seconds"),
+                        "email_sub": email["subject"][:100],
+                    }
+                    updates[key] = detected_status
+                    co_name = next((c["company"] for c in companies if c["id"] == cid), key)
+                    print(f"  [{co_name}] {current} → {detected_status}")
+
+        else:
+            # ── Unknown company: auto-create custom application ────────────────
+            # Only create if this is an "Applied" confirmation (not interview/offer
+            # for a company we simply failed to match)
+            if detected_status != "Applied":
+                continue
+
+            sender_company = extract_sender_company(email)
+            if not sender_company:
+                continue
+
+            # Deduplicate: skip if we already have a custom app from this sender
+            email_key = "email_" + re.sub(r'[^a-z0-9]', '_', sender_company.lower())[:40]
+            if email_key in custom_ids:
+                continue
+
+            role   = extract_role_from_subject(email["subject"])
+            sector = guess_sector(full_text)
+
+            new_app = {
+                "_id":     email_key,
+                "company": sender_company,
+                "program": role,
+                "sector":  sector,
+                "url":     "",          # user fills in when they paste the link
+                "opens":   "",
+                "closes":  "",
+                "notes":   f"Auto-added from email: {email['subject'][:80]}",
+                "added":   datetime.datetime.now().isoformat(timespec="seconds"),
+                "auto":    True,
+            }
+            # Also set its status
+            app_status[email_key] = {
+                "status":    "Applied",
+                "updated":   datetime.datetime.now().isoformat(timespec="seconds"),
+                "email_sub": email["subject"][:100],
+            }
+            custom_apps.append(new_app)
+            custom_ids.add(email_key)
+            print(f"  [NEW] Auto-added: {sender_company} — {role}")
 
     _save_json(STATUS_FILE, app_status)
-    print(f"  Updated {len(updates)} application status(es).")
+    _save_json(CUSTOM_APPS_FILE, custom_apps)
+    print(f"  Updated {len(updates)} status(es), added {sum(1 for a in custom_apps if a.get('auto'))} auto entries.")
     return updates
 
 def _load_json(path, default):
