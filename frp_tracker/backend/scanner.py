@@ -69,6 +69,19 @@ def save_json(path, data):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(data, indent=2))
 
+ROTATIONAL_KEYWORDS = [
+    "rotational", "rotation program", "leadership development",
+    "development program", "ldp", "fdp", "fldp", "frap", "afrp",
+    "finance program", "finance associate program",
+    "finance & strategy", "finance and strategy",
+    "new grad", "new analyst", "analyst program",
+]
+
+def is_rotational(title):
+    """Return True only if the job title looks like a rotational/dev program."""
+    t = title.lower()
+    return any(kw in t for kw in ROTATIONAL_KEYWORDS)
+
 def known_companies():
     companies = load_json(COMPANIES_FILE, [])
     return {c["company"].lower() for c in companies}
@@ -129,14 +142,15 @@ def search_linkedin(query):
         print(f"  LinkedIn error: {e}")
     return jobs
 
-def search_handshake(query):
-    encoded = requests.utils.quote(query)
-    return [{"title": f'Search: "{query}"',
-             "company": "Multiple — click to view on Handshake",
-             "link": f"https://joinhandshake.com/jobs/?query={encoded}&job_type=JOB",
-             "source": "Handshake",
-             "date": datetime.date.today().isoformat(),
-             "id": f"hs_{encoded[:40]}"}]
+def handshake_link():
+    """Single consolidated Handshake search link for all FRP terms."""
+    encoded = requests.utils.quote("finance rotational program 2027")
+    return {"title": 'Finance Rotational Programs 2027 — Search on Handshake',
+            "company": "Multiple companies — click to browse",
+            "link": f"https://joinhandshake.com/jobs/?query={encoded}&job_type=JOB",
+            "source": "Handshake",
+            "date": datetime.date.today().isoformat(),
+            "id": "hs_frp_2027"}
 
 # ── Classify new vs known programs ────────────────────────────────────────────
 def classify_jobs(jobs):
@@ -226,7 +240,6 @@ def scan_all():
             time.sleep(random.uniform(2, 4))
             found += search_linkedin(term)
             time.sleep(random.uniform(2, 4))
-            found += search_handshake(term)
         except Exception as e:
             errors.append(str(e))
 
@@ -241,8 +254,17 @@ def scan_all():
             co = job.get("company", "").lower()
             if any(k in co or co in k for k in applied_cos):
                 continue
+            # Skip if title doesn't look like a rotational/development program
+            if not is_rotational(job.get("title", "")):
+                continue
             seen.add(job["id"])
             new_jobs.append(job)
+
+    # Add one consolidated Handshake link at the end (not per search term)
+    hs = handshake_link()
+    if hs["id"] not in seen:
+        seen.add(hs["id"])
+        new_jobs.append(hs)
 
     save_json(SEEN_FILE, list(seen))
 
