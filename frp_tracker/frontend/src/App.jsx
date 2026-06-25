@@ -215,7 +215,8 @@ export default function App() {
                     </div>
                     <p className="job-title">{j.title}</p>
                     <p className="job-company">{j.company}</p>
-                    <a href={j.link} target="_blank" rel="noreferrer" className="job-link">View posting →</a>
+                    {j.note && <p className="job-note">{j.note}</p>}
+                    <a href={j.link} target="_blank" rel="noreferrer" className="job-link">Go to careers page →</a>
                   </div>
                 ))}
               </div>
