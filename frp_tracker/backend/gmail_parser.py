@@ -183,6 +183,37 @@ def _extract_body(payload):
     return ""
 
 # ── Matching ──────────────────────────────────────────────────────────────────
+
+# Job-related keywords that must appear somewhere in the email for it to count
+JOB_KEYWORDS = [
+    "application", "apply", "applied", "applicant", "position", "role",
+    "interview", "candidate", "recruiting", "recruitment", "hiring",
+    "job", "career", "opportunity", "program", "offer", "internship",
+    "thank you for your interest", "thank you for applying",
+]
+
+# Sender domains/keywords that indicate non-job emails to skip entirely
+NON_JOB_SENDERS = [
+    "credit", "bank", "card", "alert", "statement", "payment", "invoice",
+    "receipt", "order", "shipping", "delivery", "promo", "newsletter",
+    "noreply@apple.com", "no-reply@apple.com", "appleid", "icloud",
+    "subscri", "unsubscri", "marketing", "notification",
+]
+
+def is_job_email(email):
+    """Return True only if the email looks like a job-related message."""
+    sender = email["from"].lower()
+    subject = email["subject"].lower()
+    body = (email.get("body", "") + " " + email.get("snippet", "")).lower()
+    full = sender + " " + subject + " " + body
+
+    # Skip if sender looks non-job
+    if any(kw in sender for kw in NON_JOB_SENDERS):
+        return False
+
+    # Must contain at least one job keyword somewhere
+    return any(kw in full for kw in JOB_KEYWORDS)
+
 def classify_email(email_text):
     """Return detected status or None."""
     text = email_text.lower()
@@ -193,18 +224,20 @@ def classify_email(email_text):
     return None
 
 def match_company(email, companies):
-    """Returns list of company IDs whose name appears in the sender address or subject only."""
-    # Only match against sender + subject — NOT the body/snippet to avoid false positives
+    """Returns list of company IDs matched strictly from sender domain/name and subject."""
     sender_and_subject = (email["from"] + " " + email["subject"]).lower()
     matched = []
     for co in companies:
         name = co["company"].lower()
         short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?)$', '', name).strip()
-        # Require the company name to appear as a whole word to avoid partial matches
-        if short and (
-            re.search(r'\b' + re.escape(short) + r'\b', sender_and_subject) or
-            re.search(r'\b' + re.escape(name) + r'\b', sender_and_subject)
-        ):
+
+        # Skip very short names — too likely to false-match
+        if len(short) < 5:
+            continue
+
+        # Require whole-word match in sender + subject only
+        if re.search(r'\b' + re.escape(short) + r'\b', sender_and_subject) or \
+           re.search(r'\b' + re.escape(name) + r'\b', sender_and_subject):
             matched.append(co["id"])
     return matched
 
@@ -268,6 +301,10 @@ def run_parser():
     updates = {}
 
     for email in emails:
+        # Skip non-job emails entirely before any further processing
+        if not is_job_email(email):
+            continue
+
         full_text = email["subject"] + " " + email["body"] + " " + email["snippet"]
         detected_status = classify_email(full_text)
         if not detected_status:
