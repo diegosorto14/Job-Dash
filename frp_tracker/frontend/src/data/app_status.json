@@ -19,24 +19,14 @@
     "updated": "2026-06-25T03:55:30",
     "email_sub": "Thank you for your application for Finance Leadership Development Program at Johnson & Johnson"
   },
-  "email_abbott_": {
+  "50": {
     "status": "Applied",
     "updated": "2026-06-25T03:55:30",
-    "email_sub": "We Received\u00a0Your Application\u00a0for Finance Professional Development Program \u2013 31153626"
-  },
-  "email_abbott": {
-    "status": "Applied",
-    "updated": "2026-06-25T03:55:30",
-    "email_sub": "Complete Your Abbott Job Application"
+    "email_sub": "We Received Your Application for Finance Professional Development Program"
   },
   "99": {
     "status": "Applied",
     "updated": "2026-06-25T03:55:30",
     "email_sub": "Thank You for Applying"
-  },
-  "3": {
-    "status": "Applied",
-    "updated": "2026-06-25T03:55:30",
-    "email_sub": "Your credit limit offer is ready to preview."
   }
 }

@@ -2,36 +2,12 @@
   {
     "_id": "email_bosch_group",
     "company": "Bosch Group",
-    "program": "to Robert Bosch LLC",
-    "sector": "Tech & Media",
+    "program": "Finance Rotational Program",
+    "sector": "Industrials & Manufacturing",
     "url": "",
     "opens": "",
     "closes": "",
     "notes": "Auto-added from email: Thank you for applying to Robert Bosch LLC",
-    "added": "2026-06-25T03:55:30",
-    "auto": true
-  },
-  {
-    "_id": "email_abbott_",
-    "company": "Abbott-",
-    "program": "We Received\u00a0Your Application\u00a0for Finance Professional Development Program \u2013 31153626",
-    "sector": "Tech & Media",
-    "url": "",
-    "opens": "",
-    "closes": "",
-    "notes": "Auto-added from email: We Received\u00a0Your Application\u00a0for Finance Professional Development Program \u2013 3115",
-    "added": "2026-06-25T03:55:30",
-    "auto": true
-  },
-  {
-    "_id": "email_abbott",
-    "company": "Abbott",
-    "program": "Complete Your Abbott Job Application",
-    "sector": "Tech & Media",
-    "url": "",
-    "opens": "",
-    "closes": "",
-    "notes": "Auto-added from email: Complete Your Abbott Job Application",
     "added": "2026-06-25T03:55:30",
     "auto": true
   }
