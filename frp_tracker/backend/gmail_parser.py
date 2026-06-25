@@ -242,23 +242,32 @@ def match_company(email, companies):
 
     for co in companies:
         name = co["company"].lower()
-        short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?)$', '', name).strip()
+        # Strip common suffixes: "Abbott Laboratories" → "abbott laboratories"
+        short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?|laboratories|lab|solutions|technologies|systems|services|financial|capital)$', '', name).strip()
+        # Also get just the first meaningful word: "Abbott Laboratories" → "abbott"
+        first_word = short.split()[0] if short.split() else ""
 
         if len(short) < 5:
             continue
 
         pattern_short = r'\b' + re.escape(short) + r'\b'
         pattern_full  = r'\b' + re.escape(name) + r'\b'
+        pattern_first = r'\b' + re.escape(first_word) + r'\b' if len(first_word) >= 5 else None
+
+        def matches(text):
+            return (re.search(pattern_short, text) or
+                    re.search(pattern_full, text) or
+                    (pattern_first and re.search(pattern_first, text)))
 
         # Level 1: company name in sender's email domain
         if re.search(re.escape(short.replace(' ', '')), sender_domain) or \
-           re.search(re.escape(short), sender_domain):
+           re.search(re.escape(first_word), sender_domain):
             domain_hits.append(co["id"])
         # Level 2: company name in sender display name
-        elif re.search(pattern_short, sender_name) or re.search(pattern_full, sender_name):
+        elif matches(sender_name):
             name_hits.append(co["id"])
         # Level 3: company name in subject line only
-        elif re.search(pattern_short, subject) or re.search(pattern_full, subject):
+        elif matches(subject):
             subject_hits.append(co["id"])
 
     # Return exactly one match from the highest-priority level, or none if ambiguous
