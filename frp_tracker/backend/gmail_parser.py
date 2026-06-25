@@ -224,22 +224,53 @@ def classify_email(email_text):
     return None
 
 def match_company(email, companies):
-    """Returns list of company IDs matched strictly from sender domain/name and subject."""
-    sender_and_subject = (email["from"] + " " + email["subject"]).lower()
-    matched = []
+    """
+    Returns at most ONE company ID — the one that best matches the sender.
+    Priority: sender email domain > sender display name > subject line.
+    If multiple companies match at the same level, skip all (ambiguous).
+    """
+    sender = email["from"].lower()
+    subject = email["subject"].lower()
+
+    # Extract just the domain from the sender address e.g. "jpmorgan.com"
+    domain_match = re.search(r'@([\w.-]+)', sender)
+    sender_domain = domain_match.group(1) if domain_match else ""
+
+    sender_name = re.sub(r'<.*?>', '', sender).strip().strip('"')
+
+    domain_hits, name_hits, subject_hits = [], [], []
+
     for co in companies:
         name = co["company"].lower()
         short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?)$', '', name).strip()
 
-        # Skip very short names — too likely to false-match
         if len(short) < 5:
             continue
 
-        # Require whole-word match in sender + subject only
-        if re.search(r'\b' + re.escape(short) + r'\b', sender_and_subject) or \
-           re.search(r'\b' + re.escape(name) + r'\b', sender_and_subject):
-            matched.append(co["id"])
-    return matched
+        pattern_short = r'\b' + re.escape(short) + r'\b'
+        pattern_full  = r'\b' + re.escape(name) + r'\b'
+
+        # Level 1: company name in sender's email domain
+        if re.search(re.escape(short.replace(' ', '')), sender_domain) or \
+           re.search(re.escape(short), sender_domain):
+            domain_hits.append(co["id"])
+        # Level 2: company name in sender display name
+        elif re.search(pattern_short, sender_name) or re.search(pattern_full, sender_name):
+            name_hits.append(co["id"])
+        # Level 3: company name in subject line only
+        elif re.search(pattern_short, subject) or re.search(pattern_full, subject):
+            subject_hits.append(co["id"])
+
+    # Return exactly one match from the highest-priority level, or none if ambiguous
+    for hits in [domain_hits, name_hits, subject_hits]:
+        if len(hits) == 1:
+            return hits
+        if len(hits) > 1:
+            # Multiple companies matched at same level — too ambiguous, skip
+            print(f"  Ambiguous match ({len(hits)} companies) — skipping email: {email['subject'][:60]}")
+            return []
+
+    return []
 
 def extract_sender_company(email):
     """Pull company name from the sender's display name or email domain."""
