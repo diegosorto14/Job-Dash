@@ -451,18 +451,17 @@ def send_daily_email(new_jobs, new_programs, deadline_alerts):
     if not EMAIL_PASS:
         print("  GMAIL_APP_PASSWORD not set — skipping email.")
         return False, "GMAIL_APP_PASSWORD not set"
-    if not new_jobs and not new_programs and not deadline_alerts:
-        print("  Nothing to report — no email sent.")
-        return False, None
+    # Always send so you know the scanner ran, even if nothing new was found
 
     today_str = datetime.date.today().strftime("%B %d, %Y")
     subject_parts = []
     if new_jobs:        subject_parts.append(f"{len(new_jobs)} new jobs")
     if new_programs:    subject_parts.append(f"{len(new_programs)} new programs")
     if deadline_alerts: subject_parts.append(f"{len(deadline_alerts)} deadlines soon")
+    summary_label = ", ".join(subject_parts) if subject_parts else "No new postings today"
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "FRP Scanner — {} ({})".format(", ".join(subject_parts), today_str)
+    msg["Subject"] = "FRP Scanner — {} ({})".format(summary_label, today_str)
     msg["From"]    = EMAIL_FROM
     msg["To"]      = EMAIL_TO
 
