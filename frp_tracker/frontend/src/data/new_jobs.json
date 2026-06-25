@@ -1,1 +1,392 @@
-[]
+[
+  {
+    "id": "co_1",
+    "title": "Finance Rotation Program — Class of 2027",
+    "company": "Google (Alphabet)",
+    "program": "Google Finance Rotation Program",
+    "link": "https://careers.google.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — apply early, highly competitive"
+  },
+  {
+    "id": "co_4",
+    "title": "Finance Rotational Program — Class of 2027",
+    "company": "Meta",
+    "program": "Finance Rotational Program",
+    "link": "https://www.metacareers.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — check Workday portal"
+  },
+  {
+    "id": "co_5",
+    "title": "Amazon Finance Rotational Program (AFRP) — 2027",
+    "company": "Amazon",
+    "program": "Finance Rotational Program (AFRP)",
+    "link": "https://amazon.jobs/content/en/career-programs/university/undergraduate-non-tech",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — one of the largest FRP cohorts"
+  },
+  {
+    "id": "co_16",
+    "title": "Finance & Strategy Rotational Program — 2027",
+    "company": "Walt Disney",
+    "program": "Finance & Strategy Rotational Program",
+    "link": "https://jobs.disneycareers.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — search 'finance rotational' on their portal"
+  },
+  {
+    "id": "co_19",
+    "title": "Finance Division Analyst Program — Class of 2027",
+    "company": "Goldman Sachs",
+    "program": "Finance Division Analyst Program",
+    "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — direct link to new analyst program"
+  },
+  {
+    "id": "co_21",
+    "title": "Finance Analyst Rotation — Class of 2027",
+    "company": "Morgan Stanley",
+    "program": "Finance Analyst Rotation",
+    "link": "https://www.morganstanley.com/people/students",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — check student programs page"
+  },
+  {
+    "id": "co_22",
+    "title": "Finance Development Program — Class of 2027",
+    "company": "Bank of America",
+    "program": "Finance Development Program",
+    "link": "https://campus.bankofamerica.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — campus portal"
+  },
+  {
+    "id": "co_23",
+    "title": "Finance & Risk Rotational Analyst Program — 2027",
+    "company": "Citigroup",
+    "program": "Finance & Risk Rotational Analyst Program",
+    "link": "https://jobs.citi.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — one of the most well-known FRPs"
+  },
+  {
+    "id": "co_24",
+    "title": "Finance Rotational Associate Program — 2027",
+    "company": "Wells Fargo",
+    "program": "Finance Rotational Associate Program",
+    "link": "https://www.wellsfargojobs.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July"
+  },
+  {
+    "id": "co_29",
+    "title": "Finance Analyst Development Program — 2027",
+    "company": "American Express",
+    "program": "Finance Analyst Development Program",
+    "link": "https://jobs.americanexpress.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — highly regarded FADP"
+  },
+  {
+    "id": "co_30",
+    "title": "Finance Rotation Program — Class of 2027",
+    "company": "Capital One",
+    "program": "Finance Rotation Program",
+    "link": "https://www.capitalonecareers.com/full-time-programs",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — direct link to full-time programs page"
+  },
+  {
+    "id": "co_38",
+    "title": "Finance Leadership Development Program (FLDP) — 2027",
+    "company": "Lockheed Martin",
+    "program": "Finance Leadership Development Program (FLDP)",
+    "link": "https://www.lockheedmartinjobs.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — strong defense sector FLDP"
+  },
+  {
+    "id": "co_39",
+    "title": "Finance Leadership Program — Class of 2027",
+    "company": "Raytheon (RTX)",
+    "program": "Finance Leadership Program",
+    "link": "https://careers.rtx.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — RTX includes Pratt & Whitney, Collins Aerospace"
+  },
+  {
+    "id": "co_40",
+    "title": "Finance Development Program — Class of 2027",
+    "company": "Northrop Grumman",
+    "program": "Finance Development Program",
+    "link": "https://www.northropgrumman.com/careers",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July"
+  },
+  {
+    "id": "co_41",
+    "title": "Finance Career Foundation Program — 2027",
+    "company": "Boeing",
+    "program": "Finance Career Foundation Program",
+    "link": "https://jobs.boeing.com/entry-level",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — entry-level finance rotational"
+  },
+  {
+    "id": "co_52",
+    "title": "Finance Rotational Program — Class of 2027",
+    "company": "Merck & Co.",
+    "program": "Finance Rotational Program",
+    "link": "https://jobs.merck.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July"
+  },
+  {
+    "id": "co_90",
+    "title": "Finance Rotational Development Program — 2027",
+    "company": "General Motors",
+    "program": "Finance Rotational Development Program",
+    "link": "https://careers.gm.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — GM FRDP, strong program"
+  },
+  {
+    "id": "co_91",
+    "title": "Finance Rotational Program — Class of 2027",
+    "company": "Ford Motor",
+    "program": "Finance Rotational Program",
+    "link": "https://corporate.ford.com/careers.html",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July"
+  },
+  {
+    "id": "co_97",
+    "title": "Finance Rotational Program — Class of 2027",
+    "company": "Western Digital",
+    "program": "Finance Rotational Program",
+    "link": "https://jobs.westerndigital.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July"
+  },
+  {
+    "id": "co_98",
+    "title": "Treasury Rotational Leadership Development Program — 2027",
+    "company": "East West Bank",
+    "program": "Treasury Rotational Leadership Development Program",
+    "link": "https://www.eastwestbank.com/en/about-us/careers",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens July — closes September, apply soon"
+  },
+  {
+    "id": "co_2",
+    "title": "Finance Development Program (FDP) — Class of 2027",
+    "company": "Microsoft",
+    "program": "Finance Development Program (FDP)",
+    "link": "https://careers.microsoft.com/v2/global/en/financerotation",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — direct FDP link"
+  },
+  {
+    "id": "co_3",
+    "title": "Finance Leadership Program — Class of 2027",
+    "company": "Apple",
+    "program": "Finance Leadership Program",
+    "link": "https://jobs.apple.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_25",
+    "title": "Finance & Accounting Development Program — 2027",
+    "company": "BlackRock",
+    "program": "Finance & Accounting Development Program",
+    "link": "https://careers.blackrock.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_26",
+    "title": "Finance Rotational Development Program — 2027",
+    "company": "Vanguard",
+    "program": "Finance Rotational Development Program",
+    "link": "https://www.vanguardjobs.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_27",
+    "title": "Finance Leadership Program — Class of 2027",
+    "company": "Fidelity Investments",
+    "program": "Finance Leadership Program",
+    "link": "https://jobs.fidelity.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_53",
+    "title": "Finance Leadership Development Program — 2027",
+    "company": "Eli Lilly",
+    "program": "Finance Leadership Development Program",
+    "link": "https://careers.lilly.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_59",
+    "title": "Finance Leadership Development Program — 2027",
+    "company": "Stryker",
+    "program": "Finance Leadership Development Program",
+    "link": "https://careers.stryker.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — top healthcare device FLDP"
+  },
+  {
+    "id": "co_60",
+    "title": "Finance & Accounting Leadership Development Program — 2027",
+    "company": "Procter & Gamble",
+    "program": "Finance & Accounting Leadership Development Program",
+    "link": "https://www.pgcareers.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — top consumer goods FLDP"
+  },
+  {
+    "id": "co_61",
+    "title": "Finance Leadership Program — Class of 2027",
+    "company": "PepsiCo",
+    "program": "Finance Leadership Program",
+    "link": "https://www.pepsicojobs.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_74",
+    "title": "Finance Development Program — Class of 2027",
+    "company": "ExxonMobil",
+    "program": "Finance Development Program",
+    "link": "https://jobs.exxonmobil.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_75",
+    "title": "Finance Rotational Program — Class of 2027",
+    "company": "Chevron",
+    "program": "Finance Rotational Program",
+    "link": "https://careers.chevron.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_76",
+    "title": "Finance Rotational Development Program — 2027",
+    "company": "GE (General Electric)",
+    "program": "Finance Rotational Development Program",
+    "link": "https://jobs.gecareers.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — now split into GE Aerospace and GE Vernova"
+  },
+  {
+    "id": "co_77",
+    "title": "Finance & Accounting Leadership Program — 2027",
+    "company": "Honeywell",
+    "program": "Finance & Accounting Leadership Program",
+    "link": "https://careers.honeywell.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_78",
+    "title": "Finance Leadership Development Program — 2027",
+    "company": "Caterpillar",
+    "program": "Finance Leadership Development Program",
+    "link": "https://careers.caterpillar.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_82",
+    "title": "Finance Development Program — Class of 2027",
+    "company": "John Deere",
+    "program": "Finance Development Program",
+    "link": "https://jobs.deere.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — strong manufacturing FLDP"
+  },
+  {
+    "id": "co_88",
+    "title": "Finance Leadership Development Program — 2027",
+    "company": "FedEx",
+    "program": "Finance Leadership Development Program",
+    "link": "https://careers.fedex.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August"
+  },
+  {
+    "id": "co_93",
+    "title": "Early Finance Rotation Development Program (eFRDP) — 2027",
+    "company": "Genentech",
+    "program": "Early Finance Rotation Development Program (eFRDP)",
+    "link": "https://careers.gene.com/us/en/finance-rotational-program-frdp-",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens September — direct program link, Roche subsidiary"
+  },
+  {
+    "id": "co_94",
+    "title": "Finance Rotation Program — Class of 2027",
+    "company": "Applied Materials",
+    "program": "Finance Rotation Program",
+    "link": "https://www.appliedmaterials.com/us/en/careers/new-grads-finance.html",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — direct new grads finance link"
+  },
+  {
+    "id": "co_96",
+    "title": "CFO Undergraduate Development Rotational Program — 2027",
+    "company": "Gilead Sciences",
+    "program": "CFO Undergraduate Development Rotational Program",
+    "link": "https://www.gilead.com/careers",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "note": "Opens August — unique CFO-sponsored rotational"
+  }
+]

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import companies from "./data/companies.json";
+import newJobsData from "./data/new_jobs.json";
 import "./App.css";
 
 const STATUS_OPTIONS = ["Not Applied", "Applied", "First Round", "Final Round", "Offer", "Rejected"];
@@ -23,8 +24,7 @@ function saveApps(apps) {
   localStorage.setItem("frp_apps", JSON.stringify(apps));
 }
 function loadJobs() {
-  try { return JSON.parse(localStorage.getItem("frp_new_jobs") || "[]"); }
-  catch { return []; }
+  return newJobsData;
 }
 
 export default function App() {
