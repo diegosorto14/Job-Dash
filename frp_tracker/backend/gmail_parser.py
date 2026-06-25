@@ -193,13 +193,18 @@ def classify_email(email_text):
     return None
 
 def match_company(email, companies):
-    """Returns list of company IDs whose name appears in the sender or subject."""
-    text = (email["from"] + " " + email["subject"] + " " + email["snippet"]).lower()
+    """Returns list of company IDs whose name appears in the sender address or subject only."""
+    # Only match against sender + subject — NOT the body/snippet to avoid false positives
+    sender_and_subject = (email["from"] + " " + email["subject"]).lower()
     matched = []
     for co in companies:
         name = co["company"].lower()
         short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?)$', '', name).strip()
-        if short and (short in text or name in text):
+        # Require the company name to appear as a whole word to avoid partial matches
+        if short and (
+            re.search(r'\b' + re.escape(short) + r'\b', sender_and_subject) or
+            re.search(r'\b' + re.escape(name) + r'\b', sender_and_subject)
+        ):
             matched.append(co["id"])
     return matched
 
