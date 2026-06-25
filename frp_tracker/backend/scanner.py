@@ -148,6 +148,90 @@ def search_linkedin(query):
         print(f"  LinkedIn error: {e}")
     return jobs
 
+def search_ziprecruiter(query):
+    jobs = []
+    try:
+        url = f"https://www.ziprecruiter.com/candidate/search?search={requests.utils.quote(query)}&days=1"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for card in soup.select("article.job_result")[:8]:
+            title_el   = card.select_one("h2.title")
+            company_el = card.select_one("a.company_name")
+            link_el    = card.select_one("a.job_link")
+            if title_el and company_el and link_el:
+                link = link_el.get("href", "")
+                uid  = abs(hash(link)) % 10**8
+                jobs.append({
+                    "title":   title_el.get_text(strip=True),
+                    "company": company_el.get_text(strip=True),
+                    "link":    link,
+                    "source":  "ZipRecruiter",
+                    "date":    datetime.date.today().isoformat(),
+                    "id":      f"zr_{uid}",
+                })
+    except Exception as e:
+        print(f"  ZipRecruiter error: {e}")
+    return jobs
+
+def search_simplyhired(query):
+    jobs = []
+    try:
+        url = f"https://www.simplyhired.com/search?q={requests.utils.quote(query)}&t=1"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for card in soup.select("div[data-testid='searchSerpJob']")[:8]:
+            title_el   = card.select_one("h3[data-testid='searchSerpJobTitle']")
+            company_el = card.select_one("span[data-testid='searchSerpJobCompanyName']")
+            link_el    = card.select_one("a")
+            if title_el and company_el and link_el:
+                href = link_el.get("href", "")
+                link = f"https://www.simplyhired.com{href}" if href.startswith("/") else href
+                uid  = abs(hash(link)) % 10**8
+                jobs.append({
+                    "title":   title_el.get_text(strip=True),
+                    "company": company_el.get_text(strip=True),
+                    "link":    link,
+                    "source":  "SimplyHired",
+                    "date":    datetime.date.today().isoformat(),
+                    "id":      f"sh_{uid}",
+                })
+    except Exception as e:
+        print(f"  SimplyHired error: {e}")
+    return jobs
+
+def check_company_pages():
+    """Check each company's own career page for 2027 FRP mentions."""
+    companies  = load_json(COMPANIES_FILE, [])
+    app_status = load_json(STATUS_FILE, {})
+    applied_ids = {cid for cid, v in app_status.items()
+                   if v.get("status") in {"Applied","First Round","Second Round","Offer","Rejected"}}
+    jobs = []
+    keywords_2027 = ["2027", "rotational", "leadership development", "development program", "ldp", "fldp"]
+
+    for co in companies:
+        if str(co["id"]) in applied_ids:
+            continue
+        try:
+            resp = requests.get(co["link"], headers=HEADERS, timeout=8)
+            text = resp.text.lower()
+            if "2027" in text and any(kw in text for kw in keywords_2027):
+                uid = f"cp_{co['id']}"
+                jobs.append({
+                    "title":   co["program"],
+                    "company": co["company"],
+                    "link":    co["link"],
+                    "source":  "Company Page",
+                    "date":    datetime.date.today().isoformat(),
+                    "id":      uid,
+                    "program": co["program"],
+                    "note":    f"Apply directly at {co['company']}",
+                })
+                print(f"  [Company Page] {co['company']} — 2027 posting detected")
+            time.sleep(random.uniform(1, 2))
+        except Exception:
+            pass
+    return jobs
+
 def handshake_link():
     encoded = requests.utils.quote("finance rotational program 2027")
     return {
@@ -258,6 +342,10 @@ def scan_all():
             time.sleep(random.uniform(2, 4))
             found += search_linkedin(term)
             time.sleep(random.uniform(2, 4))
+            found += search_ziprecruiter(term)
+            time.sleep(random.uniform(2, 4))
+            found += search_simplyhired(term)
+            time.sleep(random.uniform(2, 4))
         except Exception as e:
             errors.append(str(e))
 
@@ -271,6 +359,14 @@ def scan_all():
                 continue
             if not is_rotational(job.get("title", "")):
                 continue
+            seen.add(job["id"])
+            new_jobs.append(job)
+
+    # Check company career pages directly for 2027 postings
+    print("  Checking company career pages...")
+    company_page_jobs = check_company_pages()
+    for job in company_page_jobs:
+        if job["id"] not in seen:
             seen.add(job["id"])
             new_jobs.append(job)
 
