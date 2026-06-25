@@ -1,5 +1,14 @@
 [
   {
+    "ts": "2026-06-25T04:13:10",
+    "date": "2026-06-25",
+    "new_jobs": 0,
+    "new_programs": 0,
+    "email_sent": false,
+    "email_error": "GMAIL_APP_PASSWORD not set",
+    "scan_errors": []
+  },
+  {
     "ts": "2026-06-25T03:54:48",
     "date": "2026-06-25",
     "new_jobs": 0,
