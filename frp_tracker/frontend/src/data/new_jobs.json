@@ -1,392 +1,492 @@
 [
   {
+    "title": "Google Finance Rotation Program",
+    "company": "Google (Alphabet)",
+    "link": "https://careers.google.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_1",
+    "program": "Google Finance Rotation Program",
+    "note": "Apply directly at Google (Alphabet)"
+  },
+  {
+    "title": "Finance Rotational Program",
+    "company": "Salesforce",
+    "link": "https://careers.salesforce.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_7",
+    "program": "Finance Rotational Program",
+    "note": "Apply directly at Salesforce"
+  },
+  {
+    "title": "Finance Division Analyst Program",
+    "company": "Goldman Sachs",
+    "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_19",
+    "program": "Finance Division Analyst Program",
+    "note": "Apply directly at Goldman Sachs"
+  },
+  {
+    "title": "Finance Rotation Program",
+    "company": "Capital One",
+    "link": "https://www.capitalonecareers.com/full-time-programs",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_30",
+    "program": "Finance Rotation Program",
+    "note": "Apply directly at Capital One"
+  },
+  {
+    "title": "Finance Rotational Program",
+    "company": "Pfizer",
+    "link": "https://www.pfizer.com/en/about/careers/early-careers",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_48",
+    "program": "Finance Rotational Program",
+    "note": "Apply directly at Pfizer"
+  },
+  {
+    "title": "Finance Development Program",
+    "company": "UnitedHealth Group",
+    "link": "https://careers.unitedhealthgroup.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_49",
+    "program": "Finance Development Program",
+    "note": "Apply directly at UnitedHealth Group"
+  },
+  {
+    "title": "Finance Leadership Program",
+    "company": "PepsiCo",
+    "link": "https://www.pepsicojobs.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_61",
+    "program": "Finance Leadership Program",
+    "note": "Apply directly at PepsiCo"
+  },
+  {
+    "title": "Finance Leadership Rotation",
+    "company": "Estee Lauder",
+    "link": "https://careers.elcompanies.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_66",
+    "program": "Finance Leadership Rotation",
+    "note": "Apply directly at Estee Lauder"
+  },
+  {
+    "title": "Finance Rotational Development Program",
+    "company": "General Motors",
+    "link": "https://careers.gm.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_90",
+    "program": "Finance Rotational Development Program",
+    "note": "Apply directly at General Motors"
+  },
+  {
+    "title": "Finance Rotational Program",
+    "company": "Western Digital",
+    "link": "https://jobs.westerndigital.com",
+    "source": "Company Page",
+    "date": "2026-06-25",
+    "id": "cp_97",
+    "program": "Finance Rotational Program",
+    "note": "Apply directly at Western Digital"
+  },
+  {
     "id": "co_1",
-    "title": "Finance Rotation Program — Class of 2027",
+    "title": "Finance Rotation Program \u2014 Class of 2027",
     "company": "Google (Alphabet)",
     "program": "Google Finance Rotation Program",
     "link": "https://careers.google.com/jobs/results/?category=FINANCE&employment_type=FULL_TIME",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — search 'finance rotation' on Google Careers when live"
+    "note": "Not yet posted \u2014 search 'finance rotation' on Google Careers when live"
   },
   {
     "id": "co_4",
-    "title": "Finance Rotational Program — Class of 2027",
+    "title": "Finance Rotational Program \u2014 Class of 2027",
     "company": "Meta",
     "program": "Finance Rotational Program",
     "link": "https://www.metacareers.com/jobs/?q=finance+rotational&teams[0]=Finance",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — link searches Meta Careers for finance rotational"
+    "note": "Not yet posted \u2014 link searches Meta Careers for finance rotational"
   },
   {
     "id": "co_5",
-    "title": "Amazon Finance Rotational Program (AFRP) — 2027",
+    "title": "Amazon Finance Rotational Program (AFRP) \u2014 2027",
     "company": "Amazon",
     "program": "Finance Rotational Program (AFRP)",
     "link": "https://amazon.jobs/content/en/career-programs/university/undergraduate-non-tech",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to Amazon university finance programs page"
+    "note": "Not yet posted \u2014 direct link to Amazon university finance programs page"
   },
   {
     "id": "co_16",
-    "title": "Finance & Strategy Rotational Program — 2027",
+    "title": "Finance & Strategy Rotational Program \u2014 2027",
     "company": "Walt Disney",
     "program": "Finance & Strategy Rotational Program",
     "link": "https://jobs.disneycareers.com/search-jobs?acm=ALL&alrpm=ALL&slug=finance-strategy-rotational-program",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — search 'finance rotational' on Disney Careers when live"
+    "note": "Not yet posted \u2014 search 'finance rotational' on Disney Careers when live"
   },
   {
     "id": "co_19",
-    "title": "Finance Division Analyst Program — Class of 2027",
+    "title": "Finance Division Analyst Program \u2014 Class of 2027",
     "company": "Goldman Sachs",
     "program": "Finance Division Analyst Program",
     "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to GS new analyst program page"
+    "note": "Not yet posted \u2014 direct link to GS new analyst program page"
   },
   {
     "id": "co_21",
-    "title": "Finance Analyst Rotation — Class of 2027",
+    "title": "Finance Analyst Rotation \u2014 Class of 2027",
     "company": "Morgan Stanley",
     "program": "Finance Analyst Rotation",
     "link": "https://www.morganstanley.com/people/students/programs/finance-division",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to MS Finance Division student programs"
+    "note": "Not yet posted \u2014 direct link to MS Finance Division student programs"
   },
   {
     "id": "co_22",
-    "title": "Finance Development Program — Class of 2027",
+    "title": "Finance Development Program \u2014 Class of 2027",
     "company": "Bank of America",
     "program": "Finance Development Program",
     "link": "https://campus.bankofamerica.com/programs-and-apply/full-time-analyst-programs.html",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to BofA full-time analyst programs"
+    "note": "Not yet posted \u2014 direct link to BofA full-time analyst programs"
   },
   {
     "id": "co_23",
-    "title": "Finance & Risk Rotational Analyst Program — 2027",
+    "title": "Finance & Risk Rotational Analyst Program \u2014 2027",
     "company": "Citigroup",
     "program": "Finance & Risk Rotational Analyst Program",
     "link": "https://jobs.citi.com/job-search-results/?keyword=finance+rotational+analyst+program",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches Citi for FRAP when live"
+    "note": "Not yet posted \u2014 searches Citi for FRAP when live"
   },
   {
     "id": "co_24",
-    "title": "Finance Rotational Associate Program — 2027",
+    "title": "Finance Rotational Associate Program \u2014 2027",
     "company": "Wells Fargo",
     "program": "Finance Rotational Associate Program",
     "link": "https://www.wellsfargojobs.com/en/students/analyst-programs/",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to Wells Fargo analyst programs"
+    "note": "Not yet posted \u2014 direct link to Wells Fargo analyst programs"
   },
   {
     "id": "co_29",
-    "title": "Finance Analyst Development Program — 2027",
+    "title": "Finance Analyst Development Program \u2014 2027",
     "company": "American Express",
     "program": "Finance Analyst Development Program",
     "link": "https://jobs.americanexpress.com/jobs?keywords=finance+analyst+development+program",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — highly regarded FADP, searches AmEx careers when live"
+    "note": "Not yet posted \u2014 highly regarded FADP, searches AmEx careers when live"
   },
   {
     "id": "co_30",
-    "title": "Finance Rotation Program — Class of 2027",
+    "title": "Finance Rotation Program \u2014 Class of 2027",
     "company": "Capital One",
     "program": "Finance Rotation Program",
     "link": "https://www.capitalonecareers.com/full-time-programs",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to Capital One full-time programs page"
+    "note": "Not yet posted \u2014 direct link to Capital One full-time programs page"
   },
   {
     "id": "co_38",
-    "title": "Finance Leadership Development Program (FLDP) — 2027",
+    "title": "Finance Leadership Development Program (FLDP) \u2014 2027",
     "company": "Lockheed Martin",
     "program": "Finance Leadership Development Program (FLDP)",
     "link": "https://www.lockheedmartinjobs.com/search-jobs?orgIds=694&acm=ALL&alrpm=ALL&slug=fldp",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — search 'FLDP' on Lockheed careers when live"
+    "note": "Not yet posted \u2014 search 'FLDP' on Lockheed careers when live"
   },
   {
     "id": "co_39",
-    "title": "Finance Leadership Program — Class of 2027",
+    "title": "Finance Leadership Program \u2014 Class of 2027",
     "company": "Raytheon (RTX)",
     "program": "Finance Leadership Program",
     "link": "https://careers.rtx.com/global/en/c/finance-jobs",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — RTX Finance careers page; covers Pratt & Whitney and Collins Aerospace"
+    "note": "Not yet posted \u2014 RTX Finance careers page; covers Pratt & Whitney and Collins Aerospace"
   },
   {
     "id": "co_40",
-    "title": "Finance Development Program — Class of 2027",
+    "title": "Finance Development Program \u2014 Class of 2027",
     "company": "Northrop Grumman",
     "program": "Finance Development Program",
     "link": "https://www.northropgrumman.com/careers/early-career-programs/",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct link to Northrop early career programs"
+    "note": "Not yet posted \u2014 direct link to Northrop early career programs"
   },
   {
     "id": "co_41",
-    "title": "Finance Career Foundation Program — 2027",
+    "title": "Finance Career Foundation Program \u2014 2027",
     "company": "Boeing",
     "program": "Finance Career Foundation Program",
     "link": "https://jobs.boeing.com/search-jobs/Finance%20Career%20Foundation/United%20States/185/1/1/6252001/38x89/-98x35/50/2",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches Boeing for Finance Career Foundation Program"
+    "note": "Not yet posted \u2014 searches Boeing for Finance Career Foundation Program"
   },
   {
     "id": "co_52",
-    "title": "Finance Rotational Program — Class of 2027",
+    "title": "Finance Rotational Program \u2014 Class of 2027",
     "company": "Merck & Co.",
     "program": "Finance Rotational Program",
     "link": "https://jobs.merck.com/us/en/c/finance-jobs",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — Merck Finance careers page"
+    "note": "Not yet posted \u2014 Merck Finance careers page"
   },
   {
     "id": "co_90",
-    "title": "Finance Rotational Development Program — 2027",
+    "title": "Finance Rotational Development Program \u2014 2027",
     "company": "General Motors",
     "program": "Finance Rotational Development Program",
     "link": "https://search-careers.gm.com/en/jobs/?search=finance+rotational",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches GM Careers for finance rotational when live"
+    "note": "Not yet posted \u2014 searches GM Careers for finance rotational when live"
   },
   {
     "id": "co_91",
-    "title": "Finance Rotational Program — Class of 2027",
+    "title": "Finance Rotational Program \u2014 Class of 2027",
     "company": "Ford Motor",
     "program": "Finance Rotational Program",
     "link": "https://corporate.ford.com/careers/students-and-recent-grads.html",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — Ford students and recent grads page"
+    "note": "Not yet posted \u2014 Ford students and recent grads page"
   },
   {
     "id": "co_97",
-    "title": "Finance Rotational Program — Class of 2027",
+    "title": "Finance Rotational Program \u2014 Class of 2027",
     "company": "Western Digital",
     "program": "Finance Rotational Program",
     "link": "https://jobs.westerndigital.com/en/jobs#q=finance+rotational&t=Jobs",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches WD careers for finance rotational"
+    "note": "Not yet posted \u2014 searches WD careers for finance rotational"
   },
   {
     "id": "co_98",
-    "title": "Treasury Rotational Leadership Development Program — 2027",
+    "title": "Treasury Rotational Leadership Development Program \u2014 2027",
     "company": "East West Bank",
     "program": "Treasury Rotational Leadership Development Program",
     "link": "https://www.eastwestbank.com/en/about-us/careers",
-    "source": "Expected — Opens July",
+    "source": "Expected \u2014 Opens July",
     "date": "2026-06-25",
-    "note": "Not yet posted — closes September, one of the earlier-closing programs"
+    "note": "Not yet posted \u2014 closes September, one of the earlier-closing programs"
   },
   {
     "id": "co_2",
-    "title": "Finance Development Program (FDP) — Class of 2027",
+    "title": "Finance Development Program (FDP) \u2014 Class of 2027",
     "company": "Microsoft",
     "program": "Finance Development Program (FDP)",
     "link": "https://careers.microsoft.com/v2/global/en/financerotation",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct Microsoft FDP program page"
+    "note": "Not yet posted \u2014 direct Microsoft FDP program page"
   },
   {
     "id": "co_3",
-    "title": "Finance Leadership Program — Class of 2027",
+    "title": "Finance Leadership Program \u2014 Class of 2027",
     "company": "Apple",
     "program": "Finance Leadership Program",
     "link": "https://jobs.apple.com/en-us/search?team=finance-and-accounting-SFRANDACCT",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — Apple Finance & Accounting jobs filter"
+    "note": "Not yet posted \u2014 Apple Finance & Accounting jobs filter"
   },
   {
     "id": "co_25",
-    "title": "Finance & Accounting Development Program — 2027",
+    "title": "Finance & Accounting Development Program \u2014 2027",
     "company": "BlackRock",
     "program": "Finance & Accounting Development Program",
     "link": "https://careers.blackrock.com/early-careers/",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — BlackRock early careers page"
+    "note": "Not yet posted \u2014 BlackRock early careers page"
   },
   {
     "id": "co_26",
-    "title": "Finance Rotational Development Program — 2027",
+    "title": "Finance Rotational Development Program \u2014 2027",
     "company": "Vanguard",
     "program": "Finance Rotational Development Program",
     "link": "https://www.vanguardjobs.com/pages/early-career-programs.aspx",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — Vanguard early career programs page"
+    "note": "Not yet posted \u2014 Vanguard early career programs page"
   },
   {
     "id": "co_27",
-    "title": "Finance Leadership Program — Class of 2027",
+    "title": "Finance Leadership Program \u2014 Class of 2027",
     "company": "Fidelity Investments",
     "program": "Finance Leadership Program",
     "link": "https://jobs.fidelity.com/students/programs/",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — Fidelity student programs page"
+    "note": "Not yet posted \u2014 Fidelity student programs page"
   },
   {
     "id": "co_53",
-    "title": "Finance Leadership Development Program — 2027",
+    "title": "Finance Leadership Development Program \u2014 2027",
     "company": "Eli Lilly",
     "program": "Finance Leadership Development Program",
     "link": "https://careers.lilly.com/us/en/c/finance-rotational-programs",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — Lilly Finance rotational programs page"
+    "note": "Not yet posted \u2014 Lilly Finance rotational programs page"
   },
   {
     "id": "co_59",
-    "title": "Finance Leadership Development Program — 2027",
+    "title": "Finance Leadership Development Program \u2014 2027",
     "company": "Stryker",
     "program": "Finance Leadership Development Program",
     "link": "https://careers.stryker.com/pages/early-career",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — top healthcare device FLDP; Stryker early career page"
+    "note": "Not yet posted \u2014 top healthcare device FLDP; Stryker early career page"
   },
   {
     "id": "co_60",
-    "title": "Finance & Accounting Leadership Development Program — 2027",
+    "title": "Finance & Accounting Leadership Development Program \u2014 2027",
     "company": "Procter & Gamble",
     "program": "Finance & Accounting Leadership Development Program",
     "link": "https://www.pgcareers.com/global/en/search-results?keywords=finance+accounting+leadership",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches P&G for FALDP when live"
+    "note": "Not yet posted \u2014 searches P&G for FALDP when live"
   },
   {
     "id": "co_61",
-    "title": "Finance Leadership Program — Class of 2027",
+    "title": "Finance Leadership Program \u2014 Class of 2027",
     "company": "PepsiCo",
     "program": "Finance Leadership Program",
     "link": "https://www.pepsicojobs.com/main/jobs?keywords=finance+leadership+program&country=United+States",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches PepsiCo careers for Finance Leadership Program"
+    "note": "Not yet posted \u2014 searches PepsiCo careers for Finance Leadership Program"
   },
   {
     "id": "co_74",
-    "title": "Finance Development Program — Class of 2027",
+    "title": "Finance Development Program \u2014 Class of 2027",
     "company": "ExxonMobil",
     "program": "Finance Development Program",
     "link": "https://jobs.exxonmobil.com/ExxonMobilJobs/job-search-results/?keyword=finance+development+program",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches ExxonMobil careers for FDP"
+    "note": "Not yet posted \u2014 searches ExxonMobil careers for FDP"
   },
   {
     "id": "co_75",
-    "title": "Finance Rotational Program — Class of 2027",
+    "title": "Finance Rotational Program \u2014 Class of 2027",
     "company": "Chevron",
     "program": "Finance Rotational Program",
     "link": "https://careers.chevron.com/search-jobs?keywords=finance+rotational",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches Chevron careers for finance rotational"
+    "note": "Not yet posted \u2014 searches Chevron careers for finance rotational"
   },
   {
     "id": "co_76",
-    "title": "Finance Rotational Development Program — 2027",
+    "title": "Finance Rotational Development Program \u2014 2027",
     "company": "GE (General Electric)",
     "program": "Finance Rotational Development Program",
     "link": "https://jobs.gecareers.com/global/en/search-results?keywords=finance+rotational",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — now split into GE Aerospace and GE Vernova; search both"
+    "note": "Not yet posted \u2014 now split into GE Aerospace and GE Vernova; search both"
   },
   {
     "id": "co_77",
-    "title": "Finance & Accounting Leadership Program — 2027",
+    "title": "Finance & Accounting Leadership Program \u2014 2027",
     "company": "Honeywell",
     "program": "Finance & Accounting Leadership Program",
     "link": "https://careers.honeywell.com/us/en/search-results?keywords=finance+leadership",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches Honeywell careers for finance leadership"
+    "note": "Not yet posted \u2014 searches Honeywell careers for finance leadership"
   },
   {
     "id": "co_78",
-    "title": "Finance Leadership Development Program — 2027",
+    "title": "Finance Leadership Development Program \u2014 2027",
     "company": "Caterpillar",
     "program": "Finance Leadership Development Program",
     "link": "https://careers.caterpillar.com/en/jobs/?keyword=finance+leadership+development",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches Caterpillar careers for FLDP"
+    "note": "Not yet posted \u2014 searches Caterpillar careers for FLDP"
   },
   {
     "id": "co_82",
-    "title": "Finance Development Program — Class of 2027",
+    "title": "Finance Development Program \u2014 Class of 2027",
     "company": "John Deere",
     "program": "Finance Development Program",
     "link": "https://jobs.deere.com/en_US/careers/SearchJobs/finance%20development%20program",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches Deere for Finance Development Program"
+    "note": "Not yet posted \u2014 searches Deere for Finance Development Program"
   },
   {
     "id": "co_88",
-    "title": "Finance Leadership Development Program — 2027",
+    "title": "Finance Leadership Development Program \u2014 2027",
     "company": "FedEx",
     "program": "Finance Leadership Development Program",
     "link": "https://careers.fedex.com/fedex/jobs?keywords=finance+leadership+development",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — searches FedEx careers for FLDP"
+    "note": "Not yet posted \u2014 searches FedEx careers for FLDP"
   },
   {
     "id": "co_93",
-    "title": "Early Finance Rotation Development Program (eFRDP) — 2027",
+    "title": "Early Finance Rotation Development Program (eFRDP) \u2014 2027",
     "company": "Genentech",
     "program": "Early Finance Rotation Development Program (eFRDP)",
     "link": "https://careers.gene.com/us/en/finance-rotational-program-frdp-",
-    "source": "Expected — Opens September",
+    "source": "Expected \u2014 Opens September",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct Genentech eFRDP program page (Roche subsidiary)"
+    "note": "Not yet posted \u2014 direct Genentech eFRDP program page (Roche subsidiary)"
   },
   {
     "id": "co_94",
-    "title": "Finance Rotation Program — Class of 2027",
+    "title": "Finance Rotation Program \u2014 Class of 2027",
     "company": "Applied Materials",
     "program": "Finance Rotation Program",
     "link": "https://www.appliedmaterials.com/us/en/careers/new-grads-finance.html",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — direct Applied Materials new grads finance page"
+    "note": "Not yet posted \u2014 direct Applied Materials new grads finance page"
   },
   {
     "id": "co_96",
-    "title": "CFO Undergraduate Development Rotational Program — 2027",
+    "title": "CFO Undergraduate Development Rotational Program \u2014 2027",
     "company": "Gilead Sciences",
     "program": "CFO Undergraduate Development Rotational Program",
     "link": "https://www.gilead.com/careers/students-and-recent-graduates",
-    "source": "Expected — Opens August",
+    "source": "Expected \u2014 Opens August",
     "date": "2026-06-25",
-    "note": "Not yet posted — unique CFO-sponsored rotational; Gilead students page"
+    "note": "Not yet posted \u2014 unique CFO-sponsored rotational; Gilead students page"
   }
 ]

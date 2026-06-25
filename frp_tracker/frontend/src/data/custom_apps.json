@@ -10,5 +10,17 @@
     "notes": "Auto-added from email: Thank you for applying to Robert Bosch LLC",
     "added": "2026-06-25T03:55:30",
     "auto": true
+  },
+  {
+    "_id": "email_abbott",
+    "company": "Abbott",
+    "program": "Complete Your Abbott Job Application",
+    "sector": "Tech & Media",
+    "url": "",
+    "opens": "",
+    "closes": "",
+    "notes": "Auto-added from email: Complete Your Abbott Job Application",
+    "added": "2026-06-25T19:36:33",
+    "auto": true
   }
 ]

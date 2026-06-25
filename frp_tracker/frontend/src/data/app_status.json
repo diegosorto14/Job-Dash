@@ -23,5 +23,15 @@
     "status": "Applied",
     "updated": "2026-06-25T03:55:30",
     "email_sub": "Thank You for Applying"
+  },
+  "13": {
+    "status": "Applied",
+    "updated": "2026-06-25T19:36:33",
+    "email_sub": "We received your job application (Job Number: 210690781)"
+  },
+  "email_abbott": {
+    "status": "Applied",
+    "updated": "2026-06-25T19:36:33",
+    "email_sub": "Complete Your Abbott Job Application"
   }
 }
