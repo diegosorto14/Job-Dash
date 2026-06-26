@@ -23,5 +23,10 @@
     "status": "Applied",
     "updated": "2026-06-25T03:55:30",
     "email_sub": "Thank You for Applying"
+  },
+  "email_emailrelay": {
+    "status": "Applied",
+    "updated": "2026-06-26T18:24:09",
+    "email_sub": "Thank you for your interest!"
   }
 }
