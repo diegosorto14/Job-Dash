@@ -200,13 +200,30 @@ def search_simplyhired(query):
     return jobs
 
 def check_company_pages():
-    """Check each company's own career page for 2027 FRP mentions."""
+    """Check each company's own career page for confirmed 2027 FRP postings.
+    Requires specific class-of-2027 phrases to avoid false positives from
+    copyright notices or unrelated date mentions."""
     companies  = load_json(COMPANIES_FILE, [])
     app_status = load_json(STATUS_FILE, {})
     applied_ids = {cid for cid, v in app_status.items()
                    if v.get("status") in {"Applied","First Round","Second Round","Offer","Rejected"}}
     jobs = []
-    keywords_2027 = ["2027", "rotational", "leadership development", "development program", "ldp", "fldp"]
+    # Must find one of these specific phrases — not just "2027" appearing anywhere
+    trigger_phrases = [
+        "class of 2027",
+        "2027 program",
+        "2027 cohort",
+        "for 2027",
+        "2027 graduate",
+        "graduating in 2027",
+        "start in 2027",
+        "starting in 2027",
+        "beginning 2027",
+        "summer 2027",
+        "fall 2027",
+        "apply for 2027",
+        "applications for 2027",
+    ]
 
     for co in companies:
         if str(co["id"]) in applied_ids:
@@ -214,10 +231,10 @@ def check_company_pages():
         try:
             resp = requests.get(co["link"], headers=HEADERS, timeout=8)
             text = resp.text.lower()
-            if "2027" in text and any(kw in text for kw in keywords_2027):
+            if any(phrase in text for phrase in trigger_phrases):
                 uid = f"cp_{co['id']}"
                 jobs.append({
-                    "title":   co["program"],
+                    "title":   co["program"] + " — Class of 2027",
                     "company": co["company"],
                     "link":    co["link"],
                     "source":  "Company Page",
@@ -226,7 +243,7 @@ def check_company_pages():
                     "program": co["program"],
                     "note":    f"Apply directly at {co['company']}",
                 })
-                print(f"  [Company Page] {co['company']} — 2027 posting detected")
+                print(f"  [Company Page] {co['company']} — confirmed 2027 posting")
             time.sleep(random.uniform(1, 2))
         except Exception:
             pass
@@ -256,7 +273,8 @@ def classify_jobs(jobs):
             known_jobs.append(job)
             continue
         matched = next(
-            (known_map[k] for k in known_names if k in co or co in k), None
+            (known_map[k] for k in known_names
+             if (k in co and len(k) >= 5) or (co in k and len(co) >= 5)), None
         )
         if matched:
             job = {
@@ -362,21 +380,21 @@ def scan_all():
             seen.add(job["id"])
             new_jobs.append(job)
 
-    # Check company career pages directly for 2027 postings
+    # Check company career pages — don't add cp_ IDs to seen so they're re-checked daily
     print("  Checking company career pages...")
     company_page_jobs = check_company_pages()
+    cp_ids_already = {j["id"] for j in new_jobs}
     for job in company_page_jobs:
-        if job["id"] not in seen:
-            seen.add(job["id"])
+        if job["id"] not in cp_ids_already:
             new_jobs.append(job)
 
-    save_json(SEEN_FILE, list(seen))
+    save_json(SEEN_FILE, list(seen))  # only job-board IDs in seen
 
     known_jobs, new_progs = classify_jobs(new_jobs)
     hs = handshake_link()
 
-    existing_jobs = load_json(NEW_JOBS_FILE, [])
-    save_json(NEW_JOBS_FILE, (known_jobs + existing_jobs)[:200])
+    # Overwrite new_jobs.json each run — prevents stale accumulation and merge conflicts
+    save_json(NEW_JOBS_FILE, known_jobs[:200])
 
     existing_progs = load_json(NEW_PROGRAMS_FILE, [])
     existing_ids   = {p["id"] for p in existing_progs}
