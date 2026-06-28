@@ -116,10 +116,25 @@ KEYWORDS = {
         "your application has been submitted",
         "successfully submitted your application",
         "application confirmation",
-        "thank you for your interest",
-        "application for the",
+        "we have received your application",
+        "your application for",
+        "thank you for submitting your application",
     ],
 }
+
+# Phrases that MUST appear in subject or body for an unknown company to be
+# auto-created. Much stricter than KEYWORDS["Applied"] — no "thank you for
+# your interest" type phrases that marketing emails also use.
+STRONG_CONFIRMATION_PHRASES = [
+    "thank you for applying",
+    "application received",
+    "we received your application",
+    "your application has been submitted",
+    "successfully submitted your application",
+    "application confirmation",
+    "we have received your application",
+    "thank you for submitting your application",
+]
 
 # Status priority: if multiple match, take the highest
 STATUS_PRIORITY = ["Offer", "Second Round", "First Round", "Rejected", "Applied"]
@@ -200,15 +215,32 @@ NON_JOB_SENDERS = [
     "subscri", "unsubscri", "marketing", "notification",
 ]
 
+# Email relay / bulk-send / transactional infrastructure domains — never a
+# real company's confirmation email. Block these from auto-creating entries.
+RELAY_DOMAINS = {
+    "emailrelay.io", "sendgrid.net", "mailchimp.com", "mandrillapp.com",
+    "mailgun.org", "amazonses.com", "sparkpostmail.com", "postmarkapp.com",
+    "mcsv.net", "list-manage.com", "constantcontact.com", "exacttarget.com",
+    "salesforce.com", "marketo.com", "hubspot.com", "intercom.io",
+    "reply.io", "outreach.io", "salesloft.com",
+}
+
+# Free/personal email providers — a real company never sends from these
+FREEMAIL_DOMAINS = {
+    "gmail.com", "yahoo.com", "hotmail.com", "outlook.com",
+    "icloud.com", "aol.com", "protonmail.com",
+}
+
 REJECT_SUBJECTS = [
     "complete your", "finish your application", "don't forget to apply",
-    "reminder:", "you left something behind", "your application is incomplete",
-    "thank you for your interest!",  # generic marketing subject
-    "emailrelay", "unsubscribe", "verify your email",
+    "you left something behind", "your application is incomplete",
+    "reminder: your application", "action required:", "action needed:",
+    "emailrelay", "unsubscribe", "verify your email", "confirm your email",
+    "please verify", "account verification",
 ]
 
 def is_job_email(email):
-    """Return True only if the email looks like a job-related message."""
+    """Return True only if the email looks like a genuine job-related message."""
     sender = email["from"].lower()
     subject = email["subject"].lower()
     body = (email.get("body", "") + " " + email.get("snippet", "")).lower()
@@ -218,12 +250,28 @@ def is_job_email(email):
     if any(kw in sender for kw in NON_JOB_SENDERS):
         return False
 
+    # Skip relay/bulk-mail infrastructure domains
+    domain_match = re.search(r'@([\w.-]+)', sender)
+    sender_domain = domain_match.group(1) if domain_match else ""
+    if sender_domain in RELAY_DOMAINS:
+        return False
+    # Also check any subdomain (e.g. em.emailrelay.io)
+    if any(sender_domain.endswith("." + d) for d in RELAY_DOMAINS):
+        return False
+
     # Skip incomplete-application reminders and generic marketing
     if any(phrase in subject for phrase in REJECT_SUBJECTS):
         return False
 
-    # Must contain at least one job keyword somewhere
-    return any(kw in full for kw in JOB_KEYWORDS)
+    # Must contain at least one explicit job keyword in subject or body
+    # (NOT just "thank you for your interest" which is in every marketing email)
+    JOB_SUBJECT_KEYWORDS = [
+        "application", "apply", "applied", "applicant", "position", "role",
+        "interview", "candidate", "recruiting", "recruitment", "hiring",
+        "job", "career", "program", "offer", "internship",
+        "thank you for applying", "we received your application",
+    ]
+    return any(kw in full for kw in JOB_SUBJECT_KEYWORDS)
 
 def classify_email(email_text):
     """Return detected status or None."""
@@ -281,13 +329,24 @@ def match_company(email, companies):
         elif matches(subject):
             subject_hits.append(co["id"])
 
-    # Return exactly one match from the highest-priority level, or none if ambiguous
-    for hits in [domain_hits, name_hits, subject_hits]:
+    # Return exactly one match from the highest-priority level, or none if ambiguous.
+    # Subject-line matches (Level 3) only count when the email also contains a
+    # strong confirmation phrase — a company name in the subject of a reminder
+    # or marketing email should not flip status.
+    full_text = (email.get("body", "") + " " + email.get("snippet", "")).lower()
+    subject_confirmed = any(p in full_text or p in email["subject"].lower()
+                            for p in STRONG_CONFIRMATION_PHRASES)
+
+    for i, hits in enumerate([domain_hits, name_hits, subject_hits]):
+        if i == 2 and not subject_confirmed:
+            # Subject-only match with no strong confirmation → skip
+            if hits:
+                print(f"  Subject-only match rejected (no strong confirmation): {email['subject'][:60]}")
+            return []
         if len(hits) == 1:
             return hits
         if len(hits) > 1:
-            # Multiple companies matched at same level — too ambiguous, skip
-            print(f"  Ambiguous match ({len(hits)} companies) — skipping email: {email['subject'][:60]}")
+            print(f"  Ambiguous match ({len(hits)} companies) — skipping: {email['subject'][:60]}")
             return []
 
     return []
@@ -458,9 +517,29 @@ def run_parser():
 
         else:
             # ── Unknown company: auto-create custom application ────────────────
-            # Only create if this is an "Applied" confirmation (not interview/offer
-            # for a company we simply failed to match)
+            # Requirements before creating:
+            #   1. Status must be "Applied" (never auto-create from interview/offer
+            #      emails for companies we didn't match — we might have matched wrong)
+            #   2. Subject/body must contain a STRONG confirmation phrase
+            #      (not just "thank you for your interest" which is in newsletters)
+            #   3. Sender must NOT be a relay service or free email provider
             if detected_status != "Applied":
+                continue
+
+            # Gate 1: strong confirmation phrase required
+            strong_hit = any(p in full_text.lower() or p in email["subject"].lower()
+                             for p in STRONG_CONFIRMATION_PHRASES)
+            if not strong_hit:
+                print(f"  [SKIP auto-create] No strong confirmation phrase: {email['subject'][:60]}")
+                continue
+
+            # Gate 2: sender must be a real company domain
+            domain_match_auto = re.search(r'@([\w.-]+)', email["from"].lower())
+            sender_domain_auto = domain_match_auto.group(1) if domain_match_auto else ""
+            if (sender_domain_auto in RELAY_DOMAINS or
+                    any(sender_domain_auto.endswith("." + d) for d in RELAY_DOMAINS) or
+                    sender_domain_auto in FREEMAIL_DOMAINS):
+                print(f"  [SKIP auto-create] Relay/freemail sender ({sender_domain_auto}): {email['subject'][:60]}")
                 continue
 
             sender_company = extract_sender_company(email)
@@ -480,14 +559,13 @@ def run_parser():
                 "company": sender_company,
                 "program": role,
                 "sector":  sector,
-                "url":     "",          # user fills in when they paste the link
+                "url":     "",
                 "opens":   "",
                 "closes":  "",
                 "notes":   f"Auto-added from email: {email['subject'][:80]}",
                 "added":   datetime.datetime.now().isoformat(timespec="seconds"),
                 "auto":    True,
             }
-            # Also set its status
             app_status[email_key] = {
                 "status":    "Applied",
                 "updated":   datetime.datetime.now().isoformat(timespec="seconds"),
