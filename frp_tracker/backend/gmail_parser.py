@@ -200,6 +200,13 @@ NON_JOB_SENDERS = [
     "subscri", "unsubscri", "marketing", "notification",
 ]
 
+REJECT_SUBJECTS = [
+    "complete your", "finish your application", "don't forget to apply",
+    "reminder:", "you left something behind", "your application is incomplete",
+    "thank you for your interest!",  # generic marketing subject
+    "emailrelay", "unsubscribe", "verify your email",
+]
+
 def is_job_email(email):
     """Return True only if the email looks like a job-related message."""
     sender = email["from"].lower()
@@ -209,6 +216,10 @@ def is_job_email(email):
 
     # Skip if sender looks non-job
     if any(kw in sender for kw in NON_JOB_SENDERS):
+        return False
+
+    # Skip incomplete-application reminders and generic marketing
+    if any(phrase in subject for phrase in REJECT_SUBJECTS):
         return False
 
     # Must contain at least one job keyword somewhere
