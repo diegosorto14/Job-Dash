@@ -200,6 +200,13 @@ NON_JOB_SENDERS = [
     "subscri", "unsubscri", "marketing", "notification",
 ]
 
+REJECT_SUBJECTS = [
+    "complete your", "finish your application", "don't forget to apply",
+    "reminder:", "you left something behind", "your application is incomplete",
+    "thank you for your interest!",  # generic marketing subject
+    "emailrelay", "unsubscribe", "verify your email",
+]
+
 def is_job_email(email):
     """Return True only if the email looks like a job-related message."""
     sender = email["from"].lower()
@@ -209,6 +216,10 @@ def is_job_email(email):
 
     # Skip if sender looks non-job
     if any(kw in sender for kw in NON_JOB_SENDERS):
+        return False
+
+    # Skip incomplete-application reminders and generic marketing
+    if any(phrase in subject for phrase in REJECT_SUBJECTS):
         return False
 
     # Must contain at least one job keyword somewhere
@@ -307,6 +318,74 @@ def guess_sector(text):
             return sector
     return "Other"
 
+def extract_interview_details(email):
+    """Extract date, time, format, and a plain-English summary from an interview email."""
+    body    = email.get("body", "")
+    subject = email.get("subject", "")
+    full    = subject + " " + body
+
+    # ── Date extraction ──────────────────────────────────────────────────────
+    date_str = None
+    date_patterns = [
+        r'\b((?:January|February|March|April|May|June|July|August|September|October|November|December)'
+        r'\s+\d{1,2}(?:st|nd|rd|th)?,?\s*\d{4})\b',
+        r'\b((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\w*,?\s+'
+        r'(?:January|February|March|April|May|June|July|August|September|October|November|December)'
+        r'\s+\d{1,2}(?:st|nd|rd|th)?(?:,?\s*\d{4})?)\b',
+        r'\b(\d{1,2}/\d{1,2}/\d{4})\b',
+        r'\b(\d{4}-\d{2}-\d{2})\b',
+    ]
+    for pat in date_patterns:
+        m = re.search(pat, full, re.I)
+        if m:
+            date_str = m.group(1).strip()
+            break
+
+    # ── Time extraction ──────────────────────────────────────────────────────
+    time_str = None
+    time_m = re.search(r'\b(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)(?:\s*[A-Z]{1,3}T)?)\b', full)
+    if time_m:
+        time_str = time_m.group(1).strip()
+
+    # ── Format detection ─────────────────────────────────────────────────────
+    t = full.lower()
+    if "hirevue" in t:
+        fmt = "HireVue (Recorded Video)"
+    elif "in-person" in t or "onsite" in t or "on-site" in t:
+        fmt = "In-Person"
+    elif "zoom" in t or "microsoft teams" in t or "google meet" in t or "webex" in t or "video interview" in t or "video call" in t:
+        fmt = "Video Call"
+    elif "phone screen" in t or "phone interview" in t or "phone call" in t:
+        fmt = "Phone Screen"
+    elif "online assessment" in t or "assessment center" in t or "pymetrics" in t or "codility" in t:
+        fmt = "Online Assessment"
+    elif "superday" in t or "final round" in t:
+        fmt = "Superday / Final Round"
+    else:
+        fmt = "Interview"
+
+    # ── Summary: pull meaningful sentences from the body ─────────────────────
+    summary = ""
+    if body:
+        cleaned = re.sub(r'^(dear\s+[\w\s,]+[.]\s*)', '', body.strip(), flags=re.I)
+        cleaned = re.sub(
+            r'(best regards?|sincerely|thank you,?|regards?,?|warm regards?|'
+            r'unsubscribe|privacy policy|this email was sent)[\s\S]*$',
+            '', cleaned, flags=re.I
+        ).strip()
+        cleaned = re.sub(r'\s+', ' ', cleaned)
+        summary = cleaned[:450].strip()
+        if len(cleaned) > 450:
+            summary += "…"
+
+    return {
+        "date":    date_str,
+        "time":    time_str,
+        "format":  fmt,
+        "summary": summary,
+    }
+
+
 def extract_role_from_subject(subject):
     """Pull a role/program title from the email subject line."""
     # Remove common prefixes like "Thank you for applying to", "Application for"
@@ -360,11 +439,19 @@ def run_parser():
                 current_pri = STATUS_PRIORITY.index(current) if current in STATUS_PRIORITY else 99
                 new_pri     = STATUS_PRIORITY.index(detected_status) if detected_status in STATUS_PRIORITY else 99
                 if new_pri < current_pri:
-                    app_status[key] = {
+                    entry = {
                         "status":    detected_status,
                         "updated":   datetime.datetime.now().isoformat(timespec="seconds"),
                         "email_sub": email["subject"][:100],
                     }
+                    # Extract interview details for any round advancement
+                    if detected_status in ("First Round", "Second Round", "Offer"):
+                        details = extract_interview_details(email)
+                        entry["interview"] = details
+                        co_name_log = next((c["company"] for c in companies if c["id"] == cid), key)
+                        print(f"  [{co_name_log}] Interview details extracted — {details['format']}"
+                              + (f" on {details['date']}" if details['date'] else ""))
+                    app_status[key] = entry
                     updates[key] = detected_status
                     co_name = next((c["company"] for c in companies if c["id"] == cid), key)
                     print(f"  [{co_name}] {current} → {detected_status}")
