@@ -36,7 +36,8 @@ jobs:
       - name: Run job scanner
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        run: python frp_tracker/frp_tracker/backend/scanner.py
+        run: python frp_tracker/backend/scanner.py
+        continue-on-error: true
 
       - name: Commit updated data files
         run: |
