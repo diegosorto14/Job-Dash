@@ -393,15 +393,28 @@ async function boot() {
     newPrograms = progs;
     activityLog = log;
 
-    // Merge auto-added custom apps from GitHub (gmail parser) with local ones
+    // Sync custom apps: auto-added entries are server-authoritative (repo wins),
+    // manually-added entries (auto:false) are kept from local storage.
+    // This ensures false positives removed from the repo disappear for everyone.
     const repoApps = await fetch(RAW + '/custom_apps.json' + bust).then(r=>r.json()).catch(()=>[]);
-    const localIds = new Set(customApps.map(a=>a._id));
-    repoApps.forEach(a => { if(!localIds.has(a._id)) customApps.push(a); });
+    const repoAutoIds = new Set(repoApps.filter(a=>a.auto).map(a=>a._id));
+    const manualApps  = customApps.filter(a => !a.auto); // user-added, keep locally
+    const repoAutoApps = repoApps.filter(a=>a.auto);
+    customApps = [...repoAutoApps, ...manualApps];
     localStorage.setItem('frp_custom_apps', JSON.stringify(customApps));
 
-    // Merge repo status (auto from Gmail) with local overrides (manual)
-    // Local always wins so manual changes aren't overwritten
-    appStatus = {...status, ...localStatus};
+    // Merge repo status (auto from Gmail) with local overrides (manual).
+    // For auto entries: repo is authoritative — if removed from repo, clear local too.
+    // For manual overrides (frp_status_v2): local wins so user changes persist.
+    const cleanedLocal = {};
+    for (const [id, val] of Object.entries(localStatus)) {
+      // Drop local status entries that were auto-added but no longer exist in repo
+      const isAutoId = id.startsWith('email_');
+      if (isAutoId && !repoAutoIds.has(id) && !(id in status)) continue;
+      cleanedLocal[id] = val;
+    }
+    localStorage.setItem('frp_status_v2', JSON.stringify(cleanedLocal));
+    appStatus = {...status, ...cleanedLocal};
 
     // Populate sector filter
     const sectors = [...new Set(companies.map(c => c.sector))].sort();
