@@ -22,8 +22,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r frp_tracker/frp_tracker/backend/requirements.txt
-          pip install google-auth google-auth-oauthlib google-api-python-client
+          pip install -r frp_tracker/backend/requirements.txt
+          pip install requests beautifulsoup4 python-dotenv
 
       - name: Run Gmail parser (auto-status from email)
         env:
