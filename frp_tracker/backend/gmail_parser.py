@@ -237,7 +237,21 @@ REJECT_SUBJECTS = [
     "reminder: your application", "action required:", "action needed:",
     "emailrelay", "unsubscribe", "verify your email", "confirm your email",
     "please verify", "account verification",
+    # ATS "welcome to portal" emails — account creation, not application confirmation
+    "applicant hub", "applicant portal", "candidate portal", "career portal",
+    "welcome to your account", "your account has been created",
 ]
+
+# Applicant Tracking System platform names — when the sender display name IS one
+# of these, the real employer is someone else; auto-creating "Workday" as a
+# company would be a false positive.
+ATS_PLATFORMS = {
+    "workday", "greenhouse", "lever", "taleo", "icims", "jobvite",
+    "bamboohr", "successfactors", "oracle hcm", "oracle", "servicenow",
+    "service now", "smartrecruiters", "jazz hr", "jazzhr", "breezy hr",
+    "recruitee", "ashby", "rippling", "adp", "paylocity", "paychex",
+    "myworkdayjobs", "ultipro", "ukg", "kronos", "cornerstone",
+}
 
 def is_job_email(email):
     """Return True only if the email looks like a genuine job-related message."""
@@ -544,6 +558,11 @@ def run_parser():
 
             sender_company = extract_sender_company(email)
             if not sender_company:
+                continue
+
+            # Gate 3: sender display name must not be an ATS platform
+            if sender_company.lower().strip() in ATS_PLATFORMS:
+                print(f"  [SKIP auto-create] ATS platform sender ({sender_company}): {email['subject'][:60]}")
                 continue
 
             # Deduplicate: skip if we already have a custom app from this sender
