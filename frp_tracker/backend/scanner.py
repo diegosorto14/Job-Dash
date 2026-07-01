@@ -42,9 +42,17 @@ MONTH_TO_NUM = {
 SEARCH_TERMS = [
     '"finance rotational program" 2027',
     '"finance leadership development program" 2027',
-    '"finance rotation program" analyst 2027',
-    '"financial rotational program" new grad 2027',
+    '"finance leadership development" program 2027',
+    '"financial management program" 2027',
+    '"finance rotation program" 2027',
+    '"financial rotational program" 2027',
     '"finance development program" 2027',
+    '"finance associate program" 2027',
+    '"finance analyst program" 2027',
+    '"FDP" finance rotational 2027',
+    '"FLDP" finance 2027',
+    'finance rotational program "new grad" 2027',
+    'finance leadership program "full time" 2027',
 ]
 
 HEADERS = {
@@ -78,9 +86,10 @@ ROTATIONAL_KEYWORDS = [
 ]
 
 def is_rotational(title):
+    # Don't gate on "2027" being in the title — job boards rarely include the year
+    # in the title text even when the role is for the 2027 cohort. The search query
+    # already scopes to 2027, so any returned result is implicitly 2027.
     t = title.lower()
-    if "2027" not in t:
-        return False
     return any(kw in t for kw in ROTATIONAL_KEYWORDS)
 
 def known_companies():
@@ -99,7 +108,7 @@ def already_applied_companies():
 def search_indeed(query):
     jobs = []
     try:
-        url = f"https://www.indeed.com/jobs?q={requests.utils.quote(query)}&sort=date&fromage=1"
+        url = f"https://www.indeed.com/jobs?q={requests.utils.quote(query)}&sort=date&fromage=7"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         soup = BeautifulSoup(resp.text, "html.parser")
         for card in soup.select("div.job_seen_beacon")[:8]:
@@ -121,29 +130,37 @@ def search_indeed(query):
     return jobs
 
 def search_linkedin(query):
+    """Use LinkedIn's guest jobs API — returns real HTML fragments unlike the
+    JS-rendered main search page which always comes back empty to scrapers."""
     jobs = []
     try:
+        # Past-week filter (r604800 = 604800 seconds = 7 days) so we catch anything
+        # posted in the last week, not just the last 24h which is too narrow for slow
+        # posting cycles on rotational programs.
         url = (
-            f"https://www.linkedin.com/jobs/search/?keywords={requests.utils.quote(query)}"
-            f"&sortBy=DD&f_TPR=r86400"
+            "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search"
+            f"?keywords={requests.utils.quote(query)}"
+            "&location=United+States&geoId=103644278"
+            "&f_TPR=r604800&start=0"
         )
-        resp = requests.get(url, headers=HEADERS, timeout=10)
+        resp = requests.get(url, headers=HEADERS, timeout=12)
         soup = BeautifulSoup(resp.text, "html.parser")
-        for card in soup.select("div.base-card")[:8]:
+        for card in soup.select("li")[:10]:
             title_el   = card.select_one("h3.base-search-card__title")
             company_el = card.select_one("h4.base-search-card__subtitle")
             link_el    = card.select_one("a.base-card__full-link")
-            if title_el and company_el and link_el:
-                link = link_el.get("href", "").split("?")[0]
-                uid  = link.split("-")[-1] if link else str(random.randint(10000, 99999))
-                jobs.append({
-                    "title":   title_el.get_text(strip=True),
-                    "company": company_el.get_text(strip=True),
-                    "link":    link,
-                    "source":  "LinkedIn",
-                    "date":    datetime.date.today().isoformat(),
-                    "id":      f"li_{uid}",
-                })
+            if not (title_el and company_el and link_el):
+                continue
+            link = link_el.get("href", "").split("?")[0]
+            uid  = link.split("-")[-1] if link else str(random.randint(10000, 99999))
+            jobs.append({
+                "title":   title_el.get_text(strip=True),
+                "company": company_el.get_text(strip=True),
+                "link":    link,
+                "source":  "LinkedIn",
+                "date":    datetime.date.today().isoformat(),
+                "id":      f"li_{uid}",
+            })
     except Exception as e:
         print(f"  LinkedIn error: {e}")
     return jobs
@@ -151,7 +168,7 @@ def search_linkedin(query):
 def search_ziprecruiter(query):
     jobs = []
     try:
-        url = f"https://www.ziprecruiter.com/candidate/search?search={requests.utils.quote(query)}&days=1"
+        url = f"https://www.ziprecruiter.com/candidate/search?search={requests.utils.quote(query)}&days=7"
         resp = requests.get(url, headers=HEADERS, timeout=10)
         soup = BeautifulSoup(resp.text, "html.parser")
         for card in soup.select("article.job_result")[:8]:
