@@ -92,6 +92,41 @@ def is_rotational(title):
     t = title.lower()
     return any(kw in t for kw in ROTATIONAL_KEYWORDS)
 
+# Phrases in a job description that confirm this is a 2027-cohort role.
+# At least ONE must appear in the fetched page body.
+YEAR_CONFIRM_PHRASES = [
+    "2027", "class of 2027", "graduating in 2027", "graduate of 2027",
+    "start date: 2027", "starting in 2027", "summer 2027", "fall 2027",
+    "january 2027", "june 2027", "july 2027", "august 2027",
+]
+
+def verify_year_in_description(job):
+    """Fetch the job posting page and confirm a 2027 cohort phrase appears.
+    Returns True if confirmed, False if the page loads but no 2027 mention found,
+    True (pass-through) if the page is unreachable so we don't silently drop jobs
+    due to network issues."""
+    url = job.get("link", "")
+    if not url or not url.startswith("http"):
+        return True  # no URL to check — don't drop it
+
+    # Company-page jobs are already verified via trigger_phrases in check_company_pages
+    if job.get("id", "").startswith("cp_"):
+        return True
+
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=10)
+        if resp.status_code != 200:
+            # Can't reach the page (auth wall, redirect, etc.) — pass through
+            return True
+        text = resp.text.lower()
+        confirmed = any(phrase in text for phrase in YEAR_CONFIRM_PHRASES)
+        if not confirmed:
+            print(f"  [SKIP — no 2027 in description] {job.get('title','')[:60]} @ {job.get('company','')}")
+        return confirmed
+    except Exception:
+        # Network error — pass through rather than silently drop
+        return True
+
 def known_companies():
     companies = load_json(COMPANIES_FILE, [])
     return {c["company"].lower() for c in companies}
@@ -387,12 +422,15 @@ def scan_all():
         for job in found:
             if job["id"] in seen:
                 continue
-            if job.get("date") and job["date"] != today:
-                continue
             co = job.get("company", "").lower()
             if any(k in co or co in k for k in applied_cos):
                 continue
             if not is_rotational(job.get("title", "")):
+                continue
+            # Fetch the actual job description and confirm it mentions 2027
+            time.sleep(random.uniform(1, 2))
+            if not verify_year_in_description(job):
+                seen.add(job["id"])  # mark seen so we don't recheck every day
                 continue
             seen.add(job["id"])
             new_jobs.append(job)
