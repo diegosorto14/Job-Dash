@@ -278,6 +278,18 @@ a.apply-link:hover{text-decoration:underline}
         <label>Closes Month</label>
         <input type="text" id="add-closes" placeholder="e.g. October"/>
       </div>
+      <div>
+        <label>Posting Expires</label>
+        <input type="date" id="add-posting-expires" title="Last day the job posting is live"/>
+      </div>
+      <div>
+        <label>Program Start Date</label>
+        <input type="date" id="add-program-start" title="When the rotational program begins"/>
+      </div>
+      <div>
+        <label>Program End Date</label>
+        <input type="date" id="add-program-end" title="When the rotational program ends"/>
+      </div>
       <div class="full">
         <label>Notes</label>
         <textarea id="add-notes" rows="2" placeholder="Any notes about this application…"></textarea>
@@ -589,6 +601,37 @@ function renderNewJobs() {
 }
 
 // ── My Applications tab ───────────────────────────────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return null;
+  try {
+    const d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  } catch { return iso; }
+}
+
+function buildDatePills(a) {
+  const pills = [];
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  if (a.postingExpires) {
+    const exp = new Date(a.postingExpires + 'T12:00:00');
+    const diff = Math.round((exp - today) / 86400000);
+    const urgent = diff >= 0 && diff <= 7;
+    const expired = diff < 0;
+    const color = expired ? '#dc2626' : urgent ? '#d97706' : '#475569';
+    const bg    = expired ? '#fef2f2' : urgent ? '#fffbeb' : '#f1f5f9';
+    const label = expired ? `Expired ${fmtDate(a.postingExpires)}` : `Expires ${fmtDate(a.postingExpires)}`;
+    pills.push(`<span style="display:inline-block;margin-top:4px;font-size:10px;padding:1px 7px;border-radius:20px;background:${bg};color:${color};font-weight:600;white-space:nowrap">⏰ ${label}</span>`);
+  }
+  if (a.programStart) {
+    pills.push(`<span style="display:inline-block;margin-top:4px;font-size:10px;padding:1px 7px;border-radius:20px;background:#f0fdf4;color:#15803d;white-space:nowrap">▶ Starts ${fmtDate(a.programStart)}</span>`);
+  }
+  if (a.programEnd) {
+    pills.push(`<span style="display:inline-block;margin-top:4px;font-size:10px;padding:1px 7px;border-radius:20px;background:#eff6ff;color:#1d4ed8;white-space:nowrap">■ Ends ${fmtDate(a.programEnd)}</span>`);
+  }
+  return pills.length ? `<div style="display:flex;flex-wrap:wrap;gap:3px">${pills.join('')}</div>` : '';
+}
+
 function toggleAddForm() {
   const p = document.getElementById('add-form-panel');
   p.style.display = p.style.display === 'none' ? 'block' : 'none';
@@ -643,9 +686,13 @@ function renderMine() {
     const customIdx = customApps.findIndex(c => c._id === a._id);
     const deleteBtn = customIdx >= 0 && !a.fromOriginal
       ? `<button class="btn btn-danger btn-sm" onclick="deleteCustomApp(${customIdx})">✕</button>` : '';
+    const datePills = buildDatePills(a);
     return `<tr>
       <td><div class="company-name">${a.company}</div></td>
-      <td style="font-size:12px;color:#475569;max-width:200px">${a.program||'—'}</td>
+      <td style="font-size:12px;color:#475569;max-width:220px">
+        <div>${a.program||'—'}</div>
+        ${datePills}
+      </td>
       <td style="font-size:12px;color:#64748b">${a.sector||'—'}</td>
       <td><span style="font-size:11px;background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:20px;font-weight:600">${a.source}</span></td>
       <td>${statusSel(a._id, st)}</td>
@@ -745,11 +792,14 @@ function saveCustomApp() {
   const app = {
     _id:     id,
     url, company, program,
-    sector:  document.getElementById('add-sector').value,
-    opens:   document.getElementById('add-opens').value.trim(),
-    closes:  document.getElementById('add-closes').value.trim(),
-    notes:   document.getElementById('add-notes').value.trim(),
-    added:   new Date().toISOString(),
+    sector:         document.getElementById('add-sector').value,
+    opens:          document.getElementById('add-opens').value.trim(),
+    closes:         document.getElementById('add-closes').value.trim(),
+    postingExpires: document.getElementById('add-posting-expires').value || '',
+    programStart:   document.getElementById('add-program-start').value || '',
+    programEnd:     document.getElementById('add-program-end').value || '',
+    notes:          document.getElementById('add-notes').value.trim(),
+    added:          new Date().toISOString(),
   };
   const initStatus = document.getElementById('add-status').value;
   setStatus(id, initStatus);
@@ -758,7 +808,7 @@ function saveCustomApp() {
   localStorage.setItem('frp_custom_apps', JSON.stringify(customApps));
 
   // Clear form
-  ['add-url','add-company','add-program','add-opens','add-closes','add-notes'].forEach(id => document.getElementById(id).value='');
+  ['add-url','add-company','add-program','add-opens','add-closes','add-posting-expires','add-program-start','add-program-end','add-notes'].forEach(id => document.getElementById(id).value='');
 
   renderMine(); updateKPIs(); toast('Application added!');
 }
