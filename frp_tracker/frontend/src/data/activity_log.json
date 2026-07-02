@@ -1,5 +1,14 @@
 [
   {
+    "ts": "2026-07-02T18:30:48",
+    "date": "2026-07-02",
+    "new_jobs": 8,
+    "new_programs": 2,
+    "email_sent": true,
+    "email_error": null,
+    "scan_errors": []
+  },
+  {
     "ts": "2026-07-01T19:31:23",
     "date": "2026-07-01",
     "new_jobs": 12,
