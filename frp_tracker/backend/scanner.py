@@ -33,6 +33,7 @@ NEW_PROGRAMS_FILE = FRONTEND / "new_programs.json"
 ACTIVITY_LOG      = FRONTEND / "activity_log.json"
 COMPANIES_FILE    = FRONTEND / "companies.json"
 STATUS_FILE       = FRONTEND / "app_status.json"
+CUSTOM_APPS_FILE  = FRONTEND / "custom_apps.json"
 
 MONTH_TO_NUM = {
     "january":1,"february":2,"march":3,"april":4,"may":5,"june":6,
@@ -134,10 +135,17 @@ def known_companies():
 def already_applied_companies():
     app_status = load_json(STATUS_FILE, {})
     companies  = load_json(COMPANIES_FILE, [])
+    custom_apps = load_json(CUSTOM_APPS_FILE, [])
     applied_statuses = {"Applied", "First Round", "Second Round", "Offer", "Rejected"}
     applied_ids = {cid for cid, v in app_status.items()
                    if v.get("status") in applied_statuses}
-    return {c["company"].lower() for c in companies if str(c["id"]) in applied_ids}
+    # Companies from the main list
+    names = {c["company"].lower() for c in companies if str(c["id"]) in applied_ids}
+    # Also include custom apps (email-detected or manually added)
+    for app in custom_apps:
+        if app_status.get(app["_id"], {}).get("status") in applied_statuses:
+            names.add(app["company"].lower())
+    return names
 
 # ── Scrapers ──────────────────────────────────────────────────────────────────
 def search_indeed(query):

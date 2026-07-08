@@ -68,6 +68,33 @@ KEYWORDS = {
         "decided to pursue other candidates",
         "not moving forward with your candidacy",
         "we're unable to offer you",
+        # Additional rejection phrases commonly used
+        "we are moving forward with other applicants",
+        "we've decided to move forward with other",
+        "we decided to move forward with other",
+        "your application was not selected",
+        "not a fit for this role",
+        "not a match for",
+        "will not be moving forward",
+        "have decided not to move forward",
+        "we have chosen not to",
+        "no longer considering your application",
+        "we won't be proceeding",
+        "we are not able to move forward",
+        "we're not moving forward",
+        "this position has been filled",
+        "we have filled the position",
+        "the position has been filled",
+        "we are pursuing other candidates",
+        "we will be pursuing other candidates",
+        "we have selected other candidates",
+        "not selected to move forward",
+        "your background does not meet",
+        "your qualifications do not match",
+        "we will not be able to offer you",
+        "we are not in a position to offer",
+        "we cannot offer you a position",
+        "we have decided not to proceed",
     ],
     "Offer": [
         "pleased to offer you",
@@ -157,7 +184,7 @@ def fetch_recent_emails(service, days=3):
     results = service.users().messages().list(
         userId="me",
         q=f"after:{after}",
-        maxResults=200
+        maxResults=500
     ).execute()
     messages = results.get("messages", [])
 
@@ -512,8 +539,8 @@ def run_parser():
     companies = _load_json(COMPANIES_FILE, [])
     app_status = _load_json(STATUS_FILE, {})
 
-    emails = fetch_recent_emails(service, days=3)
-    print(f"  Fetched {len(emails)} recent emails.")
+    emails = fetch_recent_emails(service, days=21)
+    print(f"  Fetched {len(emails)} recent emails (21-day window).")
 
     custom_apps  = _load_json(CUSTOM_APPS_FILE, [])
     custom_ids   = {a["_id"] for a in custom_apps}
