@@ -682,12 +682,12 @@ function renderTable() {
        days <= 30 ? `<br><span style="color:#ea580c;font-size:11px">${days}d left</span>` : '');
     return `<tr>
       <td style="color:#94a3b8;font-size:12px">${i+1}</td>
-      <td><div class="company-name">${c.company}</div><div class="program-name">${c.program}</div></td>
-      <td style="font-size:12px;color:#475569">${c.sector}</td>
+      <td><div class="company-name">${escHtml(c.company)}</div><div class="program-name">${escHtml(c.program)}</div></td>
+      <td style="font-size:12px;color:#475569">${escHtml(c.sector)}</td>
       <td style="font-size:12px;color:#475569">${window}</td>
       <td>${statusSel(c.id, st)}</td>
       <td><button class="notes-btn${note?' has-note':''}" onclick="openNote(${c.id},'${escHtml(c.company)}')">${note?'Edit note':'+ Note'}</button></td>
-      <td><a class="apply-link" href="${c.link}" target="_blank">Apply →</a></td>
+      <td><a class="apply-link" href="${safeUrl(c.link)}" target="_blank" rel="noopener noreferrer">Apply →</a></td>
     </tr>`;
   }).join('');
 }
@@ -712,15 +712,15 @@ function renderNewJobs() {
     return `<div class="job-card" style="border-left:3px solid ${priority?'#dc2626':'#1a5fb4'}">
       <div class="job-info" style="flex:1">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <div class="job-title">${j.title}</div>
+          <div class="job-title">${escHtml(j.title)}</div>
           ${priority ? `<span style="font-size:11px;background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:20px;font-weight:700">In Your 100</span>` : ''}
-          ${alreadyApplied ? `<span style="font-size:11px;background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:20px;font-weight:700">${status}</span>` : ''}
+          ${alreadyApplied ? `<span style="font-size:11px;background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:20px;font-weight:700">${escHtml(status)}</span>` : ''}
         </div>
-        <div class="job-co">${j.company} · <span style="color:#94a3b8">${j.source}</span></div>
+        <div class="job-co">${escHtml(j.company)} · <span style="color:#94a3b8">${escHtml(j.source)}</span></div>
         ${priority && !alreadyApplied ? `<div style="font-size:11px;color:#dc2626;margin-top:4px;font-weight:600">Apply now — status will flip to Applied automatically when your confirmation email arrives</div>` : ''}
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-        <a class="btn btn-primary btn-sm" href="${j.link}" target="_blank">Apply →</a>
+        <a class="btn btn-primary btn-sm" href="${safeUrl(j.link)}" target="_blank" rel="noopener noreferrer">Apply →</a>
       </div>
     </div>`;
   }
@@ -832,16 +832,16 @@ function renderMine() {
       ? `<button class="btn btn-danger btn-sm" onclick="deleteCustomApp(${customIdx})">✕</button>` : '';
     const datePills = buildDatePills(a);
     return `<tr>
-      <td><div class="company-name">${a.company}</div></td>
+      <td><div class="company-name">${escHtml(a.company)}</div></td>
       <td style="font-size:12px;color:#475569;max-width:220px">
-        <div>${a.program||'—'}</div>
+        <div>${escHtml(a.program||'—')}</div>
         ${datePills}
       </td>
-      <td style="font-size:12px;color:#64748b">${a.sector||'—'}</td>
-      <td><span style="font-size:11px;background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:20px;font-weight:600">${a.source}</span></td>
+      <td style="font-size:12px;color:#64748b">${escHtml(a.sector||'—')}</td>
+      <td><span style="font-size:11px;background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:20px;font-weight:600">${escHtml(a.source)}</span></td>
       <td>${statusSel(a._id, st)}</td>
       <td><button class="notes-btn${note?' has-note':''}" onclick="openNote('${a._id}','${escHtml(a.company)}')">${note?'Edit note':'+ Note'}</button></td>
-      <td>${a.url?`<a class="apply-link" href="${a.url}" target="_blank">Open →</a>`:'—'}</td>
+      <td>${a.url?`<a class="apply-link" href="${safeUrl(a.url)}" target="_blank" rel="noopener noreferrer">Open →</a>`:'—'}</td>
       <td>${deleteBtn}</td>
     </tr>`;
   }).join('');
@@ -1069,9 +1069,9 @@ function renderActivity() {
     return `<div class="act-item">
       <div class="act-dot${hasData?'':' none'}"></div>
       <div style="flex:1">
-        <div class="act-stat">${hasData ? `${e.new_jobs} new jobs · ${e.new_programs} new programs` : 'No new findings'}</div>
-        <div class="act-meta">${dateStr}</div>
-        ${e.scan_errors&&e.scan_errors.length?`<div style="font-size:11px;color:#dc2626;margin-top:3px">${e.scan_errors.length} scan error(s)</div>`:''}
+        <div class="act-stat">${hasData ? `${Number(e.new_jobs)} new jobs · ${Number(e.new_programs)} new programs` : 'No new findings'}</div>
+        <div class="act-meta">${escHtml(dateStr)}</div>
+        ${e.scan_errors&&e.scan_errors.length?`<div style="font-size:11px;color:#dc2626;margin-top:3px">${Number(e.scan_errors.length)} scan error(s)</div>`:''}
       </div>
       <div style="font-size:12px">
         ${e.email_sent?'<span style="color:#16a34a;font-weight:600">Email sent</span>':'<span style="color:#94a3b8">No email</span>'}
@@ -1125,7 +1125,20 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-function escHtml(s) { return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+function escHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function safeUrl(u) {
+  try {
+    const parsed = new URL(u);
+    return (parsed.protocol === 'https:' || parsed.protocol === 'http:') ? u : '#';
+  } catch { return '#'; }
+}
 
 // ── Resume Tailor ─────────────────────────────────────────────────────────────
 // Stores either { type:'pdf', b64:'...' } or { type:'text', content:'...' }
