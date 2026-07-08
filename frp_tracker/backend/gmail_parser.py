@@ -296,71 +296,98 @@ def classify_email(email_text):
                 return status
     return None
 
+def _company_patterns(co):
+    """Pre-compute match patterns for a company dict. Returns (short, patterns_list)."""
+    name = co["company"].lower()
+    short = re.sub(
+        r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?|'
+        r'laboratories|lab|solutions|technologies|systems|services|financial|capital)$',
+        '', name
+    ).strip()
+    first_word = short.split()[0] if short.split() else ""
+
+    if len(short) < 4:
+        return short, []
+
+    pats = [re.compile(r'\b' + re.escape(short) + r'\b'),
+            re.compile(r'\b' + re.escape(name) + r'\b')]
+    if len(first_word) >= 5:
+        pats.append(re.compile(r'\b' + re.escape(first_word) + r'\b'))
+    # Domain pattern: "ge vernova" → "gevernova"
+    pats.append(re.compile(re.escape(short.replace(' ', ''))))
+    return short, pats
+
+
+def _any_match(pats, text):
+    return any(p.search(text) for p in pats)
+
+
 def match_company(email, companies):
     """
-    Returns at most ONE company ID — the one that best matches the sender.
-    Priority: sender email domain > sender display name > subject line.
-    If multiple companies match at the same level, skip all (ambiguous).
+    Match an email to a company in the list using 4 priority levels:
+      L1 — sender email domain  (most reliable)
+      L2 — sender display name
+      L3 — email subject        (requires strong confirmation phrase in body)
+      L4 — email body text      (requires strong confirmation phrase)  ← catches ATS senders
+    Returns a list with exactly one company ID, or [] if no confident match.
     """
-    sender = email["from"].lower()
+    sender  = email["from"].lower()
     subject = email["subject"].lower()
+    body    = (email.get("body", "") + " " + email.get("snippet", "")).lower()
 
-    # Extract just the domain from the sender address e.g. "jpmorgan.com"
-    domain_match = re.search(r'@([\w.-]+)', sender)
-    sender_domain = domain_match.group(1) if domain_match else ""
+    domain_m      = re.search(r'@([\w.-]+)', sender)
+    sender_domain = domain_m.group(1) if domain_m else ""
+    sender_name   = re.sub(r'<.*?>', '', sender).strip().strip('"')
 
-    sender_name = re.sub(r'<.*?>', '', sender).strip().strip('"')
+    # A strong confirmation phrase must be present for L3/L4 to fire —
+    # prevents a company name buried in a newsletter body from flipping status.
+    confirmed = any(p in body or p in subject for p in STRONG_CONFIRMATION_PHRASES)
 
-    domain_hits, name_hits, subject_hits = [], [], []
+    domain_hits, name_hits, subject_hits, body_hits = [], [], [], []
 
     for co in companies:
-        name = co["company"].lower()
-        # Strip common suffixes: "Abbott Laboratories" → "abbott laboratories"
-        short = re.sub(r'\s*(inc\.?|corp\.?|llc\.?|ltd\.?|group|holdings|&\s*co\.?|laboratories|lab|solutions|technologies|systems|services|financial|capital)$', '', name).strip()
-        # Also get just the first meaningful word: "Abbott Laboratories" → "abbott"
-        first_word = short.split()[0] if short.split() else ""
-
-        if len(short) < 5:
+        short, pats = _company_patterns(co)
+        if not pats:
             continue
 
-        pattern_short = r'\b' + re.escape(short) + r'\b'
-        pattern_full  = r'\b' + re.escape(name) + r'\b'
-        pattern_first = r'\b' + re.escape(first_word) + r'\b' if len(first_word) >= 5 else None
-
-        def matches(text):
-            return (re.search(pattern_short, text) or
-                    re.search(pattern_full, text) or
-                    (pattern_first and re.search(pattern_first, text)))
-
-        # Level 1: company name in sender's email domain
-        if re.search(re.escape(short.replace(' ', '')), sender_domain) or \
-           re.search(re.escape(first_word), sender_domain):
+        # L1: company name appears in the sender's email domain
+        if any(p.search(sender_domain) for p in pats):
             domain_hits.append(co["id"])
-        # Level 2: company name in sender display name
-        elif matches(sender_name):
+            continue
+
+        # L2: company name appears in sender display name
+        if _any_match(pats, sender_name):
             name_hits.append(co["id"])
-        # Level 3: company name in subject line only
-        elif matches(subject):
+            continue
+
+        # L3: company name in subject (only when email is a confirmed application)
+        if confirmed and _any_match(pats, subject):
             subject_hits.append(co["id"])
+            continue
 
-    # Return exactly one match from the highest-priority level, or none if ambiguous.
-    # Subject-line matches (Level 3) only count when the email also contains a
-    # strong confirmation phrase — a company name in the subject of a reminder
-    # or marketing email should not flip status.
-    full_text = (email.get("body", "") + " " + email.get("snippet", "")).lower()
-    subject_confirmed = any(p in full_text or p in email["subject"].lower()
-                            for p in STRONG_CONFIRMATION_PHRASES)
+        # L4: company name anywhere in the email body
+        # This catches ATS-sent emails (Workday, iCIMS, Taleo, etc.) where the
+        # sender domain is the ATS platform, not the employer — the body almost
+        # always says "thank you for applying to <Company>" explicitly.
+        if confirmed and _any_match(pats, body):
+            body_hits.append(co["id"])
 
-    for i, hits in enumerate([domain_hits, name_hits, subject_hits]):
-        if i == 2 and not subject_confirmed:
-            # Subject-only match with no strong confirmation → skip
-            if hits:
-                print(f"  Subject-only match rejected (no strong confirmation): {email['subject'][:60]}")
-            return []
+    # Return exactly one match from the highest-confidence level.
+    # If multiple companies match at the same level it's ambiguous — skip.
+    for level, hits, label in [
+        (0, domain_hits,  "domain"),
+        (1, name_hits,    "display name"),
+        (2, subject_hits, "subject"),
+        (3, body_hits,    "body"),
+    ]:
         if len(hits) == 1:
+            if level >= 2:
+                co_name = next((c["company"] for c in companies if c["id"] == hits[0]), hits[0])
+                print(f"  [L{level+1} {label} match] {co_name} ← {email['subject'][:60]}")
             return hits
         if len(hits) > 1:
-            print(f"  Ambiguous match ({len(hits)} companies) — skipping: {email['subject'][:60]}")
+            names = [next((c["company"] for c in companies if c["id"] == h), h) for h in hits]
+            print(f"  [Ambiguous L{level+1}] {names} — skipping: {email['subject'][:60]}")
             return []
 
     return []
