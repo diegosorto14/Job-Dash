@@ -169,6 +169,12 @@ a.apply-link:hover{text-decoration:underline}
 .changed-tag{background:#fef9c3;color:#92400e}
 .key-setup{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#1e40af}
 .key-setup strong{display:block;margin-bottom:4px}
+.drop-zone{border:2px dashed #cbd5e1;border-radius:10px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:4px;background:#fafbff}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#1a5fb4;background:#eff6ff}
+.drop-zone.has-file{border-color:#16a34a;background:#f0fdf4;border-style:solid}
+.drop-icon{font-size:28px;margin-bottom:6px}
+.drop-label{font-size:13px;font-weight:600;color:#475569;margin-bottom:3px}
+.drop-sub{font-size:11px;color:#94a3b8}
 
 @media(max-width:900px){
   .kpi-row{grid-template-columns:repeat(3,1fr)}
@@ -433,21 +439,29 @@ a.apply-link:hover{text-decoration:underline}
   <div class="resume-layout">
     <div class="resume-panel">
       <h3>📄 Your Current Resume</h3>
-      <p class="hint">Paste your resume as plain text. Keep your formatting — Claude will preserve it exactly.</p>
-      <textarea id="resume-input" rows="28" placeholder="Paste your full resume here…
+      <p class="hint">Upload your file <strong>or</strong> paste text below. PDF recommended — Claude reads it natively.</p>
 
-Diego Sorto Taipe
-Finance | Analytics
-diego.sorto14@gmail.com
+      <!-- Drop zone -->
+      <div class="drop-zone" id="resume-drop" onclick="document.getElementById('resume-file').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleResumeDrop(event)">
+        <input type="file" id="resume-file" accept=".pdf,.txt,.docx,.doc,.rtf" style="display:none" onchange="handleResumeFile(this.files[0])"/>
+        <div id="drop-content">
+          <div class="drop-icon">📎</div>
+          <div class="drop-label">Click to upload or drag &amp; drop</div>
+          <div class="drop-sub">PDF · DOCX · TXT · RTF</div>
+        </div>
+        <div id="drop-loaded" style="display:none">
+          <div class="drop-icon">✅</div>
+          <div class="drop-label" id="drop-filename" style="color:#16a34a;font-weight:700"></div>
+          <div class="drop-sub" style="color:#16a34a">File ready — click to replace</div>
+        </div>
+      </div>
 
-EDUCATION
-University of Maryland …
-
-EXPERIENCE
-…
-
-SKILLS
-…"></textarea>
+      <div style="display:flex;align-items:center;gap:10px;margin:12px 0">
+        <div style="flex:1;height:1px;background:#e2e8f0"></div>
+        <span style="font-size:11px;color:#94a3b8;font-weight:600">OR PASTE TEXT</span>
+        <div style="flex:1;height:1px;background:#e2e8f0"></div>
+      </div>
+      <textarea id="resume-input" rows="14" placeholder="Paste resume text here as a fallback if file upload isn't working…"></textarea>
     </div>
 
     <div class="resume-panel">
@@ -1114,6 +1128,83 @@ function toast(msg) {
 function escHtml(s) { return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
 
 // ── Resume Tailor ─────────────────────────────────────────────────────────────
+// Stores either { type:'pdf', b64:'...' } or { type:'text', content:'...' }
+let resumeFileData = null;
+
+function handleResumeDrop(e) {
+  e.preventDefault();
+  document.getElementById('resume-drop').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleResumeFile(file);
+}
+
+async function handleResumeFile(file) {
+  if (!file) return;
+  const drop = document.getElementById('resume-drop');
+  const ext  = file.name.split('.').pop().toLowerCase();
+
+  if (ext === 'pdf') {
+    // Read as base64 — Claude handles PDF natively
+    const buf = await file.arrayBuffer();
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+    resumeFileData = { type: 'pdf', b64, name: file.name };
+  } else if (['txt','rtf'].includes(ext)) {
+    const text = await file.text();
+    resumeFileData = { type: 'text', content: text, name: file.name };
+    document.getElementById('resume-input').value = text;
+  } else if (['docx','doc'].includes(ext)) {
+    // DOCX: extract raw text from XML inside the zip using FileReader
+    // We read it as binary and pull out w:t tag content — no library needed
+    const buf  = await file.arrayBuffer();
+    const text = extractDocxText(buf);
+    if (text) {
+      resumeFileData = { type: 'text', content: text, name: file.name };
+      document.getElementById('resume-input').value = text;
+    } else {
+      setStatus('Could not fully parse .docx — text pasted as fallback. For best results use PDF.', 'err');
+      resumeFileData = null;
+    }
+  } else {
+    setStatus('Unsupported file type. Use PDF, DOCX, TXT, or RTF.', 'err');
+    return;
+  }
+
+  // Update UI
+  drop.classList.add('has-file');
+  document.getElementById('drop-content').style.display = 'none';
+  document.getElementById('drop-loaded').style.display  = 'block';
+  document.getElementById('drop-filename').textContent   = file.name;
+  if (resumeFileData?.type !== 'pdf') {
+    setStatus(`✓ ${file.name} loaded as text`, 'ok');
+  } else {
+    setStatus(`✓ ${file.name} ready — Claude will read the PDF directly`, 'ok');
+  }
+}
+
+function extractDocxText(arrayBuffer) {
+  // DOCX is a ZIP. We scan the binary for the word/document.xml content
+  // and pull text from <w:t> nodes with a regex — no zip library required.
+  try {
+    const bytes = new Uint8Array(arrayBuffer);
+    // Find the start of word/document.xml by looking for its signature
+    const str = new TextDecoder('utf-8', {fatal: false}).decode(bytes);
+    const xmlMatch = str.match(/word\/document\.xml[^P]*PK/s) || str.match(/<w:body[\s\S]*?<\/w:body>/);
+    const chunk = xmlMatch ? xmlMatch[0] : str;
+    // Extract all <w:t> text nodes
+    const texts = [];
+    let m;
+    const re = /<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g;
+    while ((m = re.exec(chunk)) !== null) texts.push(m[1]);
+    return texts.join(' ').replace(/\s{3,}/g, '\n\n').trim();
+  } catch { return ''; }
+}
+
+function setStatus(msg, cls='') {
+  const el = document.getElementById('tailor-status');
+  el.textContent = msg;
+  el.className = 'tailor-status' + (cls ? ' '+cls : '');
+}
+
 function saveApiKey() {
   const k = document.getElementById('anthropic-key').value.trim();
   if (k) {
@@ -1139,15 +1230,12 @@ function loadApiKey() {
 async function fetchJobDesc() {
   const url = document.getElementById('jd-url').value.trim();
   if (!url || !url.startsWith('http')) { toast('Enter a valid URL first'); return; }
-  const statusEl = document.getElementById('tailor-status');
-  statusEl.textContent = 'Fetching job description…';
-  statusEl.className = 'tailor-status';
+  setStatus('Fetching job description…');
   try {
     const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
     const res = await fetch(proxy, {signal: AbortSignal.timeout(10000)});
     const data = await res.json();
     const html = data.contents || '';
-    // Strip HTML tags and collapse whitespace to get readable plain text
     const text = html
       .replace(/<style[\s\S]*?<\/style>/gi, '')
       .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -1155,54 +1243,61 @@ async function fetchJobDesc() {
       .replace(/&nbsp;/g, ' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
       .replace(/\s{3,}/g, '\n\n').trim().slice(0, 8000);
     document.getElementById('jd-input').value = text;
-    statusEl.textContent = '✓ Job description fetched — review and trim if needed.';
-    statusEl.className = 'tailor-status ok';
+    setStatus('✓ Job description fetched — review and trim if needed.', 'ok');
   } catch(e) {
-    statusEl.textContent = 'Could not fetch URL — paste the job description manually.';
-    statusEl.className = 'tailor-status err';
+    setStatus('Could not fetch URL — paste the job description manually.', 'err');
   }
 }
 
 async function tailorResume() {
-  const apiKey  = localStorage.getItem('anthropic_api_key') || '';
-  const resume  = document.getElementById('resume-input').value.trim();
-  const jd      = document.getElementById('jd-input').value.trim();
-  const statusEl = document.getElementById('tailor-status');
-  const btn     = document.getElementById('tailor-btn');
-  const icon    = document.getElementById('tailor-btn-icon');
+  const apiKey   = localStorage.getItem('anthropic_api_key') || '';
+  const jd       = document.getElementById('jd-input').value.trim();
+  const pasteText = document.getElementById('resume-input').value.trim();
+  const btn      = document.getElementById('tailor-btn');
+  const icon     = document.getElementById('tailor-btn-icon');
 
   if (!apiKey) {
     document.getElementById('api-key-banner').style.display = 'block';
-    statusEl.textContent = 'Add your Anthropic API key above first.';
-    statusEl.className = 'tailor-status err';
+    setStatus('Add your Anthropic API key above first.', 'err');
     return;
   }
-  if (!resume) { toast('Paste your resume in the left panel first.'); return; }
-  if (!jd)     { toast('Paste or fetch a job description in the right panel first.'); return; }
+  if (!resumeFileData && !pasteText) {
+    toast('Upload your resume file or paste text in the left panel first.');
+    return;
+  }
+  if (!jd) { toast('Paste or fetch a job description in the right panel first.'); return; }
 
   btn.disabled = true;
   icon.textContent = '⏳';
-  statusEl.textContent = 'Sending to Claude — this takes ~15 seconds…';
-  statusEl.className = 'tailor-status';
+  setStatus('Sending to Claude — this takes ~15 seconds…');
 
-  const prompt = `You are a professional resume editor. Your job is to tailor the resume below to the job description provided.
+  const instructions = `You are a professional resume editor. Tailor the resume to the job description.
 
-STRICT RULES — follow every one:
+STRICT RULES:
 1. Keep the EXACT same structure, sections, and formatting as the original resume. Do not add or remove sections.
 2. Keep the same number of bullet points per role. Do not add new jobs or roles.
-3. Only change: keywords, skills, action verbs, and specific numbers/metrics where they can be credibly strengthened to match the job description language.
-4. Mirror the terminology and priorities from the job description naturally — if the JD emphasizes "variance analysis" or "cross-functional collaboration", work that language in where it genuinely fits.
-5. Do NOT fabricate experience, responsibilities, or credentials that are not implied by the original resume.
+3. Only change: keywords, skills, action verbs, and numbers/metrics where they can be credibly strengthened to match the job description language.
+4. Mirror the JD's terminology naturally — if it emphasizes "variance analysis" or "cross-functional collaboration", work that language in where it genuinely fits.
+5. Do NOT fabricate experience, responsibilities, or credentials not implied by the original.
 6. Do NOT change: the candidate's name, contact info, school, degree, GPA, dates, or company names.
-7. Return ONLY the full tailored resume text — no explanation, no commentary, no markdown code fences.
+7. Return ONLY the full tailored resume text — no explanation, no commentary, no markdown code fences.`;
 
----ORIGINAL RESUME---
-${resume}
-
----JOB DESCRIPTION---
-${jd}
-
----TAILORED RESUME (return this only):`;
+  // Build content blocks depending on whether we have a PDF or plain text
+  let userContent;
+  if (resumeFileData?.type === 'pdf') {
+    userContent = [
+      { type: 'text', text: instructions },
+      {
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: resumeFileData.b64 },
+        title: 'Candidate Resume',
+      },
+      { type: 'text', text: `---JOB DESCRIPTION---\n${jd}\n\n---TAILORED RESUME (return this only):` },
+    ];
+  } else {
+    const resumeText = resumeFileData?.content || pasteText;
+    userContent = `${instructions}\n\n---ORIGINAL RESUME---\n${resumeText}\n\n---JOB DESCRIPTION---\n${jd}\n\n---TAILORED RESUME (return this only):`;
+  }
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1216,7 +1311,7 @@ ${jd}
       body: JSON.stringify({
         model: 'claude-sonnet-5-20251101',
         max_tokens: 4096,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [{ role: 'user', content: userContent }],
       }),
     });
 
@@ -1234,12 +1329,10 @@ ${jd}
     document.getElementById('resume-output').value = output;
     document.getElementById('resume-out-section').style.display = 'block';
     document.getElementById('resume-out-section').scrollIntoView({behavior:'smooth', block:'start'});
-    statusEl.textContent = '✓ Resume tailored successfully — review and edit below.';
-    statusEl.className = 'tailor-status ok';
+    setStatus('✓ Resume tailored — review and edit below.', 'ok');
 
   } catch(e) {
-    statusEl.textContent = '✗ ' + e.message;
-    statusEl.className = 'tailor-status err';
+    setStatus('✗ ' + e.message, 'err');
   } finally {
     btn.disabled = false;
     icon.textContent = '✦';
