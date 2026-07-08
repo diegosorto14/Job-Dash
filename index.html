@@ -132,9 +132,48 @@ a.apply-link:hover{text-decoration:underline}
 .toast{position:fixed;bottom:24px;right:24px;background:#0f2044;color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
 
+/* ── RESUME EDITOR ── */
+.resume-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.resume-panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.resume-panel h3{font-size:13px;font-weight:700;color:#0f2044;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.resume-panel p.hint{font-size:12px;color:#94a3b8;margin-bottom:12px}
+.resume-panel textarea{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:12.5px;font-family:'Courier New',monospace;resize:vertical;outline:none;color:#1a2233;line-height:1.6;background:#fafbff}
+.resume-panel textarea:focus{border-color:#1a5fb4}
+.jd-url-row{display:flex;gap:8px;margin-bottom:10px}
+.jd-url-row input{flex:1;padding:8px 11px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none}
+.jd-url-row input:focus{border-color:#1a5fb4}
+.jd-url-row button{padding:8px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;white-space:nowrap}
+.jd-url-row button:hover{background:#e2e8f0}
+.resume-actions{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.tailor-btn{background:linear-gradient(135deg,#1a5fb4,#7c3aed);color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity .2s}
+.tailor-btn:hover{opacity:.88}
+.tailor-btn:disabled{opacity:.45;cursor:not-allowed}
+.api-key-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b}
+.api-key-row input{padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;outline:none;width:220px;font-family:monospace}
+.api-key-row input:focus{border-color:#1a5fb4}
+.resume-out-wrap{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.resume-out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.resume-out-head h3{font-size:13px;font-weight:700;color:#0f2044;text-transform:uppercase;letter-spacing:.5px}
+.resume-out-actions{display:flex;gap:8px}
+.out-btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#f1f5f9;color:#475569}
+.out-btn:hover{background:#e2e8f0}
+.out-btn.primary{background:#1a5fb4;color:#fff;border-color:#1a5fb4}
+.out-btn.primary:hover{background:#1e40af}
+#resume-output{width:100%;min-height:520px;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:12.5px;font-family:'Courier New',monospace;resize:vertical;outline:none;color:#1a2233;line-height:1.65;background:#fafbff}
+#resume-output:focus{border-color:#1a5fb4}
+.tailor-status{font-size:12px;color:#64748b;padding:8px 0;min-height:24px}
+.tailor-status.err{color:#dc2626}
+.tailor-status.ok{color:#16a34a}
+.diff-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.diff-legend span{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.changed-tag{background:#fef9c3;color:#92400e}
+.key-setup{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#1e40af}
+.key-setup strong{display:block;margin-bottom:4px}
+
 @media(max-width:900px){
   .kpi-row{grid-template-columns:repeat(3,1fr)}
   .stats-grid{grid-template-columns:1fr}
+  .resume-layout{grid-template-columns:1fr}
 }
 @media(max-width:600px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
@@ -153,6 +192,7 @@ a.apply-link:hover{text-decoration:underline}
     <button class="nav-tab" onclick="showTab('mine')">My Applications</button>
     <button class="nav-tab" onclick="showTab('stats')">Stats</button>
     <button class="nav-tab" onclick="showTab('activity')">Activity</button>
+    <button class="nav-tab" onclick="showTab('resume')">✦ Resume</button>
   </div>
   <div class="nav-right" id="last-updated">Loading…</div>
 </nav>
@@ -358,6 +398,96 @@ a.apply-link:hover{text-decoration:underline}
     <p style="font-size:13px;color:#64748b;margin-top:3px">Every time the daily scanner runs, it logs results here</p>
   </div>
   <div id="activity-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
+</div>
+
+<!-- RESUME EDITOR TAB -->
+<div class="page" id="page-resume">
+  <div style="margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:18px;font-weight:700;color:#0f2044">Resume Tailor</h2>
+      <p style="font-size:13px;color:#64748b;margin-top:3px">Paste your resume + a job description. Claude rewrites it to match — same structure, targeted keywords.</p>
+    </div>
+  </div>
+
+  <!-- API key setup banner -->
+  <div class="key-setup" id="api-key-banner" style="display:none">
+    <strong>One-time setup: add your Anthropic API key</strong>
+    Enter your key below — it's saved only in your browser (never sent anywhere except directly to Anthropic).
+    Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#1d4ed8">console.anthropic.com</a>.
+  </div>
+
+  <!-- Actions bar -->
+  <div class="resume-actions">
+    <button class="tailor-btn" id="tailor-btn" onclick="tailorResume()">
+      <span id="tailor-btn-icon">✦</span> Tailor My Resume
+    </button>
+    <div class="api-key-row">
+      <span>API Key:</span>
+      <input type="password" id="anthropic-key" placeholder="sk-ant-…" oninput="saveApiKey()" autocomplete="off"/>
+      <span id="key-status" style="font-size:11px"></span>
+    </div>
+    <div class="tailor-status" id="tailor-status"></div>
+  </div>
+
+  <!-- Two-panel input -->
+  <div class="resume-layout">
+    <div class="resume-panel">
+      <h3>📄 Your Current Resume</h3>
+      <p class="hint">Paste your resume as plain text. Keep your formatting — Claude will preserve it exactly.</p>
+      <textarea id="resume-input" rows="28" placeholder="Paste your full resume here…
+
+Diego Sorto Taipe
+Finance | Analytics
+diego.sorto14@gmail.com
+
+EDUCATION
+University of Maryland …
+
+EXPERIENCE
+…
+
+SKILLS
+…"></textarea>
+    </div>
+
+    <div class="resume-panel">
+      <h3>🎯 Job Description</h3>
+      <p class="hint">Paste the full job description, or enter a URL and click Fetch.</p>
+      <div class="jd-url-row">
+        <input type="url" id="jd-url" placeholder="https://careers.company.com/job/…"/>
+        <button onclick="fetchJobDesc()">Fetch from URL</button>
+      </div>
+      <textarea id="jd-input" rows="25" placeholder="Paste the job description here…
+
+Finance Leadership Development Program
+Raytheon Technologies · Arlington, VA
+
+About the role:
+…
+
+Responsibilities:
+…
+
+Qualifications:
+…"></textarea>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="resume-out-wrap" id="resume-out-section" style="display:none">
+    <div class="resume-out-head">
+      <div>
+        <h3>✦ Tailored Resume</h3>
+        <p style="font-size:12px;color:#64748b;margin-top:2px">Review and edit below, then copy or download.</p>
+      </div>
+      <div class="resume-out-actions">
+        <button class="out-btn" onclick="copyResume()">Copy Text</button>
+        <button class="out-btn" onclick="downloadResume()">Download .txt</button>
+        <button class="out-btn primary" onclick="tailorResume()">Re-tailor</button>
+      </div>
+    </div>
+    <textarea id="resume-output" placeholder="Your tailored resume will appear here…"></textarea>
+  </div>
 </div>
 
 <!-- NOTES MODAL -->
@@ -965,6 +1095,7 @@ function showTab(name) {
   if (name==='activity') renderActivity();
   if (name==='discover') renderNewJobs();
   if (name==='mine')     renderMine();
+  if (name==='resume')   loadApiKey();
 }
 
 // ── Render all ────────────────────────────────────────────────────────────────
@@ -982,7 +1113,157 @@ function toast(msg) {
 
 function escHtml(s) { return s.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
 
+// ── Resume Tailor ─────────────────────────────────────────────────────────────
+function saveApiKey() {
+  const k = document.getElementById('anthropic-key').value.trim();
+  if (k) {
+    localStorage.setItem('anthropic_api_key', k);
+    document.getElementById('key-status').textContent = '✓ saved';
+    document.getElementById('key-status').style.color = '#16a34a';
+    document.getElementById('api-key-banner').style.display = 'none';
+  }
+}
+
+function loadApiKey() {
+  const k = localStorage.getItem('anthropic_api_key') || '';
+  if (k) {
+    document.getElementById('anthropic-key').value = k;
+    document.getElementById('key-status').textContent = '✓ saved';
+    document.getElementById('key-status').style.color = '#16a34a';
+    document.getElementById('api-key-banner').style.display = 'none';
+  } else {
+    document.getElementById('api-key-banner').style.display = 'block';
+  }
+}
+
+async function fetchJobDesc() {
+  const url = document.getElementById('jd-url').value.trim();
+  if (!url || !url.startsWith('http')) { toast('Enter a valid URL first'); return; }
+  const statusEl = document.getElementById('tailor-status');
+  statusEl.textContent = 'Fetching job description…';
+  statusEl.className = 'tailor-status';
+  try {
+    const proxy = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const res = await fetch(proxy, {signal: AbortSignal.timeout(10000)});
+    const data = await res.json();
+    const html = data.contents || '';
+    // Strip HTML tags and collapse whitespace to get readable plain text
+    const text = html
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+      .replace(/\s{3,}/g, '\n\n').trim().slice(0, 8000);
+    document.getElementById('jd-input').value = text;
+    statusEl.textContent = '✓ Job description fetched — review and trim if needed.';
+    statusEl.className = 'tailor-status ok';
+  } catch(e) {
+    statusEl.textContent = 'Could not fetch URL — paste the job description manually.';
+    statusEl.className = 'tailor-status err';
+  }
+}
+
+async function tailorResume() {
+  const apiKey  = localStorage.getItem('anthropic_api_key') || '';
+  const resume  = document.getElementById('resume-input').value.trim();
+  const jd      = document.getElementById('jd-input').value.trim();
+  const statusEl = document.getElementById('tailor-status');
+  const btn     = document.getElementById('tailor-btn');
+  const icon    = document.getElementById('tailor-btn-icon');
+
+  if (!apiKey) {
+    document.getElementById('api-key-banner').style.display = 'block';
+    statusEl.textContent = 'Add your Anthropic API key above first.';
+    statusEl.className = 'tailor-status err';
+    return;
+  }
+  if (!resume) { toast('Paste your resume in the left panel first.'); return; }
+  if (!jd)     { toast('Paste or fetch a job description in the right panel first.'); return; }
+
+  btn.disabled = true;
+  icon.textContent = '⏳';
+  statusEl.textContent = 'Sending to Claude — this takes ~15 seconds…';
+  statusEl.className = 'tailor-status';
+
+  const prompt = `You are a professional resume editor. Your job is to tailor the resume below to the job description provided.
+
+STRICT RULES — follow every one:
+1. Keep the EXACT same structure, sections, and formatting as the original resume. Do not add or remove sections.
+2. Keep the same number of bullet points per role. Do not add new jobs or roles.
+3. Only change: keywords, skills, action verbs, and specific numbers/metrics where they can be credibly strengthened to match the job description language.
+4. Mirror the terminology and priorities from the job description naturally — if the JD emphasizes "variance analysis" or "cross-functional collaboration", work that language in where it genuinely fits.
+5. Do NOT fabricate experience, responsibilities, or credentials that are not implied by the original resume.
+6. Do NOT change: the candidate's name, contact info, school, degree, GPA, dates, or company names.
+7. Return ONLY the full tailored resume text — no explanation, no commentary, no markdown code fences.
+
+---ORIGINAL RESUME---
+${resume}
+
+---JOB DESCRIPTION---
+${jd}
+
+---TAILORED RESUME (return this only):`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5-20251101',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err?.error?.message || `API error ${res.status}`;
+      if (res.status === 401) throw new Error('Invalid API key — check your key at console.anthropic.com');
+      throw new Error(msg);
+    }
+
+    const data = await res.json();
+    const output = data?.content?.[0]?.text?.trim() || '';
+    if (!output) throw new Error('Empty response from Claude');
+
+    document.getElementById('resume-output').value = output;
+    document.getElementById('resume-out-section').style.display = 'block';
+    document.getElementById('resume-out-section').scrollIntoView({behavior:'smooth', block:'start'});
+    statusEl.textContent = '✓ Resume tailored successfully — review and edit below.';
+    statusEl.className = 'tailor-status ok';
+
+  } catch(e) {
+    statusEl.textContent = '✗ ' + e.message;
+    statusEl.className = 'tailor-status err';
+  } finally {
+    btn.disabled = false;
+    icon.textContent = '✦';
+  }
+}
+
+function copyResume() {
+  const text = document.getElementById('resume-output').value;
+  if (!text) { toast('Nothing to copy yet.'); return; }
+  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!'));
+}
+
+function downloadResume() {
+  const text = document.getElementById('resume-output').value;
+  if (!text) { toast('Nothing to download yet.'); return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], {type:'text/plain'}));
+  a.download = 'resume_tailored.txt';
+  a.click();
+}
+
 boot();
+// Load API key into field on page load
+document.addEventListener('DOMContentLoaded', loadApiKey);
 </script>
 </body>
 </html>
