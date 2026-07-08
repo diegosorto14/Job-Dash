@@ -301,17 +301,6 @@ def check_company_pages():
             pass
     return jobs
 
-def handshake_link():
-    encoded = requests.utils.quote("finance rotational program 2027")
-    return {
-        "title":   "Finance Rotational Programs 2027 — Search on Handshake",
-        "company": "Multiple companies — click to browse",
-        "link":    f"https://joinhandshake.com/jobs/?query={encoded}&job_type=JOB",
-        "source":  "Handshake",
-        "date":    datetime.date.today().isoformat(),
-        "id":      "hs_frp_2027",
-    }
-
 # ── Classify new vs known programs ────────────────────────────────────────────
 def classify_jobs(jobs):
     companies   = load_json(COMPANIES_FILE, [])
@@ -435,18 +424,19 @@ def scan_all():
             seen.add(job["id"])
             new_jobs.append(job)
 
-    # Check company career pages — don't add cp_ IDs to seen so they're re-checked daily
+    # Check company career pages — re-checked daily but only emailed once per posting.
+    # We track cp_ IDs in seen_jobs.json like any other job; they're reset when the
+    # posting disappears and re-added only when a new 2027 trigger phrase appears.
     print("  Checking company career pages...")
     company_page_jobs = check_company_pages()
-    cp_ids_already = {j["id"] for j in new_jobs}
     for job in company_page_jobs:
-        if job["id"] not in cp_ids_already:
+        if job["id"] not in seen:
+            seen.add(job["id"])
             new_jobs.append(job)
 
-    save_json(SEEN_FILE, list(seen))  # only job-board IDs in seen
+    save_json(SEEN_FILE, list(seen))
 
     known_jobs, new_progs = classify_jobs(new_jobs)
-    hs = handshake_link()
 
     # Overwrite new_jobs.json each run — prevents stale accumulation and merge conflicts
     save_json(NEW_JOBS_FILE, known_jobs[:200])
@@ -457,7 +447,7 @@ def scan_all():
     save_json(NEW_PROGRAMS_FILE, (fresh_progs + existing_progs)[:500])
 
     print(f"  Found {len(known_jobs)} new job postings, {len(fresh_progs)} new programs.")
-    return known_jobs, fresh_progs, errors, hs
+    return known_jobs, fresh_progs, errors
 
 # ── Activity log ──────────────────────────────────────────────────────────────
 def log_activity(new_jobs, new_programs, email_sent, email_error=None, errors=None):
@@ -692,12 +682,12 @@ def send_weekly_email():
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print(f"=== FRP Scanner — {datetime.datetime.now()} ===")
-    new_jobs, new_programs, scan_errors, handshake = scan_all()
+    new_jobs, new_programs, scan_errors = scan_all()
     deadline_alerts = get_deadline_alerts(days_ahead=7)
     if deadline_alerts:
         print(f"  {len(deadline_alerts)} deadline alert(s) to send.")
 
-    email_sent, email_error = send_daily_email(new_jobs + [handshake], new_programs, deadline_alerts)
+    email_sent, email_error = send_daily_email(new_jobs, new_programs, deadline_alerts)
 
     if datetime.date.today().weekday() == 6:
         print("  Sending weekly summary...")
