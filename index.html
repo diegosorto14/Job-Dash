@@ -1381,74 +1381,110 @@ async function fetchJobDesc() {
   if (!url || !url.startsWith('http')) { toast('Enter a valid URL first'); return; }
   setStatus('Fetching job description…');
 
-  // Try multiple CORS proxies in order
-  const proxies = [
-    u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
-    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-  ];
-
-  function htmlToText(html) {
-    return html
+  function cleanText(raw) {
+    return raw
       .replace(/<style[\s\S]*?<\/style>/gi, '')
       .replace(/<script[\s\S]*?<\/script>/gi, '')
       .replace(/<[^>]+>/g, ' ')
       .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-      .replace(/\s{3,}/g, '\n\n').trim().slice(0, 8000);
+      .replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim().slice(0, 10000);
   }
 
-  // Try each proxy
-  for (const proxyFn of proxies) {
-    try {
-      const res  = await fetch(proxyFn(url), {signal: AbortSignal.timeout(9000)});
-      if (!res.ok) continue;
-      const data = await res.json().catch(() => null);
-      const html = data?.contents || await res.text?.() || '';
-      if (!html || html.length < 200) continue;
-      const text = htmlToText(html);
-      if (text.length < 100) continue;
-      document.getElementById('jd-input').value = text;
-      detectJD();
-      setStatus('✓ Job description fetched — review below.', 'ok');
-      return;
-    } catch { continue; }
-  }
-
-  // All proxies failed — ask Claude to fetch and summarize it instead
-  const apiKey = localStorage.getItem('anthropic_api_key') || '';
-  if (apiKey) {
-    setStatus('Direct fetch blocked — asking Claude to read the page…');
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-5-20251101',
-          max_tokens: 2048,
-          messages: [{
-            role: 'user',
-            content: `Please fetch this job posting URL and return ONLY the raw job description text — title, company, location, responsibilities, qualifications. No commentary, no formatting, just the text as-is.\n\nURL: ${url}`
-          }],
-        }),
-      });
-      const data = await res.json();
-      const text = data?.content?.[0]?.text?.trim() || '';
-      if (text && text.length > 100) {
+  // 1. Jina AI Reader — best for JS-heavy job sites (LinkedIn, Workday, Greenhouse, Indeed)
+  try {
+    setStatus('Fetching job description…');
+    const res = await fetch(`https://r.jina.ai/${url}`, {
+      signal: AbortSignal.timeout(15000),
+      headers: { 'Accept': 'text/plain' }
+    });
+    if (res.ok) {
+      const text = (await res.text()).trim().slice(0, 10000);
+      if (text.length > 150) {
         document.getElementById('jd-input').value = text;
         detectJD();
-        setStatus('✓ Job description fetched via Claude — review below.', 'ok');
+        setStatus('✓ Job description fetched — review below.', 'ok');
         return;
       }
-    } catch { /* fall through */ }
+    }
+  } catch { /* try next */ }
+
+  // 2. allorigins fallback
+  try {
+    setStatus('Trying alternate fetch…');
+    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(9000)});
+    if (res.ok) {
+      const data = await res.json();
+      const text = cleanText(data?.contents || '');
+      if (text.length > 150) {
+        document.getElementById('jd-input').value = text;
+        detectJD();
+        setStatus('✓ Job description fetched — review below.', 'ok');
+        return;
+      }
+    }
+  } catch { /* try next */ }
+
+  // 3. corsproxy.io fallback
+  try {
+    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(9000)});
+    if (res.ok) {
+      const text = cleanText(await res.text());
+      if (text.length > 150) {
+        document.getElementById('jd-input').value = text;
+        detectJD();
+        setStatus('✓ Job description fetched — review below.', 'ok');
+        return;
+      }
+    }
+  } catch { /* fall through */ }
+
+  // 4. Last resort: try Jina again without Accept header, then send raw HTML to Claude to extract JD
+  const apiKey = localStorage.getItem('anthropic_api_key') || '';
+  if (apiKey) {
+    setStatus('Using Claude to extract job description from page…');
+    let rawContent = '';
+    try {
+      const res = await fetch(`https://r.jina.ai/${url}`, {signal: AbortSignal.timeout(15000)});
+      if (res.ok) rawContent = (await res.text()).slice(0, 12000);
+    } catch { /* ignore */ }
+    if (!rawContent) {
+      try {
+        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(9000)});
+        if (res.ok) { const d = await res.json(); rawContent = cleanText(d?.contents || '').slice(0, 12000); }
+      } catch { /* ignore */ }
+    }
+    if (rawContent && rawContent.length > 100) {
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 1500,
+            messages: [{
+              role: 'user',
+              content: `Extract ONLY the job posting content from the text below. Return the job title, company, location, about the role, responsibilities, and qualifications — plain text, no commentary.\n\n${rawContent}`
+            }],
+          }),
+        });
+        const data = await res.json();
+        const text = data?.content?.[0]?.text?.trim() || '';
+        if (text && text.length > 100) {
+          document.getElementById('jd-input').value = text;
+          detectJD();
+          setStatus('✓ Job description extracted via Claude — review below.', 'ok');
+          return;
+        }
+      } catch { /* fall through */ }
+    }
   }
 
-  // Everything failed
-  setStatus('⚠ Could not auto-fetch — paste the job description manually below.', 'err');
+  setStatus('⚠ Could not fetch this URL — paste the job description text directly into the box below.', 'err');
 }
 
 async function tailorResume() {
