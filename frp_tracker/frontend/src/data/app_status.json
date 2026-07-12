@@ -23,5 +23,20 @@
     "status": "Applied",
     "updated": "2026-06-25T03:55:30",
     "email_sub": "Thank You for Applying"
+  },
+  "78": {
+    "status": "Applied",
+    "updated": "2026-07-12T22:40:55",
+    "email_sub": "Manually added \u2014 Finance Leadership Development Program"
+  },
+  "101": {
+    "status": "Applied",
+    "updated": "2026-07-12T22:40:55",
+    "email_sub": "Manually added \u2014 Financial Management Program"
+  },
+  "email_sc_johnson": {
+    "status": "Applied",
+    "updated": "2026-07-12T22:40:55",
+    "email_sub": "Manually added \u2014 SC Johnson Finance Rotational Program"
   }
 }

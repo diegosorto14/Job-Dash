@@ -10,5 +10,17 @@
     "notes": "Auto-added from email: Thank you for applying to Robert Bosch LLC",
     "added": "2026-06-25T03:55:30",
     "auto": true
+  },
+  {
+    "_id": "email_sc_johnson",
+    "company": "SC Johnson",
+    "program": "Finance Rotational Program",
+    "sector": "Consumer Goods & Retail",
+    "url": "https://www.scjohnson.com/en/careers",
+    "opens": "",
+    "closes": "",
+    "notes": "Manually added \u2014 applied via company portal",
+    "added": "2026-07-12T22:40:55",
+    "auto": false
   }
 ]
