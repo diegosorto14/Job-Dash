@@ -813,7 +813,7 @@ function renderTable() {
       <td style="font-size:12px;color:#475569">${escHtml(c.sector)}</td>
       <td style="font-size:12px;color:#475569">${window}</td>
       <td>${statusSel(c.id, st)}</td>
-      <td><button class="notes-btn${note?' has-note':''}" onclick="openNote(${c.id},'${escHtml(c.company)}')">${note?'Edit note':'+ Note'}</button></td>
+      <td><button class="notes-btn${note?' has-note':''}" data-id="${c.id}" data-co="${escHtml(c.company)}" onclick="openNote(this.dataset.id,this.dataset.co)">${note?'Edit note':'+ Note'}</button></td>
       <td><a class="apply-link" href="${safeUrl(c.link)}" target="_blank" rel="noopener noreferrer">Apply →</a></td>
     </tr>`;
   }).join('');
@@ -967,7 +967,7 @@ function renderMine() {
       <td style="font-size:12px;color:#64748b">${escHtml(a.sector||'—')}</td>
       <td><span style="font-size:11px;background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:20px;font-weight:600">${escHtml(a.source)}</span></td>
       <td>${statusSel(a._id, st)}</td>
-      <td><button class="notes-btn${note?' has-note':''}" onclick="openNote('${a._id}','${escHtml(a.company)}')">${note?'Edit note':'+ Note'}</button></td>
+      <td><button class="notes-btn${note?' has-note':''}" data-id="${escHtml(a._id)}" data-co="${escHtml(a.company)}" onclick="openNote(this.dataset.id,this.dataset.co)">${note?'Edit note':'+ Note'}</button></td>
       <td>${a.url?`<a class="apply-link" href="${safeUrl(a.url)}" target="_blank" rel="noopener noreferrer">Open →</a>`:'—'}</td>
       <td>${deleteBtn}</td>
     </tr>`;
@@ -1121,7 +1121,7 @@ function renderStats() {
     ? sorted.map(([name, count], i) => {
         const pct = Math.round(count / total * 100);
         return `<div class="sector-row" style="margin-bottom:12px">
-          <div style="width:160px;font-size:13px;color:#1a2233;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+          <div style="width:160px;font-size:13px;color:#1a2233;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(name)}</div>
           <div class="sector-bar-wrap" style="flex:1;height:10px">
             <div class="sector-bar" style="width:${pct}%;background:${COLORS[i%COLORS.length]}"></div>
           </div>
@@ -1147,12 +1147,12 @@ function renderStats() {
           : `<span style="font-size:11px;background:#fef9c3;color:#92400e;padding:2px 7px;border-radius:20px;font-weight:600">Not Applied</span>`;
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f5f9">
           <div>
-            <div style="font-size:13px;font-weight:600;color:#0f2044">${c.company||c.title}</div>
-            <div style="font-size:11px;color:#64748b">${c.program||c.sector||''}</div>
+            <div style="font-size:13px;font-weight:600;color:#0f2044">${escHtml(c.company||c.title||'')}</div>
+            <div style="font-size:11px;color:#64748b">${escHtml(c.program||c.sector||'')}</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             ${badge}
-            <a href="${c.link}" target="_blank" style="font-size:12px;color:#1a5fb4;font-weight:600;text-decoration:none">Apply →</a>
+            <a href="${safeUrl(c.link)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:#1a5fb4;font-weight:600;text-decoration:none">Apply →</a>
           </div>
         </div>`;
       }).join('')
@@ -1169,12 +1169,12 @@ function renderStats() {
         const urgent = days <= 7;
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f5f9">
           <div>
-            <div style="font-size:13px;font-weight:600;color:#0f2044">${c.company}</div>
-            <div style="font-size:11px;color:#64748b">${c.program}</div>
+            <div style="font-size:13px;font-weight:600;color:#0f2044">${escHtml(c.company)}</div>
+            <div style="font-size:11px;color:#64748b">${escHtml(c.program)}</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:12px;font-weight:700;color:${urgent?'#dc2626':'#ea580c'}">${days}d left</span>
-            <a href="${c.link}" target="_blank" style="font-size:12px;color:#1a5fb4;font-weight:600;text-decoration:none">Apply →</a>
+            <a href="${safeUrl(c.link)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:#1a5fb4;font-weight:600;text-decoration:none">Apply →</a>
           </div>
         </div>`;
       }).join('')
