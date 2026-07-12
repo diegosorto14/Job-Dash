@@ -204,6 +204,44 @@ a.apply-link:hover{text-decoration:underline}
 .drop-icon{font-size:30px;margin-bottom:8px}
 .drop-label{font-size:13px;font-weight:600;color:#475569;margin-bottom:3px}
 .drop-sub{font-size:11px;color:#94a3b8}
+/* ATS Report */
+.ats-report{display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.ats-report.visible{display:block}
+.ats-report-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.ats-grade{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;flex-shrink:0;border:4px solid}
+.ats-grade.A{background:#dcfce7;color:#166534;border-color:#86efac}
+.ats-grade.B{background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+.ats-grade.C{background:#fef9c3;color:#854d0e;border-color:#fde047}
+.ats-grade.D{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.ats-title{flex:1}
+.ats-title h4{font-size:15px;font-weight:800;color:#0f2044;margin-bottom:2px}
+.ats-title p{font-size:12px;color:#64748b}
+.ats-sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.ats-section{background:#f8fafc;border-radius:8px;padding:12px}
+.ats-section-label{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.ats-section-score{font-size:20px;font-weight:800;color:#0f2044;margin-bottom:4px}
+.ats-section-bar{height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden}
+.ats-section-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.ats-missing{margin-top:12px}
+.ats-missing h5{font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px}
+.ats-missing-chips{display:flex;flex-wrap:wrap;gap:5px}
+.ats-missing-chip{font-size:11px;padding:2px 9px;border-radius:20px;background:#fee2e2;color:#991b1b;font-weight:600}
+.ats-tips{margin-top:12px;border-top:1px solid #f1f5f9;padding-top:12px}
+.ats-tips h5{font-size:12px;font-weight:700;color:#0f2044;margin-bottom:6px}
+.ats-tip{font-size:12px;color:#475569;padding:5px 0;border-bottom:1px solid #f8fafc;display:flex;gap:8px}
+.ats-tip:last-child{border:none}
+.ats-section-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.ats-section-row>span:first-child{min-width:140px;font-weight:600;color:#475569}
+.ats-section-bar-wrap{flex:1;height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden}
+.ats-section-bar{height:100%;background:#1a5fb4;border-radius:99px;width:0;transition:width .6s ease}
+.ats-section-row>span:last-child{min-width:36px;text-align:right;font-size:12px;font-weight:700;color:#0f2044}
+.ats-missing strong,.ats-tips strong{font-size:12px;font-weight:700;color:#0f2044;display:block;margin-bottom:6px}
+.ats-tips ul{padding-left:16px;font-size:12px;color:#475569;line-height:1.7}
+/* Print / PDF styles */
+@media print{
+  body > *:not(#pdf-frame){display:none !important}
+  #pdf-frame{display:block !important;position:fixed;inset:0;background:#fff;padding:40px;font-family:Arial,sans-serif;font-size:12px;line-height:1.6;color:#000;white-space:pre-wrap;word-break:break-word}
+}
 
 @media(max-width:900px){
   .kpi-row{grid-template-columns:repeat(3,1fr)}
@@ -545,7 +583,7 @@ Qualifications:
       </div>
       <div class="resume-out-actions">
         <button class="out-btn" onclick="copyResume()">📋 Copy</button>
-        <button class="out-btn" onclick="downloadResume()">⬇ Download .txt</button>
+        <button class="out-btn" onclick="downloadPDF()">⬇ Download PDF</button>
         <button class="out-btn primary" onclick="tailorResume()">↺ Re-tailor</button>
       </div>
     </div>
@@ -568,6 +606,25 @@ Qualifications:
       </div>
     </div>
   </div>
+
+  <!-- ATS Score Report -->
+  <div class="ats-report" id="ats-report">
+    <div class="ats-report-header">
+      <div class="ats-grade" id="ats-grade">A</div>
+      <div>
+        <div style="font-weight:700;font-size:16px;color:#0f2044">ATS Compatibility Score</div>
+        <div style="font-size:13px;color:#64748b" id="ats-headline">Your resume passes ATS screening at a high rate</div>
+      </div>
+    </div>
+    <div class="ats-sections">
+      <div class="ats-section-row"><span>Keyword Match</span><div class="ats-section-bar-wrap"><div class="ats-section-bar" id="ats-bar-keywords"></div></div><span id="ats-pct-keywords">0%</span></div>
+      <div class="ats-section-row"><span>Formatting</span><div class="ats-section-bar-wrap"><div class="ats-section-bar" id="ats-bar-formatting"></div></div><span id="ats-pct-formatting">0%</span></div>
+      <div class="ats-section-row"><span>Experience Relevance</span><div class="ats-section-bar-wrap"><div class="ats-section-bar" id="ats-bar-experience"></div></div><span id="ats-pct-experience">0%</span></div>
+      <div class="ats-section-row"><span>Skills Alignment</span><div class="ats-section-bar-wrap"><div class="ats-section-bar" id="ats-bar-skills"></div></div><span id="ats-pct-skills">0%</span></div>
+    </div>
+    <div class="ats-missing" id="ats-missing"></div>
+    <div class="ats-tips" id="ats-tips"></div>
+  </div>
 </div>
 
 <!-- NOTES MODAL -->
@@ -584,6 +641,7 @@ Qualifications:
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="pdf-frame" style="display:none"></div>
 
 <script>
 // ── Data sources (GitHub raw URLs) ────────────────────────────────────────────
@@ -1423,11 +1481,23 @@ STRICT RULES:
 5. Do NOT fabricate experience, responsibilities, or credentials not implied by the original.
 6. Do NOT change: the candidate's name, contact info, school, degree, GPA, dates, or company names.
 
-OUTPUT FORMAT — return a JSON object with exactly these two keys:
+OUTPUT FORMAT — return a JSON object with exactly these keys:
 {
   "resume": "<full tailored resume text, preserving all line breaks>",
   "keywords": ["keyword1", "keyword2", ...],
-  "score": <integer 0-100 representing how well the tailored resume now matches the JD>
+  "score": <integer 0-100 representing how well the tailored resume matches the JD>,
+  "ats": {
+    "grade": "<A, B, C, or D based on overall ATS likelihood>",
+    "headline": "<one sentence summary of ATS result>",
+    "sections": {
+      "keywords": <integer 0-100>,
+      "formatting": <integer 0-100>,
+      "experience": <integer 0-100>,
+      "skills": <integer 0-100>
+    },
+    "missing_keywords": ["term1", "term2", ...],
+    "tips": ["tip1", "tip2", "tip3"]
+  }
 }
 No markdown, no code fences, no explanation — only the raw JSON object.`;
 
@@ -1475,12 +1545,13 @@ No markdown, no code fences, no explanation — only the raw JSON object.`;
     if (!raw) throw new Error('Empty response from Claude');
 
     // Parse JSON response
-    let tailored = raw, keywords = [], score = null;
+    let tailored = raw, keywords = [], score = null, ats = null;
     try {
       const parsed = JSON.parse(raw);
       tailored  = parsed.resume  || raw;
       keywords  = parsed.keywords || [];
       score     = typeof parsed.score === 'number' ? parsed.score : null;
+      ats       = parsed.ats || null;
     } catch {
       // Claude returned plain text — use as-is
       tailored = raw;
@@ -1509,6 +1580,35 @@ No markdown, no code fences, no explanation — only the raw JSON object.`;
         `${keywords.length} keyword${keywords.length !== 1 ? 's' : ''} woven in from the job description`;
       const chips = document.getElementById('kw-chips');
       chips.innerHTML = keywords.slice(0, 12).map(k => `<span class="kw-chip added">${escHtml(k)}</span>`).join('');
+    }
+
+    // Render ATS report
+    if (ats) {
+      const gradeEl = document.getElementById('ats-grade');
+      gradeEl.textContent = ats.grade || 'B';
+      gradeEl.className = 'ats-grade ' + (ats.grade || 'B');
+      document.getElementById('ats-headline').textContent = ats.headline || '';
+      const sec = ats.sections || {};
+      ['keywords','formatting','experience','skills'].forEach(k => {
+        const pct = sec[k] ?? 0;
+        document.getElementById('ats-bar-'+k).style.width = pct + '%';
+        document.getElementById('ats-pct-'+k).textContent = pct + '%';
+      });
+      const missingEl = document.getElementById('ats-missing');
+      if (ats.missing_keywords && ats.missing_keywords.length) {
+        missingEl.innerHTML = '<strong>Missing keywords:</strong> ' +
+          ats.missing_keywords.map(k => `<span class="kw-chip">${escHtml(k)}</span>`).join(' ');
+      } else {
+        missingEl.innerHTML = '';
+      }
+      const tipsEl = document.getElementById('ats-tips');
+      if (ats.tips && ats.tips.length) {
+        tipsEl.innerHTML = '<strong>Tips to improve:</strong><ul>' +
+          ats.tips.map(t => `<li>${escHtml(t)}</li>`).join('') + '</ul>';
+      } else {
+        tipsEl.innerHTML = '';
+      }
+      document.getElementById('ats-report').classList.add('visible');
     }
 
   } catch(e) {
@@ -1564,13 +1664,13 @@ function copyResume() {
   navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!'));
 }
 
-function downloadResume() {
+function downloadPDF() {
   const text = document.getElementById('resume-output').value;
   if (!text) { toast('Nothing to download yet.'); return; }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], {type:'text/plain'}));
-  a.download = 'resume_tailored.txt';
-  a.click();
+  const frame = document.getElementById('pdf-frame');
+  frame.textContent = text;
+  window.print();
+  setTimeout(() => { frame.textContent = ''; }, 1000);
 }
 
 boot();
