@@ -134,45 +134,74 @@ a.apply-link:hover{text-decoration:underline}
 
 /* ── RESUME EDITOR ── */
 .resume-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.resume-panel{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.resume-panel h3{font-size:13px;font-weight:700;color:#0f2044;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
-.resume-panel p.hint{font-size:12px;color:#94a3b8;margin-bottom:12px}
-.resume-panel textarea{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:12.5px;font-family:'Courier New',monospace;resize:vertical;outline:none;color:#1a2233;line-height:1.6;background:#fafbff}
-.resume-panel textarea:focus{border-color:#1a5fb4}
+.resume-panel{background:#fff;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.08);border:1px solid #f1f5f9}
+.resume-panel h3{font-size:13px;font-weight:700;color:#0f2044;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.resume-panel p.hint{font-size:12px;color:#94a3b8;margin-bottom:14px}
+.resume-panel textarea{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:12.5px;font-family:'Courier New',monospace;resize:vertical;outline:none;color:#1a2233;line-height:1.6;background:#fafbff;transition:border-color .15s}
+.resume-panel textarea:focus{border-color:#1a5fb4;box-shadow:0 0 0 3px rgba(26,95,180,.08)}
 .jd-url-row{display:flex;gap:8px;margin-bottom:10px}
-.jd-url-row input{flex:1;padding:8px 11px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none}
-.jd-url-row input:focus{border-color:#1a5fb4}
-.jd-url-row button{padding:8px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;white-space:nowrap}
+.jd-url-row input{flex:1;padding:8px 11px;border:1px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;transition:border-color .15s}
+.jd-url-row input:focus{border-color:#1a5fb4;box-shadow:0 0 0 3px rgba(26,95,180,.08)}
+.jd-url-row button{padding:8px 14px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:#475569;white-space:nowrap;transition:background .15s}
 .jd-url-row button:hover{background:#e2e8f0}
-.resume-actions{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-.tailor-btn{background:linear-gradient(135deg,#1a5fb4,#7c3aed);color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity .2s}
-.tailor-btn:hover{opacity:.88}
-.tailor-btn:disabled{opacity:.45;cursor:not-allowed}
+/* Detected job info strip */
+.jd-detected{display:none;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#166534}
+.jd-detected.visible{display:flex}
+.jd-detected strong{font-weight:700}
+/* Actions bar */
+.resume-actions{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.tailor-btn{background:linear-gradient(135deg,#1a5fb4 0%,#7c3aed 100%);color:#fff;border:none;border-radius:9px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:9px;transition:opacity .2s,box-shadow .2s;box-shadow:0 2px 10px rgba(26,95,180,.25)}
+.tailor-btn:hover{opacity:.9;box-shadow:0 4px 16px rgba(26,95,180,.35)}
+.tailor-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
 .api-key-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b}
-.api-key-row input{padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;outline:none;width:220px;font-family:monospace}
+.api-key-row input{padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;outline:none;width:220px;font-family:monospace;transition:border-color .15s}
 .api-key-row input:focus{border-color:#1a5fb4}
-.resume-out-wrap{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
-.resume-out-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.resume-out-head h3{font-size:13px;font-weight:700;color:#0f2044;text-transform:uppercase;letter-spacing:.5px}
-.resume-out-actions{display:flex;gap:8px}
-.out-btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#f1f5f9;color:#475569}
+/* Score badge */
+.match-score-bar{display:none;align-items:center;gap:14px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.match-score-bar.visible{display:flex;flex-wrap:wrap}
+.score-ring-wrap{position:relative;width:56px;height:56px;flex-shrink:0}
+.score-ring-wrap svg{transform:rotate(-90deg)}
+.score-ring-bg{fill:none;stroke:#e2e8f0;stroke-width:5}
+.score-ring-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0f2044}
+.score-info{flex:1;min-width:160px}
+.score-info h4{font-size:13px;font-weight:700;color:#0f2044;margin-bottom:4px}
+.score-info p{font-size:11.5px;color:#64748b}
+.kw-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.kw-chip{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:600;background:#dbeafe;color:#1e40af}
+.kw-chip.added{background:#dcfce7;color:#166534}
+/* Output */
+.resume-out-wrap{background:#fff;border-radius:12px;padding:22px;box-shadow:0 1px 6px rgba(0,0,0,.08);border:1px solid #f1f5f9}
+.resume-out-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.resume-out-head h3{font-size:13px;font-weight:700;color:#0f2044;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px}
+.resume-out-head p{font-size:12px;color:#64748b}
+.resume-out-actions{display:flex;gap:8px;flex-wrap:wrap}
+.out-btn{padding:7px 15px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e2e8f0;background:#f8fafc;color:#475569;transition:background .15s}
 .out-btn:hover{background:#e2e8f0}
 .out-btn.primary{background:#1a5fb4;color:#fff;border-color:#1a5fb4}
 .out-btn.primary:hover{background:#1e40af}
-#resume-output{width:100%;min-height:520px;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:12.5px;font-family:'Courier New',monospace;resize:vertical;outline:none;color:#1a2233;line-height:1.65;background:#fafbff}
-#resume-output:focus{border-color:#1a5fb4}
-.tailor-status{font-size:12px;color:#64748b;padding:8px 0;min-height:24px}
+/* Side-by-side diff view */
+.diff-toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.diff-toggle-row span{font-size:12px;color:#64748b;font-weight:600}
+.view-toggle{display:flex;border:1px solid #e2e8f0;border-radius:7px;overflow:hidden}
+.view-toggle button{padding:5px 13px;border:none;background:#f8fafc;font-size:12px;font-weight:600;color:#64748b;cursor:pointer}
+.view-toggle button.active{background:#1a5fb4;color:#fff}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.diff-pane-label{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+#resume-output,#resume-original-mirror{width:100%;min-height:480px;border:1px solid #e2e8f0;border-radius:8px;padding:14px;font-size:12.5px;font-family:'Courier New',monospace;resize:vertical;outline:none;color:#1a2233;line-height:1.65;background:#fafbff;transition:border-color .15s}
+#resume-output:focus{border-color:#1a5fb4;box-shadow:0 0 0 3px rgba(26,95,180,.08)}
+#resume-original-mirror{background:#f8fafc;color:#94a3b8;resize:none}
+.single-view #resume-original-mirror,.single-view .diff-pane-label:first-child{display:none}
+.single-view{grid-template-columns:1fr}
+.tailor-status{font-size:12px;color:#64748b;padding:6px 0;min-height:22px}
 .tailor-status.err{color:#dc2626}
 .tailor-status.ok{color:#16a34a}
-.diff-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
-.diff-legend span{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
-.changed-tag{background:#fef9c3;color:#92400e}
 .key-setup{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:#1e40af}
 .key-setup strong{display:block;margin-bottom:4px}
-.drop-zone{border:2px dashed #cbd5e1;border-radius:10px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:4px;background:#fafbff}
+.drop-zone{border:2px dashed #cbd5e1;border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:4px;background:#fafbff}
 .drop-zone:hover,.drop-zone.drag-over{border-color:#1a5fb4;background:#eff6ff}
 .drop-zone.has-file{border-color:#16a34a;background:#f0fdf4;border-style:solid}
-.drop-icon{font-size:28px;margin-bottom:6px}
+.drop-icon{font-size:30px;margin-bottom:8px}
 .drop-label{font-size:13px;font-weight:600;color:#475569;margin-bottom:3px}
 .drop-sub{font-size:11px;color:#94a3b8}
 
@@ -410,16 +439,16 @@ a.apply-link:hover{text-decoration:underline}
 <div class="page" id="page-resume">
   <div style="margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
-      <h2 style="font-size:18px;font-weight:700;color:#0f2044">Resume Tailor</h2>
-      <p style="font-size:13px;color:#64748b;margin-top:3px">Paste your resume + a job description. Claude rewrites it to match — same structure, targeted keywords.</p>
+      <h2 style="font-size:20px;font-weight:800;color:#0f2044">✦ Resume Tailor</h2>
+      <p style="font-size:13px;color:#64748b;margin-top:4px">Upload your resume + paste a job description. Claude rewrites it to match — same structure, smarter keywords.</p>
     </div>
   </div>
 
   <!-- API key setup banner -->
   <div class="key-setup" id="api-key-banner" style="display:none">
     <strong>One-time setup: add your Anthropic API key</strong>
-    Enter your key below — it's saved only in your browser (never sent anywhere except directly to Anthropic).
-    Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#1d4ed8">console.anthropic.com</a>.
+    Enter your key below — saved only in your browser, sent directly to Anthropic only.
+    Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style="color:#1d4ed8">console.anthropic.com</a>.
   </div>
 
   <!-- Actions bar -->
@@ -435,13 +464,30 @@ a.apply-link:hover{text-decoration:underline}
     <div class="tailor-status" id="tailor-status"></div>
   </div>
 
+  <!-- Match score bar (shown after tailoring) -->
+  <div class="match-score-bar" id="match-score-bar">
+    <div class="score-ring-wrap">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle class="score-ring-bg" cx="28" cy="28" r="24"/>
+        <circle class="score-ring-fill" id="score-ring-fill" cx="28" cy="28" r="24"
+          stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+      </svg>
+      <div class="score-num" id="score-num">—</div>
+    </div>
+    <div class="score-info">
+      <h4 id="score-label">Keyword Match Score</h4>
+      <p id="score-desc">Keywords from the JD woven into your resume</p>
+      <div class="kw-chips" id="kw-chips"></div>
+    </div>
+  </div>
+
   <!-- Two-panel input -->
   <div class="resume-layout">
+    <!-- Left: Resume upload -->
     <div class="resume-panel">
-      <h3>📄 Your Current Resume</h3>
-      <p class="hint">Upload your file <strong>or</strong> paste text below. PDF recommended — Claude reads it natively.</p>
+      <h3>📄 Your Resume</h3>
+      <p class="hint">Upload your file — PDF recommended (Claude reads it natively). DOCX and TXT also work.</p>
 
-      <!-- Drop zone -->
       <div class="drop-zone" id="resume-drop" onclick="document.getElementById('resume-file').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleResumeDrop(event)">
         <input type="file" id="resume-file" accept=".pdf,.txt,.docx,.doc,.rtf" style="display:none" onchange="handleResumeFile(this.files[0])"/>
         <div id="drop-content">
@@ -456,22 +502,28 @@ a.apply-link:hover{text-decoration:underline}
         </div>
       </div>
 
-      <div style="display:flex;align-items:center;gap:10px;margin:12px 0">
+      <div style="display:flex;align-items:center;gap:10px;margin:14px 0 10px">
         <div style="flex:1;height:1px;background:#e2e8f0"></div>
         <span style="font-size:11px;color:#94a3b8;font-weight:600">OR PASTE TEXT</span>
         <div style="flex:1;height:1px;background:#e2e8f0"></div>
       </div>
-      <textarea id="resume-input" rows="14" placeholder="Paste resume text here as a fallback if file upload isn't working…"></textarea>
+      <textarea id="resume-input" rows="14" placeholder="Paste resume text here as a fallback…"></textarea>
     </div>
 
+    <!-- Right: Job description -->
     <div class="resume-panel">
       <h3>🎯 Job Description</h3>
-      <p class="hint">Paste the full job description, or enter a URL and click Fetch.</p>
+      <p class="hint">Paste the full JD below, or enter a URL and click Fetch.</p>
       <div class="jd-url-row">
         <input type="url" id="jd-url" placeholder="https://careers.company.com/job/…"/>
-        <button onclick="fetchJobDesc()">Fetch from URL</button>
+        <button onclick="fetchJobDesc()">Fetch URL</button>
       </div>
-      <textarea id="jd-input" rows="25" placeholder="Paste the job description here…
+      <!-- Auto-detected role strip -->
+      <div class="jd-detected" id="jd-detected">
+        <span>🏢</span>
+        <div><strong id="jd-det-role">Role</strong> at <strong id="jd-det-co">Company</strong></div>
+      </div>
+      <textarea id="jd-input" rows="24" placeholder="Paste the job description here…
 
 Finance Leadership Development Program
 Raytheon Technologies · Arlington, VA
@@ -479,11 +531,8 @@ Raytheon Technologies · Arlington, VA
 About the role:
 …
 
-Responsibilities:
-…
-
 Qualifications:
-…"></textarea>
+…" oninput="detectJD()"></textarea>
     </div>
   </div>
 
@@ -492,15 +541,32 @@ Qualifications:
     <div class="resume-out-head">
       <div>
         <h3>✦ Tailored Resume</h3>
-        <p style="font-size:12px;color:#64748b;margin-top:2px">Review and edit below, then copy or download.</p>
+        <p>Review and edit below — changes from your original are on the right.</p>
       </div>
       <div class="resume-out-actions">
-        <button class="out-btn" onclick="copyResume()">Copy Text</button>
-        <button class="out-btn" onclick="downloadResume()">Download .txt</button>
-        <button class="out-btn primary" onclick="tailorResume()">Re-tailor</button>
+        <button class="out-btn" onclick="copyResume()">📋 Copy</button>
+        <button class="out-btn" onclick="downloadResume()">⬇ Download .txt</button>
+        <button class="out-btn primary" onclick="tailorResume()">↺ Re-tailor</button>
       </div>
     </div>
-    <textarea id="resume-output" placeholder="Your tailored resume will appear here…"></textarea>
+    <!-- View toggle -->
+    <div class="diff-toggle-row">
+      <span>View:</span>
+      <div class="view-toggle">
+        <button class="active" id="vt-split" onclick="setDiffView('split')">Side by Side</button>
+        <button id="vt-single" onclick="setDiffView('single')">Tailored Only</button>
+      </div>
+    </div>
+    <div class="diff-grid" id="diff-grid">
+      <div>
+        <div class="diff-pane-label">Original</div>
+        <textarea id="resume-original-mirror" readonly placeholder="Your original resume will appear here for comparison…"></textarea>
+      </div>
+      <div>
+        <div class="diff-pane-label">Tailored ✦</div>
+        <textarea id="resume-output" placeholder="Your tailored resume will appear here…"></textarea>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1219,19 +1285,28 @@ function setStatus(msg, cls='') {
 }
 
 function saveApiKey() {
-  const k = document.getElementById('anthropic-key').value.trim();
-  if (k) {
+  const input = document.getElementById('anthropic-key');
+  const k = input.value.trim();
+  // If user typed the masked placeholder back, don't overwrite the real key
+  if (k === '••••••••••••••••' || k.startsWith('••')) return;
+  if (k.startsWith('sk-')) {
     localStorage.setItem('anthropic_api_key', k);
+    // Mask after saving — show only last 4 chars so shoulder-surfers see nothing
+    input.value = '••••••••••••••••' + k.slice(-4);
     document.getElementById('key-status').textContent = '✓ saved';
     document.getElementById('key-status').style.color = '#16a34a';
     document.getElementById('api-key-banner').style.display = 'none';
+  } else if (k) {
+    document.getElementById('key-status').textContent = '✗ must start with sk-';
+    document.getElementById('key-status').style.color = '#dc2626';
   }
 }
 
 function loadApiKey() {
   const k = localStorage.getItem('anthropic_api_key') || '';
   if (k) {
-    document.getElementById('anthropic-key').value = k;
+    // Show masked version — real key never displayed after first save
+    document.getElementById('anthropic-key').value = '••••••••••••••••' + k.slice(-4);
     document.getElementById('key-status').textContent = '✓ saved';
     document.getElementById('key-status').style.color = '#16a34a';
     document.getElementById('api-key-banner').style.display = 'none';
@@ -1284,32 +1359,38 @@ async function tailorResume() {
   icon.textContent = '⏳';
   setStatus('Sending to Claude — this takes ~15 seconds…');
 
-  const instructions = `You are a professional resume editor. Tailor the resume to the job description.
+  const instructions = `You are a professional resume editor. Tailor the candidate's resume to the job description below.
 
 STRICT RULES:
 1. Keep the EXACT same structure, sections, and formatting as the original resume. Do not add or remove sections.
 2. Keep the same number of bullet points per role. Do not add new jobs or roles.
 3. Only change: keywords, skills, action verbs, and numbers/metrics where they can be credibly strengthened to match the job description language.
-4. Mirror the JD's terminology naturally — if it emphasizes "variance analysis" or "cross-functional collaboration", work that language in where it genuinely fits.
+4. Mirror the JD's terminology naturally — if it emphasizes "variance analysis" or "cross-functional collaboration", work that language in where it fits.
 5. Do NOT fabricate experience, responsibilities, or credentials not implied by the original.
 6. Do NOT change: the candidate's name, contact info, school, degree, GPA, dates, or company names.
-7. Return ONLY the full tailored resume text — no explanation, no commentary, no markdown code fences.`;
 
-  // Build content blocks depending on whether we have a PDF or plain text
+OUTPUT FORMAT — return a JSON object with exactly these two keys:
+{
+  "resume": "<full tailored resume text, preserving all line breaks>",
+  "keywords": ["keyword1", "keyword2", ...],
+  "score": <integer 0-100 representing how well the tailored resume now matches the JD>
+}
+No markdown, no code fences, no explanation — only the raw JSON object.`;
+
+  const resumeText = resumeFileData?.content || pasteText;
+
+  // Store original for diff view
+  const originalText = resumeFileData?.type === 'pdf' ? '(PDF — original displayed after tailoring)' : resumeText;
+
   let userContent;
   if (resumeFileData?.type === 'pdf') {
     userContent = [
       { type: 'text', text: instructions },
-      {
-        type: 'document',
-        source: { type: 'base64', media_type: 'application/pdf', data: resumeFileData.b64 },
-        title: 'Candidate Resume',
-      },
-      { type: 'text', text: `---JOB DESCRIPTION---\n${jd}\n\n---TAILORED RESUME (return this only):` },
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: resumeFileData.b64 }, title: 'Candidate Resume' },
+      { type: 'text', text: `---JOB DESCRIPTION---\n${jd}` },
     ];
   } else {
-    const resumeText = resumeFileData?.content || pasteText;
-    userContent = `${instructions}\n\n---ORIGINAL RESUME---\n${resumeText}\n\n---JOB DESCRIPTION---\n${jd}\n\n---TAILORED RESUME (return this only):`;
+    userContent = `${instructions}\n\n---ORIGINAL RESUME---\n${resumeText}\n\n---JOB DESCRIPTION---\n${jd}`;
   }
 
   try {
@@ -1336,19 +1417,90 @@ STRICT RULES:
     }
 
     const data = await res.json();
-    const output = data?.content?.[0]?.text?.trim() || '';
-    if (!output) throw new Error('Empty response from Claude');
+    const raw = data?.content?.[0]?.text?.trim() || '';
+    if (!raw) throw new Error('Empty response from Claude');
 
-    document.getElementById('resume-output').value = output;
+    // Parse JSON response
+    let tailored = raw, keywords = [], score = null;
+    try {
+      const parsed = JSON.parse(raw);
+      tailored  = parsed.resume  || raw;
+      keywords  = parsed.keywords || [];
+      score     = typeof parsed.score === 'number' ? parsed.score : null;
+    } catch {
+      // Claude returned plain text — use as-is
+      tailored = raw;
+    }
+
+    // Populate output
+    document.getElementById('resume-output').value = tailored;
+    document.getElementById('resume-original-mirror').value = originalText;
     document.getElementById('resume-out-section').style.display = 'block';
     document.getElementById('resume-out-section').scrollIntoView({behavior:'smooth', block:'start'});
     setStatus('✓ Resume tailored — review and edit below.', 'ok');
+
+    // Show score ring
+    if (score !== null) {
+      const bar = document.getElementById('match-score-bar');
+      bar.classList.add('visible');
+      document.getElementById('score-num').textContent = score + '%';
+      const color = score >= 75 ? '#16a34a' : score >= 50 ? '#d97706' : '#dc2626';
+      const ring = document.getElementById('score-ring-fill');
+      ring.style.stroke = color;
+      const circumference = 150.8;
+      ring.style.strokeDashoffset = circumference - (circumference * score / 100);
+      document.getElementById('score-label').textContent =
+        score >= 75 ? 'Strong match' : score >= 50 ? 'Good match' : 'Needs more alignment';
+      document.getElementById('score-desc').textContent =
+        `${keywords.length} keyword${keywords.length !== 1 ? 's' : ''} woven in from the job description`;
+      const chips = document.getElementById('kw-chips');
+      chips.innerHTML = keywords.slice(0, 12).map(k => `<span class="kw-chip added">${escHtml(k)}</span>`).join('');
+    }
 
   } catch(e) {
     setStatus('✗ ' + e.message, 'err');
   } finally {
     btn.disabled = false;
     icon.textContent = '✦';
+  }
+}
+
+function setDiffView(mode) {
+  const grid = document.getElementById('diff-grid');
+  const btnSplit = document.getElementById('vt-split');
+  const btnSingle = document.getElementById('vt-single');
+  if (mode === 'split') {
+    grid.classList.remove('single-view');
+    btnSplit.classList.add('active');
+    btnSingle.classList.remove('active');
+  } else {
+    grid.classList.add('single-view');
+    btnSingle.classList.add('active');
+    btnSplit.classList.remove('active');
+  }
+}
+
+function detectJD() {
+  const text = document.getElementById('jd-input').value;
+  if (text.length < 40) { document.getElementById('jd-detected').classList.remove('visible'); return; }
+  // Try to extract role and company from first 3 lines
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const roleEl = document.getElementById('jd-det-role');
+  const coEl   = document.getElementById('jd-det-co');
+  const strip  = document.getElementById('jd-detected');
+  // Common pattern: "Role Title\nCompany · Location" or "Role at Company"
+  let role = '', co = '';
+  if (lines[0]) role = lines[0].replace(/^\s*(about|job title|position|role|title)[:\s]*/i,'').substring(0,60);
+  if (lines[1]) {
+    const parts = lines[1].split(/[·|@,]/);
+    co = parts[0].trim().substring(0,40);
+  }
+  if (role && co) {
+    roleEl.textContent = role;
+    coEl.textContent   = co;
+    strip.classList.add('visible');
+  } else {
+    strip.classList.remove('visible');
   }
 }
 
