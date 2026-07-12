@@ -615,15 +615,16 @@ async function boot() {
     newPrograms = progs;
     activityLog = log;
 
-    // Sync custom apps: auto-added entries are server-authoritative (repo wins),
-    // manually-added entries (auto:false) are kept from local storage.
-    // This ensures false positives removed from the repo disappear for everyone.
+    // Sync custom apps: repo is authoritative for ALL entries (auto and manual).
+    // Repo-added manual entries (added by me on your behalf) always show up.
+    // Local-only manual entries (added via the + form in browser) are merged in.
     const repoApps = await fetch(RAW + '/custom_apps.json' + bust).then(r=>r.json()).catch(()=>[]);
-    const repoAutoIds = new Set(repoApps.filter(a=>a.auto).map(a=>a._id));
-    const manualApps  = customApps.filter(a => !a.auto); // user-added, keep locally
-    const repoAutoApps = repoApps.filter(a=>a.auto);
-    customApps = [...repoAutoApps, ...manualApps];
+    const repoIds = new Set(repoApps.map(a=>a._id));
+    // Keep local entries that aren't already in the repo (user added via + form)
+    const localOnlyApps = customApps.filter(a => !repoIds.has(a._id));
+    customApps = [...repoApps, ...localOnlyApps];
     localStorage.setItem('frp_custom_apps', JSON.stringify(customApps));
+    const repoAutoIds = new Set(repoApps.filter(a=>a.auto).map(a=>a._id));
 
     // Merge repo status (auto from Gmail) with local overrides (manual).
     // For auto entries: repo is authoritative — if removed from repo, clear local too.
