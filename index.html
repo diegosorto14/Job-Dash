@@ -540,12 +540,15 @@ a.apply-link:hover{text-decoration:underline}
         </div>
       </div>
 
-      <div style="display:flex;align-items:center;gap:10px;margin:14px 0 10px">
-        <div style="flex:1;height:1px;background:#e2e8f0"></div>
-        <span style="font-size:11px;color:#94a3b8;font-weight:600">OR PASTE TEXT</span>
-        <div style="flex:1;height:1px;background:#e2e8f0"></div>
+      <!-- Download zone — shown after tailoring -->
+      <div id="download-zone" style="display:none;margin-top:14px;border:2px dashed #86efac;border-radius:10px;padding:22px;text-align:center;background:#f0fdf4">
+        <div style="font-size:28px;margin-bottom:6px">⬇</div>
+        <div style="font-weight:700;color:#166534;font-size:14px;margin-bottom:4px">Tailored Resume Ready</div>
+        <div style="font-size:12px;color:#4ade80;margin-bottom:14px">Your updated resume is generated — download it as a PDF</div>
+        <button class="btn btn-primary" style="background:#16a34a" onclick="downloadPDF()">Download PDF</button>
       </div>
-      <textarea id="resume-input" rows="14" placeholder="Paste resume text here as a fallback…"></textarea>
+      <!-- Hidden paste fallback (still needed for non-file input) -->
+      <textarea id="resume-input" rows="1" style="display:none" placeholder="Paste resume text here as a fallback…"></textarea>
     </div>
 
     <!-- Right: Job description -->
@@ -583,7 +586,6 @@ Qualifications:
       </div>
       <div class="resume-out-actions">
         <button class="out-btn" onclick="copyResume()">📋 Copy</button>
-        <button class="out-btn" onclick="downloadPDF()">⬇ Download PDF</button>
         <button class="out-btn primary" onclick="tailorResume()">↺ Re-tailor</button>
       </div>
     </div>
@@ -1473,13 +1475,19 @@ async function tailorResume() {
 
   const instructions = `You are a professional resume editor. Tailor the candidate's resume to the job description below.
 
-STRICT RULES:
-1. Keep the EXACT same structure, sections, and formatting as the original resume. Do not add or remove sections.
-2. Keep the same number of bullet points per role. Do not add new jobs or roles.
-3. Only change: keywords, skills, action verbs, and numbers/metrics where they can be credibly strengthened to match the job description language.
-4. Mirror the JD's terminology naturally — if it emphasizes "variance analysis" or "cross-functional collaboration", work that language in where it fits.
-5. Do NOT fabricate experience, responsibilities, or credentials not implied by the original.
-6. Do NOT change: the candidate's name, contact info, school, degree, GPA, dates, or company names.
+STRICT FORMATTING RULES (do not violate any):
+1. Preserve the EXACT same section order, layout, and indentation as the original resume. No new sections, no removed sections.
+2. Dates and location must stay on the SAME LINE as the job/education title — never let them wrap to the next line. Use spacing (tabs or multiple spaces) to push them to the right on the same line.
+3. Keep the same number of bullet points per role — do not add or remove bullets.
+4. The final resume MUST fit on one page — tighten language if needed to stay within one page.
+5. Do NOT change: name, contact info, school, degree, GPA, company names, or any dates.
+6. Do NOT fabricate experience or credentials not present in the original.
+
+ENHANCEMENT RULES:
+7. Replace generic action verbs with strong, JD-aligned verbs (e.g. "Drove", "Optimized", "Spearheaded").
+8. Where numbers or metrics exist in the original, strengthen or contextualize them if credibly supported by the JD's language (e.g. "increased efficiency" → "reduced processing time by 20%").
+9. Mirror the JD's exact terminology — if it says "cross-functional collaboration", "variance analysis", "P&L management", weave those phrases in naturally.
+10. Fix all grammar, tense consistency (past tense for past roles, present for current), and phrasing to sound sharp and professional in the context of this specific role.
 
 OUTPUT FORMAT — return a JSON object with exactly these keys:
 {
@@ -1561,6 +1569,7 @@ No markdown, no code fences, no explanation — only the raw JSON object.`;
     document.getElementById('resume-output').value = tailored;
     document.getElementById('resume-original-mirror').value = originalText;
     document.getElementById('resume-out-section').style.display = 'block';
+    document.getElementById('download-zone').style.display = 'block';
     document.getElementById('resume-out-section').scrollIntoView({behavior:'smooth', block:'start'});
     setStatus('✓ Resume tailored — review and edit below.', 'ok');
 
