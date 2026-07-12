@@ -102,7 +102,6 @@ a.apply-link:hover{text-decoration:underline}
 .pipe-arrow{color:#cbd5e1;font-size:22px;padding:0 4px;align-self:flex-start;margin-top:10px}
 
 /* ACTIVITY */
-.act-item{background:#fff;border-radius:8px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;gap:16px}
 .act-dot{width:10px;height:10px;border-radius:50%;background:#1a5fb4;flex-shrink:0}
 .act-dot.none{background:#e2e8f0}
 .act-meta{font-size:12px;color:#64748b}
@@ -264,7 +263,6 @@ a.apply-link:hover{text-decoration:underline}
     <button class="nav-tab" onclick="showTab('discover')">New Jobs</button>
     <button class="nav-tab" onclick="showTab('mine')">My Applications</button>
     <button class="nav-tab" onclick="showTab('stats')">Stats</button>
-    <button class="nav-tab" onclick="showTab('activity')">Activity</button>
     <button class="nav-tab" onclick="showTab('resume')">✦ Resume</button>
   </div>
   <div class="nav-right" id="last-updated">Loading…</div>
@@ -465,13 +463,6 @@ a.apply-link:hover{text-decoration:underline}
 </div>
 
 <!-- ACTIVITY TAB -->
-<div class="page" id="page-activity">
-  <div style="margin-bottom:18px">
-    <h2 style="font-size:18px;font-weight:700;color:#0f2044">Scanner Activity Log</h2>
-    <p style="font-size:13px;color:#64748b;margin-top:3px">Every time the daily scanner runs, it logs results here</p>
-  </div>
-  <div id="activity-list"><div class="loading"><div class="spinner"></div>Loading…</div></div>
-</div>
 
 <!-- RESUME EDITOR TAB -->
 <div class="page" id="page-resume">
@@ -650,7 +641,7 @@ Qualifications:
 const RAW = 'https://raw.githubusercontent.com/diegosorto14/Job-Dash/main/frp_tracker/frontend/src/data';
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let companies = [], appStatus = {}, newJobs = [], newPrograms = [], activityLog = [];
+let companies = [], appStatus = {}, newJobs = [], newPrograms = [];
 let customApps = JSON.parse(localStorage.getItem('frp_custom_apps') || '[]');
 let localStatus = JSON.parse(localStorage.getItem('frp_status_v2') || '{}');
 let localNotes  = JSON.parse(localStorage.getItem('frp_notes_v2')  || '{}');
@@ -668,13 +659,10 @@ async function boot() {
       fetch(RAW + '/app_status.json' + bust).then(r => r.json()).catch(() => ({})),
       fetch(RAW + '/new_jobs.json' + bust).then(r => r.json()).catch(() => []),
       fetch(RAW + '/new_programs.json' + bust).then(r => r.json()).catch(() => []),
-      fetch(RAW + '/activity_log.json' + bust).then(r => r.json()).catch(() => []),
     ]);
     companies   = cos;
     newJobs     = jobs;
     newPrograms = progs;
-    activityLog = log;
-
     // Sync custom apps: repo is authoritative for ALL entries (auto and manual).
     // Repo-added manual entries (added by me on your behalf) always show up.
     // Local-only manual entries (added via the + form in browser) are merged in.
@@ -1181,31 +1169,6 @@ function renderStats() {
     : '<div style="color:#94a3b8;font-size:13px">No programs closing this month that you haven\'t applied to yet</div>';
 }
 
-// ── Activity tab ──────────────────────────────────────────────────────────────
-function renderActivity() {
-  const el = document.getElementById('activity-list');
-  if (!activityLog.length) {
-    el.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:#fff;border-radius:10px">No scanner runs logged yet</div>';
-    return;
-  }
-  el.innerHTML = activityLog.map(e => {
-    const hasData = e.new_jobs > 0 || e.new_programs > 0;
-    const d = new Date(e.ts);
-    const dateStr = d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) +
-      ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    return `<div class="act-item">
-      <div class="act-dot${hasData?'':' none'}"></div>
-      <div style="flex:1">
-        <div class="act-stat">${hasData ? `${Number(e.new_jobs)} new jobs · ${Number(e.new_programs)} new programs` : 'No new findings'}</div>
-        <div class="act-meta">${escHtml(dateStr)}</div>
-        ${e.scan_errors&&e.scan_errors.length?`<div style="font-size:11px;color:#dc2626;margin-top:3px">${Number(e.scan_errors.length)} scan error(s)</div>`:''}
-      </div>
-      <div style="font-size:12px">
-        ${e.email_sent?'<span style="color:#16a34a;font-weight:600">Email sent</span>':'<span style="color:#94a3b8">No email</span>'}
-      </div>
-    </div>`;
-  }).join('');
-}
 
 // ── Notes modal ───────────────────────────────────────────────────────────────
 function openNote(id, name) {
@@ -1233,7 +1196,6 @@ function showTab(name) {
   document.getElementById('page-'+name).classList.add('active');
   event.currentTarget.classList.add('active');
   if (name==='stats')    renderStats();
-  if (name==='activity') renderActivity();
   if (name==='discover') renderNewJobs();
   if (name==='mine')     renderMine();
   if (name==='resume')   loadApiKey();
