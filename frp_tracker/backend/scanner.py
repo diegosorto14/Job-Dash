@@ -27,7 +27,7 @@ EMAIL_PASS = os.environ.get("GMAIL_APP_PASSWORD", "")
 
 BASE         = Path(__file__).parent
 FRONTEND     = BASE.parent / "frontend" / "src" / "data"
-SEEN_FILE         = BASE / "seen_jobs.json"
+SEEN_FILE         = FRONTEND / "seen_jobs.json"
 NEW_JOBS_FILE     = FRONTEND / "new_jobs.json"
 NEW_PROGRAMS_FILE = FRONTEND / "new_programs.json"
 ACTIVITY_LOG      = FRONTEND / "activity_log.json"
