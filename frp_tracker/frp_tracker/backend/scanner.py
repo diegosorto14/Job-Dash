@@ -27,7 +27,7 @@ EMAIL_FROM = "diego.sorto14@gmail.com"
 EMAIL_PASS = os.environ.get("GMAIL_APP_PASSWORD", "")
 
 FRONTEND_DATA = Path(__file__).parent.parent / "frontend" / "src" / "data"
-SEEN_FILE        = Path(__file__).parent / "seen_jobs.json"
+SEEN_FILE        = FRONTEND_DATA / "seen_jobs.json"
 NEW_JOBS_FILE    = FRONTEND_DATA / "new_jobs.json"
 NEW_PROGRAMS_FILE= FRONTEND_DATA / "new_programs.json"
 ACTIVITY_LOG     = FRONTEND_DATA / "activity_log.json"
