@@ -2,22 +2,57 @@
   {
     "title": "Finance Rotation Program - LIFT (Full Time) - United States",
     "company": "Cisco",
-    "link": "https://jobs.cisco.com",
+    "link": "https://www.linkedin.com/jobs/view/finance-rotation-program-lift-full-time-united-states-at-cisco-4448940103",
     "source": "LinkedIn",
     "date": "2026-08-08",
     "id": "li_4448940103",
+    "apply_link": "https://jobs.cisco.com",
     "program": "Finance Leadership Development Program",
     "note": "Apply directly at Cisco"
   },
   {
     "title": "Finance Leadership Development Program (FLDP) 2027",
     "company": "Boston Scientific",
-    "link": "https://jobs.bostonscientific.com",
+    "link": "https://www.linkedin.com/jobs/view/finance-leadership-development-program-fldp-2027-at-boston-scientific-4450071517",
     "source": "LinkedIn",
     "date": "2026-08-08",
     "id": "li_4450071517",
+    "apply_link": "https://jobs.bostonscientific.com",
     "program": "Finance Development Program",
     "note": "Apply directly at Boston Scientific"
+  },
+  {
+    "title": "Finance Development Program (FDP) \u2014 Class of 2027",
+    "company": "Microsoft",
+    "link": "https://careers.microsoft.com/v2/global/en/financerotation",
+    "source": "Company Page",
+    "date": "2026-08-08",
+    "id": "cp_2",
+    "program": "Finance Development Program (FDP)",
+    "note": "Apply directly at Microsoft",
+    "apply_link": "https://careers.microsoft.com/v2/global/en/financerotation"
+  },
+  {
+    "title": "Finance Division Analyst Program \u2014 Class of 2027",
+    "company": "Goldman Sachs",
+    "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program",
+    "source": "Company Page",
+    "date": "2026-08-08",
+    "id": "cp_19",
+    "program": "Finance Division Analyst Program",
+    "note": "Apply directly at Goldman Sachs",
+    "apply_link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program"
+  },
+  {
+    "title": "Finance Rotational Program \u2014 Class of 2027",
+    "company": "Pfizer",
+    "link": "https://www.pfizer.com/en/about/careers/early-careers",
+    "source": "Company Page",
+    "date": "2026-08-08",
+    "id": "cp_48",
+    "program": "Finance Rotational Program",
+    "note": "Apply directly at Pfizer",
+    "apply_link": "https://www.pfizer.com/en/about/careers/early-careers"
   },
   {
     "title": "Finance Leadership Development Program (FLDP) 2027",
@@ -48,35 +83,5 @@
     "id": "li_4441457875",
     "program": "Finance & Accounting Development Program",
     "note": "Apply directly at BlackRock"
-  },
-  {
-    "title": "Finance Development Program (FDP) \u2014 Class of 2027",
-    "company": "Microsoft",
-    "link": "https://careers.microsoft.com/v2/global/en/financerotation",
-    "source": "Company Page",
-    "date": "2026-08-08",
-    "id": "cp_2",
-    "program": "Finance Development Program (FDP)",
-    "note": "Apply directly at Microsoft"
-  },
-  {
-    "title": "Finance Division Analyst Program \u2014 Class of 2027",
-    "company": "Goldman Sachs",
-    "link": "https://www.goldmansachs.com/careers/students/programs-and-internships/americas/new-analyst-program",
-    "source": "Company Page",
-    "date": "2026-08-08",
-    "id": "cp_19",
-    "program": "Finance Division Analyst Program",
-    "note": "Apply directly at Goldman Sachs"
-  },
-  {
-    "title": "Finance Rotational Program \u2014 Class of 2027",
-    "company": "Pfizer",
-    "link": "https://www.pfizer.com/en/about/careers/early-careers",
-    "source": "Company Page",
-    "date": "2026-08-08",
-    "id": "cp_48",
-    "program": "Finance Rotational Program",
-    "note": "Apply directly at Pfizer"
   }
 ]
