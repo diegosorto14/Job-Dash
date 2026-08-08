@@ -446,8 +446,15 @@ def scan_all():
 
     known_jobs, new_progs = classify_jobs(new_jobs)
 
-    # Overwrite new_jobs.json each run — prevents stale accumulation and merge conflicts
-    save_json(NEW_JOBS_FILE, known_jobs[:200])
+    # Merge new jobs into existing list, preserving original dates on already-seen entries
+    existing_jobs = load_json(NEW_JOBS_FILE, [])
+    existing_by_id = {j["id"]: j for j in existing_jobs}
+    for job in known_jobs:
+        if job["id"] not in existing_by_id:
+            existing_by_id[job["id"]] = job
+    # Keep list capped; newest first
+    merged_jobs = known_jobs + [j for j in existing_jobs if j["id"] not in {k["id"] for k in known_jobs}]
+    save_json(NEW_JOBS_FILE, merged_jobs[:200])
 
     existing_progs = load_json(NEW_PROGRAMS_FILE, [])
     existing_ids   = {p["id"] for p in existing_progs}
