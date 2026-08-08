@@ -29,6 +29,7 @@ EMAIL_PASS = os.environ.get("GMAIL_APP_PASSWORD", "")
 BASE         = Path(__file__).parent
 FRONTEND     = BASE.parent / "frontend" / "src" / "data"
 SEEN_FILE         = FRONTEND / "seen_jobs.json"
+SEEN_COS_FILE     = FRONTEND / "seen_companies.json"  # company-level cooldown
 NEW_JOBS_FILE     = FRONTEND / "new_jobs.json"
 NEW_PROGRAMS_FILE = FRONTEND / "new_programs.json"
 ACTIVITY_LOG      = FRONTEND / "activity_log.json"
@@ -405,7 +406,30 @@ def _co_title_key(job):
 def scan_all():
     seen        = set(load_json(SEEN_FILE, []))
     applied_cos = already_applied_companies()
-    today       = datetime.date.today().isoformat()
+    today       = datetime.date.today()
+    today_iso   = today.isoformat()
+
+    # Company cooldown: {normalised_company: "YYYY-MM-DD last emailed"}
+    # Once a company's job is emailed, skip it for 30 days unless a different title appears.
+    seen_cos    = load_json(SEEN_COS_FILE, {})
+    COOLDOWN_DAYS = 30
+
+    def _co_key(name):
+        return re.sub(r'[^a-z0-9]', '', name.lower())
+
+    def company_on_cooldown(job):
+        ck = _co_key(job.get("company", ""))
+        if ck not in seen_cos:
+            return False
+        last = datetime.date.fromisoformat(seen_cos[ck]["date"])
+        if (today - last).days < COOLDOWN_DAYS:
+            return True
+        return False
+
+    def record_company_seen(job):
+        ck = _co_key(job.get("company", ""))
+        seen_cos[ck] = {"date": today_iso, "title": job.get("title", "")}
+
     new_jobs, errors = [], []
     seen_this_run = set()   # deduplicates by company+title within one scan
 
@@ -435,15 +459,20 @@ def scan_all():
             # Skip if we already have this company+role from another source this run
             ck = _co_title_key(job)
             if ck in seen_this_run:
-                seen.add(job["id"])  # mark id seen so it won't resurface tomorrow
+                seen.add(job["id"])
+                continue
+            # Skip if this company was already emailed within the cooldown window
+            if company_on_cooldown(job):
+                seen.add(job["id"])
                 continue
             # Fetch the actual job description and confirm it mentions 2027
             time.sleep(random.uniform(1, 2))
             if not verify_year_in_description(job):
-                seen.add(job["id"])  # mark seen so we don't recheck every day
+                seen.add(job["id"])
                 continue
             seen.add(job["id"])
             seen_this_run.add(ck)
+            record_company_seen(job)
             new_jobs.append(job)
 
     # Check company career pages — re-checked daily but only emailed once per posting.
@@ -452,11 +481,15 @@ def scan_all():
     print("  Checking company career pages...")
     company_page_jobs = check_company_pages()
     for job in company_page_jobs:
-        if job["id"] not in seen:
+        if job["id"] not in seen and not company_on_cooldown(job):
             seen.add(job["id"])
+            record_company_seen(job)
             new_jobs.append(job)
+        else:
+            seen.add(job["id"])
 
     save_json(SEEN_FILE, list(seen))
+    save_json(SEEN_COS_FILE, seen_cos)
 
     known_jobs, new_progs = classify_jobs(new_jobs)
 
