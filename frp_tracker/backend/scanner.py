@@ -81,19 +81,41 @@ def save_json(path, data):
     Path(path).write_text(json.dumps(data, indent=2))
 
 ROTATIONAL_KEYWORDS = [
-    "rotational", "rotation program", "leadership development",
-    "development program", "ldp", "fdp", "fldp", "frap", "afrp",
-    "finance program", "finance associate program",
-    "finance & strategy", "finance and strategy",
-    "new grad", "new analyst", "analyst program",
+    "rotational", "rotation program",
+    "leadership development program", "ldp",
+    "finance development program", "fdp",
+    "finance leadership development", "fldp",
+    "finance rotational", "finance rotation",
+    "finance associate program",
+    "fp&a rotational", "frap", "afrp",
+]
+
+# Titles containing these words are NOT rotational programs even if they match above
+ROTATIONAL_BLOCKLIST = [
+    "investment banking analyst",
+    "full-time analyst",
+    "full time analyst",
+    "summer analyst",
+    "internship",
+    "intern ",
+    "senior",
+    "director",
+    "manager",
+    "vice president",
+    " vp ",
+    "associate, ",   # e.g. "Investment Banking Associate, ..."
+    "quantitative",
 ]
 
 def is_rotational(title):
-    # Don't gate on "2027" being in the title — job boards rarely include the year
-    # in the title text even when the role is for the 2027 cohort. The search query
-    # already scopes to 2027, so any returned result is implicitly 2027.
     t = title.lower()
-    return any(kw in t for kw in ROTATIONAL_KEYWORDS)
+    # Must match at least one rotational keyword
+    if not any(kw in t for kw in ROTATIONAL_KEYWORDS):
+        return False
+    # Must NOT match any blocklist phrase
+    if any(bad in t for bad in ROTATIONAL_BLOCKLIST):
+        return False
+    return True
 
 # Phrases in a job description that confirm this is a 2027-cohort role.
 # At least ONE must appear in the fetched page body.
@@ -328,9 +350,22 @@ def classify_jobs(jobs):
              if (k in co and len(k) >= 5) or (co in k and len(co) >= 5)), None
         )
         if matched:
+            # Keep the original job-board URL (direct posting link from LinkedIn/Indeed)
+            # Only fall back to the company careers page if no specific URL was captured
+            original_link = job.get("link", "")
+            careers_page  = matched["link"]
+            direct_link   = original_link if (
+                original_link and
+                original_link != careers_page and
+                "linkedin.com/jobs/view" in original_link or
+                "indeed.com/viewjob" in original_link or
+                "ziprecruiter.com" in original_link or
+                "simplyhired.com" in original_link
+            ) else careers_page
             job = {
                 **job,
-                "link":    matched["link"],
+                "link":    direct_link,
+                "apply_link": careers_page,   # always keep the careers page as backup
                 "program": matched.get("program", job.get("title", "")),
                 "note":    f"Apply directly at {matched['company']}",
             }
@@ -532,10 +567,20 @@ def _job_rows(jobs):
     rows = []
     for j in jobs:
         display_title = j.get("program") or j.get("title", "")
-        if j.get("note"):
-            link_label = "Apply at {} →".format(j["company"].split("(")[0].strip())
+        main_link     = j.get("link", "")
+        apply_link    = j.get("apply_link", "")
+        source        = j.get("source", "")
+        company_short = j["company"].split("(")[0].strip()
+
+        # Primary link: direct job posting if available, otherwise careers page
+        if "linkedin.com" in main_link or "indeed.com" in main_link or \
+           "ziprecruiter.com" in main_link or "simplyhired.com" in main_link:
+            view_cell = "<a href='{}' style='color:#1d4ed8'>View posting →</a>".format(main_link)
+            if apply_link and apply_link != main_link:
+                view_cell += "&nbsp;&nbsp;<a href='{}' style='color:#16a34a;font-size:12px'>Apply at {} →</a>".format(apply_link, company_short)
         else:
-            link_label = "View on {} →".format(j["source"])
+            view_cell = "<a href='{}' style='color:#1d4ed8'>Apply at {} →</a>".format(main_link, company_short)
+
         rows.append(
             "<tr>"
             "<td style='padding:10px;border-bottom:1px solid #eee'>"
@@ -543,12 +588,8 @@ def _job_rows(jobs):
             "<span style='color:#666'>{}</span>"
             "</td>"
             "<td style='padding:10px;border-bottom:1px solid #eee;color:#888'>{}</td>"
-            "<td style='padding:10px;border-bottom:1px solid #eee'>"
-            "<a href='{}' style='color:#1d4ed8'>{}</a>"
-            "</td>"
-            "</tr>".format(
-                display_title, j["company"], j["source"], j["link"], link_label
-            )
+            "<td style='padding:10px;border-bottom:1px solid #eee'>{}</td>"
+            "</tr>".format(display_title, j["company"], source, view_cell)
         )
     return "".join(rows)
 
