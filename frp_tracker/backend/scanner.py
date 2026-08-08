@@ -7,6 +7,7 @@ FRP Job Scanner — runs daily via GitHub Actions.
 
 import json
 import os
+import re
 import smtplib
 import datetime
 import time
@@ -395,11 +396,18 @@ def get_weekly_summary():
     return counts, closing_soon[:10]
 
 # ── Main scan ─────────────────────────────────────────────────────────────────
+def _co_title_key(job):
+    """Normalised key so the same role at the same company deduplicates across sources."""
+    co    = re.sub(r'[^a-z0-9]', '', job.get("company", "").lower())
+    title = re.sub(r'[^a-z0-9]', '', job.get("title",   "").lower())
+    return f"{co}|{title}"
+
 def scan_all():
     seen        = set(load_json(SEEN_FILE, []))
     applied_cos = already_applied_companies()
     today       = datetime.date.today().isoformat()
     new_jobs, errors = [], []
+    seen_this_run = set()   # deduplicates by company+title within one scan
 
     for term in SEARCH_TERMS:
         print(f"  Scanning: {term}")
@@ -424,12 +432,18 @@ def scan_all():
                 continue
             if not is_rotational(job.get("title", "")):
                 continue
+            # Skip if we already have this company+role from another source this run
+            ck = _co_title_key(job)
+            if ck in seen_this_run:
+                seen.add(job["id"])  # mark id seen so it won't resurface tomorrow
+                continue
             # Fetch the actual job description and confirm it mentions 2027
             time.sleep(random.uniform(1, 2))
             if not verify_year_in_description(job):
                 seen.add(job["id"])  # mark seen so we don't recheck every day
                 continue
             seen.add(job["id"])
+            seen_this_run.add(ck)
             new_jobs.append(job)
 
     # Check company career pages — re-checked daily but only emailed once per posting.
