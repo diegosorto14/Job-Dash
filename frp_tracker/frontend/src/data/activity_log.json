@@ -1,5 +1,14 @@
 [
   {
+    "ts": "2026-10-18T16:27:33",
+    "date": "2026-10-18",
+    "new_jobs": 0,
+    "new_programs": 1,
+    "email_sent": true,
+    "email_error": null,
+    "scan_errors": []
+  },
+  {
     "ts": "2026-10-17T16:14:38",
     "date": "2026-10-17",
     "new_jobs": 0,
@@ -795,15 +804,6 @@
     "ts": "2026-07-21T15:10:49",
     "date": "2026-07-21",
     "new_jobs": 11,
-    "new_programs": 1,
-    "email_sent": true,
-    "email_error": null,
-    "scan_errors": []
-  },
-  {
-    "ts": "2026-07-20T15:17:56",
-    "date": "2026-07-20",
-    "new_jobs": 14,
     "new_programs": 1,
     "email_sent": true,
     "email_error": null,
