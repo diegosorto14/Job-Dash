@@ -228,8 +228,8 @@
     "title": "Finance Rotation Program"
   },
   "sandisk": {
-    "date": "2026-09-18",
-    "title": "MBA Finance & Accounting Rotation Program (2027 Graduates)"
+    "date": "2026-11-11",
+    "title": "Bachelors - Finance & Accounting Rotation Program (2027 New College Graduates)"
   },
   "wattswatertechnologies": {
     "date": "2026-09-24",
@@ -326,5 +326,9 @@
   "archer": {
     "date": "2026-11-05",
     "title": "Financial Analyst Rotational Program"
+  },
+  "andurilindustries": {
+    "date": "2026-11-11",
+    "title": "2027 Early Career Finance Emerging Leadership Rotational Program"
   }
 }
